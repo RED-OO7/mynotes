@@ -103,11 +103,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         MainActivity.isLogin = isLogin;
     }
 
+    /**
+     * 该方法用于检查当前用户是否登录并返回当前用户名
+     * @return 会返回当前用户名，若当前用户不存在，则会返回本地拥有者
+     */
+    public static String getNowUsername(){
+        String nowUsername = NotesDB.LOCAL_OWNER_STRING;
+        if (isLogin){
+            if (nowAccount != null){
+                nowUsername = nowAccount.getUsername();
+            }
+        }
+        return nowUsername;
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
 
         if (Build.VERSION.SDK_INT >= 24) {//api版本大于24时则使用渐变色
             setContentView(R.layout.activity_main);
@@ -140,7 +153,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        return true;
 //    }
 
-    public void initView() {//该方法用于初始化cellListView
+    /**
+     * 该方法用于初始化MainActivity的控件们
+     */
+    public void initView() {
         bt_login = (Button) findViewById(R.id.bt_login);
         bt_register = (Button) findViewById(R.id.bt_register);
         bt_cancel = (Button) findViewById(R.id.bt_cancel);
@@ -242,7 +258,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.bt_test1://该按钮用于测试
                 ContentValues contentValues1 = new ContentValues();
                 //id不需要放入是因为设置了id自增
-                contentValues1.put(NotesDB.TITLE,"无序号的空内容记录2");
+                contentValues1.put(NotesDB.TITLE, "无序号的空内容记录2");
                 contentValues1.put(NotesDB.CONTENT, "");//添加文本输入框里的内容进数据库
                 contentValues1.put(NotesDB.TIME, AddContent.getNowTimeStr());//添加当前的时间
                 contentValues1.put(NotesDB.CHANGE_TIME, AddContent.getNowTimeStr());//添加修改的时间
@@ -255,7 +271,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 notesDB = new NotesDB(this);
                 SQLiteDatabase notesWriter1 = notesDB.getWritableDatabase();
                 notesWriter1.insert(NotesDB.TABLE_NAME, null, contentValues1);
-                ContentFragment.contentFragmentInstance.selectNotesDB();//重新查询记录以刷新记录
+//                ContentFragment.contentFragmentInstance.selectNotesDB();//重新查询记录以刷新记录
 //                Toast.makeText(this, "这个按钮现在什么都没做", Toast.LENGTH_SHORT).show();
                 break;
 
@@ -305,7 +321,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 SQLiteDatabase notesWriter = notesDB.getWritableDatabase();
                 notesWriter.insert(NotesDB.TABLE_NAME, null, contentValues);
 
-                ContentFragment.contentFragmentInstance.selectNotesDB();//重新查询记录以刷新记录
+//                ContentFragment.contentFragmentInstance.selectNotesDB();//重新查询记录以刷新记录
                 break;
 
             default:
@@ -319,13 +335,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        selectNotesDB();
     }
 
-    public void selectNotesDB() {//该方法用于查询
-        //该cursor游标暂不初始化
-        Cursor cursor = dbReader.query(NotesDB.TABLE_NAME, null, null, null, null, null, null);
-        ContentFragment contentFragment = new ContentFragment();
-        showListContentApdater = new ShowListContentApdater(this, cursor);//将该适配器和该 主页面 绑定游标
-        cellListView.setAdapter(showListContentApdater);//将显示列表用的View绑定适配器
-    }
+//    public void selectNotesDB() {//该方法用于查询
+//        //该cursor游标暂不初始化
+//        Cursor cursor = dbReader.query(NotesDB.TABLE_NAME, null, null, null, null, null, null);
+//        ContentFragment contentFragment = new ContentFragment();
+//        showListContentApdater = new ShowListContentApdater(this,R.id.cellListView, cursor);//将该适配器和该 主页面 绑定游标
+//        cellListView.setAdapter(showListContentApdater);//将显示列表用的View绑定适配器
+//    }
 
     /**
      * 该方法用于保存账号信息到非易失文件
@@ -508,7 +524,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     /**
      * 该方法用于其它类调用以关闭刷新动画，同时还会刷新记录
      */
-    public void stopRefresh(){
+    public void stopRefresh() {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {

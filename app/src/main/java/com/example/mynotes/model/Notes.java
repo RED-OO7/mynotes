@@ -14,10 +14,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Notes {//该Notes是面向本地sqlite数据库的
+public class Notes implements Serializable {//该Notes是面向本地sqlite数据库的
 
     public static final String CLASSNAME = "Notes";
 
@@ -218,8 +219,65 @@ public class Notes {//该Notes是面向本地sqlite数据库的
             notesList.add(note);
         }
 
+        //最后关闭资源
+        cursor.close();
+        notesDB.close();
+
         return notesList;
     }
+
+
+    /**
+     * 该方法返回的notes列表里的note适合显示在列表的或显示在详情里
+     */
+    @NonNull
+    public static List<Notes> getNotesListContent(Context context, String nowUsername) {
+        List<Notes> notesList = new ArrayList<Notes>();//将要返回的笔记本列表
+
+        NotesDB notesDB = new NotesDB(context);
+        String selectionArgs[] = {NotesDB.LOCAL_OWNER_STRING, nowUsername};
+        SQLiteDatabase dbReader = notesDB.getReadableDatabase();//获取可读取数据库
+        //该cursor游标设置为使用NotesDB.OWNER限定搜索结果，再使用NotesDB.CHANGE_TIME排序
+        Cursor cursor = dbReader.query(NotesDB.TABLE_NAME, null,
+                NotesDB.OWNER + " = ? or " + NotesDB.OWNER + " = ? ",
+                selectionArgs, null, null, NotesDB.CHANGE_TIME + " Desc");
+
+        while (cursor.moveToNext()) {//遍历游标里的所有数据
+            int id = cursor.getInt(cursor.getColumnIndex(NotesDB.ID));
+            String titleStr = cursor.getString(cursor.getColumnIndex(NotesDB.TITLE));
+            String contentStr = cursor.getString(cursor.getColumnIndex(NotesDB.CONTENT));
+            String pic_pathStr = cursor.getString(cursor.getColumnIndex(NotesDB.PIC_PATH));
+            String video_pathStr = cursor.getString(cursor.getColumnIndex(NotesDB.VIDEO_PATH));
+            String sound_pathStr = cursor.getString(cursor.getColumnIndex(NotesDB.SOUND_PATH));
+            String timeStr = cursor.getString(cursor.getColumnIndex(NotesDB.TIME));
+            String changeTimeStr = cursor.getString(cursor.getColumnIndex(NotesDB.CHANGE_TIME));
+//            int isChange_int = cursor.getInt(cursor.getColumnIndex(NotesDB.IS_CHANGE));// 0 为 false ， 1为true
+//            boolean isChange = (isChange_int == 1);
+            String ownerStr = cursor.getString(cursor.getColumnIndex(NotesDB.OWNER));
+
+            Notes note = new Notes();
+
+            note.setId(id);
+            note.setTime(timeStr);
+            note.setChange_time(changeTimeStr);
+//            note.setIs_change(isChange);
+
+            note.setTitle(titleStr);
+            note.setContent(contentStr);
+            note.setPic_path(pic_pathStr);
+            note.setVideo_path(video_pathStr);
+            note.setSound_path(sound_pathStr);
+            note.setOwner(ownerStr);
+
+            notesList.add(note);
+        }
+        //最后关闭资源
+        cursor.close();
+        notesDB.close();
+
+        return notesList;
+    }
+
 
     /**
      * 该方法可以更新本客户端的文本记录<br/>
@@ -289,10 +347,10 @@ public class Notes {//该Notes是面向本地sqlite数据库的
 
                         if (cursor.moveToNext()) {//如果移动成功，则说明该记录存在，则需要更新该记录
                             int updateId = cursor.getInt(cursor.getColumnIndex(NotesDB.ID));//获取到id
-                            dbWriter.update(NotesDB.TABLE_NAME,downloadCV,NotesDB.ID +" = " +updateId,null);
-                        }else{//否则该记录不存在本客户端，则需要插入
+                            dbWriter.update(NotesDB.TABLE_NAME, downloadCV, NotesDB.ID + " = " + updateId, null);
+                        } else {//否则该记录不存在本客户端，则需要插入
 //                            Toast.makeText(context,"似乎有执行插入:"+noteObject.getString(NotesDB.TIME),Toast.LENGTH_LONG).show();
-                            dbWriter.insert(NotesDB.TABLE_NAME,null,downloadCV);
+                            dbWriter.insert(NotesDB.TABLE_NAME, null, downloadCV);
                         }
                         downloadCV.clear();//在下次更新前必须先清理旧的值
                         iUpdateSuccess++;

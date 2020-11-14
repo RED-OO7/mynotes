@@ -13,18 +13,19 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.example.mynotes.MainActivity;
 import com.example.mynotes.R;
 import com.example.mynotes.adapter.ShowListContentApdater;
-import com.example.mynotes.control.AddContent;
 import com.example.mynotes.database.NotesDB;
+import com.example.mynotes.model.Notes;
 import com.example.mynotes.other_activities.Detail;
+
+import java.util.List;
 
 public class SearchFragment extends Fragment implements View.OnClickListener{
 
@@ -151,7 +152,8 @@ public class SearchFragment extends Fragment implements View.OnClickListener{
         //该cursor游标暂不初始化
         cursor=dbReader.query(NotesDB.TABLE_NAME,null,null,null,null,null,null);
         SearchFragment searchFragment =new SearchFragment();
-        showListContentApdater = new ShowListContentApdater(getContext(),cursor);//将该适配器和该 主页面 绑定游标
+        List notesList = Notes.getNotesListContent(getContext(), MainActivity.getNowUsername());
+        showListContentApdater = new ShowListContentApdater(getContext(),R.id.cellListView,notesList);//将该适配器和该 主页面 绑定游标
         cellListView.setAdapter(showListContentApdater);//将显示列表用的View绑定适配器
     }
 
@@ -162,7 +164,8 @@ public class SearchFragment extends Fragment implements View.OnClickListener{
 //        Toast.makeText(getContext(),search_sql,Toast.LENGTH_SHORT).show();//测试用，可注释
         final Cursor[] cursor = {dbReader.query(NotesDB.TABLE_NAME, null, search_sql, null, null, null, null)};
         SearchFragment searchFragment =new SearchFragment();
-        showListContentApdater = new ShowListContentApdater(getContext(), cursor[0]);//将该适配器和该 主页面 绑定游标
+        List<Notes> notesList = Notes.getNotesListContent(getContext(),MainActivity.getNowUsername());
+        showListContentApdater = new ShowListContentApdater(getContext(), R.id.cellListView,notesList );//将该适配器和该 主页面 绑定游标
         cellListView.setAdapter(showListContentApdater);//将显示列表用的View绑定适配器
 
     }

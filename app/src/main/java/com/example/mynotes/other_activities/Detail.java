@@ -28,6 +28,7 @@ import com.example.mynotes.R;
 import com.example.mynotes.control.AddContent;
 import com.example.mynotes.control.FileIO;
 import com.example.mynotes.database.NotesDB;
+import com.example.mynotes.model.Notes;
 
 public class Detail extends Activity implements View.OnClickListener {
     private Button bt_delete, bt_return, bt_display, bt_stop;
@@ -42,6 +43,7 @@ public class Detail extends Activity implements View.OnClickListener {
 
     private NotesDB notesDB;
     private SQLiteDatabase notesWriter;//该dbWriter用以删除数据库的记录
+    private Notes nowNote;//该记录为目前的记事记录
 
     //    private MediaRecorder mediaRecorder = new MediaRecorder();
     private MediaPlayer mediaPlayer = new MediaPlayer();
@@ -75,15 +77,17 @@ public class Detail extends Activity implements View.OnClickListener {
         bt_stop.setOnClickListener(this);
 
         Intent get_intent = getIntent();//获取到传递过来的意图
+        nowNote = (Notes) get_intent.getSerializableExtra(Notes.CLASSNAME);//获取传递过来的Notes实例
+
         detail_seize1.setVisibility(View.GONE);
-        detail_title.setText(get_intent.getStringExtra(NotesDB.TITLE));
-        detail_text.setText(get_intent.getStringExtra(NotesDB.CONTENT));//给文本框设置内容
+        detail_title.setText(nowNote.getTitle());
+        detail_text.setText(nowNote.getContent());//给文本框设置内容
 //        Toast.makeText(this,get_intent.getStringExtra(NotesDB.CONTENT),Toast.LENGTH_LONG).show();//显示意图传递的content
 
-        detail_time.setText(get_intent.getStringExtra(NotesDB.TIME));//设置时间
+        detail_time.setText(nowNote.getTime());//设置时间
         detail_time.bringToFront();//设置到最上层
         //如果获取到图片路径的为空，则不显示
-        String imgPath_get = get_intent.getStringExtra(NotesDB.PIC_PATH);//这里获取的居然是string类型的null？？？
+        String imgPath_get = nowNote.getPic_path();//这里获取的居然是string类型的null？？？
         if ("null".equals(imgPath_get)) {
             detail_img.setVisibility(View.GONE);
         } else {
@@ -94,7 +98,7 @@ public class Detail extends Activity implements View.OnClickListener {
             detail_img.setImageBitmap(bitmap);//使用bitmap来显示图片
         }
         //如果获取到视频路径的为空，则不显示
-        String videoPath_get = get_intent.getStringExtra(NotesDB.VIDEO_PATH);//这里获取的居然是string类型的null？？？
+        String videoPath_get = nowNote.getVideo_path();//这里获取的居然是string类型的null？？？
         if ("null".equals(videoPath_get)) {
             detail_video.setVisibility(View.GONE);
         } else {
@@ -112,7 +116,7 @@ public class Detail extends Activity implements View.OnClickListener {
             detail_video.start();//启动播放视频
         }
         //如果获取到录音路径的为空，则不显示
-        String soundPath_get = get_intent.getStringExtra(NotesDB.SOUND_PATH);//这里获取的居然是string类型的null？？？
+        String soundPath_get = nowNote.getSound_path();//这里获取的居然是string类型的null？？？
         if ("null".equals(soundPath_get) || soundPath_get == null) {
 //            detail_video.setVisibility(View.GONE);
 //            Toast.makeText(this,"该录音路径为："+soundPath_get,Toast.LENGTH_SHORT).show();
@@ -122,7 +126,7 @@ public class Detail extends Activity implements View.OnClickListener {
             bt_display.setEnabled(true);
             bt_stop.setEnabled(false);
             try{
-                mediaPlayer.setDataSource(getIntent().getStringExtra(NotesDB.SOUND_PATH));
+                mediaPlayer.setDataSource(soundPath_get);
                 mediaPlayer.prepare();
             }catch (Exception e){
                 e.printStackTrace();
@@ -141,7 +145,8 @@ public class Detail extends Activity implements View.OnClickListener {
 
         notesDB = new NotesDB(this);
         notesWriter = notesDB.getWritableDatabase();//创建数据库写入器
-        int id = getIntent().getIntExtra(NotesDB.ID, 0);//获取该行数据的id
+
+        int id = ((Notes)getIntent().getSerializableExtra(Notes.CLASSNAME)).getId();//获取该行数据的id
         ContentValues contentValues = new ContentValues();
         //id不需要放入是因为设置了id自增
         contentValues.put(NotesDB.TITLE, title_input);
@@ -160,7 +165,7 @@ public class Detail extends Activity implements View.OnClickListener {
     public void deleteItem() {//该方法用于删除一条数据
         notesDB = new NotesDB(this);
         notesWriter = notesDB.getWritableDatabase();//创建数据库写入器
-        int id = getIntent().getIntExtra(NotesDB.ID, 0);//获取该行数据的id
+        int id = ((Notes)getIntent().getSerializableExtra(Notes.CLASSNAME)).getId();//获取该行数据的id
         notesWriter.delete(NotesDB.TABLE_NAME, NotesDB.ID + " = " + id, null);//根据id删除该行数据
     }
 
@@ -182,12 +187,15 @@ public class Detail extends Activity implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
-        Intent get_intent = getIntent();//获取到传递过来的意图
+//        Intent get_intent = getIntent();//获取到传递过来的意图
 //        String title_str = get_intent.getStringExtra(NotesDB.TITLE);
 //        String content_str = get_intent.getStringExtra(NotesDB.CONTENT);
-        String picPath_str = get_intent.getStringExtra(NotesDB.PIC_PATH);
-        String videoPath_str = get_intent.getStringExtra(NotesDB.VIDEO_PATH);
-        String soundPath_str = get_intent.getStringExtra(NotesDB.SOUND_PATH);
+
+
+
+        String picPath_str = nowNote.getPic_path();
+        String videoPath_str = nowNote.getVideo_path();
+        String soundPath_str = nowNote.getSound_path();
 //        String soundPath_str=get_intent.getStringExtra(NotesDB.);
 
         switch (v.getId()) {
@@ -217,8 +225,8 @@ public class Detail extends Activity implements View.OnClickListener {
 
             case R.id.bt_return:
                 //开始时判断是否有必要更新记录
-                String title_str = get_intent.getStringExtra(NotesDB.TITLE);
-                String content_str = get_intent.getStringExtra(NotesDB.CONTENT);//如果为null，则获取null本身，但不可能为null，只能为""
+                String title_str = nowNote.getTitle();
+                String content_str = nowNote.getContent();//如果为null，则获取null本身，但不可能为null，只能为""
                 String title_input = detail_title.getText().toString().trim();//如果输入为空，则获取到""字符串
                 title_input = title_input.replaceAll("\r|\n", "");//将标题换行都去掉
                 String content_input = detail_text.getText().toString();//如果输入为空，则获取到""字符串
