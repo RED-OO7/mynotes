@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?><!--  该RelativeLayout用于主面板的内容  -->
+
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:weightSum="5">
+
+    <!--    <uk.co.senab.actionbarpulltorefresh.library.PullToRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+    <!--        xmlns:tools="http://schemas.android.com/tools"-->
+    <!--        android:id="@+id/content_refresh"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="match_parent">-->
+
+    <!--  该listview用于承载记录的内容  -->
+    <!--  这里原本是listview  -->
+    <com.example.mynotes.widget.XListView
+        android:id="@+id/cellListView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/tip_text"
+        android:layout_alignParentTop="true"
+        android:layout_marginBottom="30dp"
+        android:layout_weight="4"></com.example.mynotes.widget.XListView>
+
+    <!--    </uk.co.senab.actionbarpulltorefresh.library.PullToRefreshLayout>-->
+    <TextView
+        android:id="@+id/tip_text"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:layout_alignBottom="@+id/linear_bt"
+        android:layout_marginBottom="50dp"
+        android:background="#FFFFFF"
+        android:gravity="center"
+        android:text="点击以下四个按钮可以开始记事"
+        android:textSize="20dp"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:id="@+id/linear_bt"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:layout_weight="1"
+        android:background="#FFFFFF"
+        android:orientation="horizontal"
+        android:weightSum="4">
+
+        <Button
+            android:id="@+id/bt_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="文字" />
+
+        <Button
+            android:id="@+id/bt_pic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="拍照" />
+
+        <Button
+            android:id="@+id/bt_video"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="录像" />
+
+        <Button
+            android:id="@+id/bt_sound"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="录音" />
+    </LinearLayout>
+</RelativeLayout>
+
+

@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">MyNotes</string>
+
+    <!--  下面的都是新增的，不影响原项目 -->
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+
+    <string name="btn_scroll_view">ScrollView demo</string>
+    <string name="btn_list_view">ListView demo</string>
+
+    <string name="header_hint_refresh_normal">拖动以刷新</string><!--拖动以刷新的字符串-->
+    <string name="header_hint_refresh_ready">释放以刷新</string><!--释放刷新时的字符串-->
+    <string name="header_hint_refresh_loading">刷新中！&#8230;</string><!--刷新时的字符串&#8230;是省略号-->
+    <string name="header_hint_refresh_time"></string><!--上次同步的时间-->
+    <string name="footer_hint_load_normal">Load more</string>
+    <string name="footer_hint_load_ready">Release to load more</string>
+</resources>

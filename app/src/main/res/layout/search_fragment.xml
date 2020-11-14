@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--  该RelativeLayout用于主面板的内容  -->
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:weightSum="5">
+
+    <!--  该RelativeLayout用于存放搜索框  -->
+    <RelativeLayout
+        android:id="@+id/search_layout"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentTop="true"
+        android:orientation="horizontal"
+        android:weightSum="3">
+        <TextView
+            android:id="@+id/tv_search"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="搜索"
+            android:gravity="center"
+            android:textSize="20dp"
+            android:layout_weight="3"
+            />
+
+        <Button
+            android:id="@+id/bt_search"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:text="确认"
+            android:layout_weight="3"
+            />
+
+        <EditText
+            android:id="@+id/et_search"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignRight="@+id/bt_search"
+            android:layout_marginLeft="80dp"
+            android:layout_marginRight="80dp"
+            android:padding="10dp" />
+    </RelativeLayout>
+
+    <!--  该listview用于承载记录的内容  -->
+    <ListView
+        android:id="@+id/cellListView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/search_layout"
+        android:layout_alignTop="@+id/search_layout"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="50dp"
+        android:layout_weight="4"/>
+
+
+    <TextView
+        android:background="#FFFFFF"
+        android:gravity="center"
+        android:id="@+id/tip_text"
+        android:layout_alignBottom="@+id/linear_bt"
+        android:layout_height="30dp"
+        android:layout_marginBottom="50dp"
+        android:layout_width="match_parent"
+        android:text="点击以下四个按钮可以开始记事"
+        android:textSize="20dp"
+        android:textStyle="bold"
+        android:visibility="gone"/>
+
+    <LinearLayout
+        android:background="#FFFFFF"
+        android:id="@+id/linear_bt"
+        android:layout_alignParentBottom="true"
+        android:layout_height="50dp"
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:weightSum="4"
+        android:visibility="gone"
+        >
+
+        <Button
+            android:id="@+id/bt_text"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:text="文字" />
+
+        <Button
+            android:id="@+id/bt_pic"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:text="拍照" />
+
+        <Button
+            android:id="@+id/bt_video"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:text="录像" />
+
+        <Button
+            android:id="@+id/bt_sound"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:text="录音" />
+    </LinearLayout>
+</RelativeLayout>
+
+
+

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="200px"
+        android:orientation="horizontal">
+
+        <RelativeLayout
+            android:layout_width="200px"
+            android:layout_height="200px"
+            android:layout_marginLeft="10dp">
+            <TextView
+                android:id="@+id/cell_text"
+                android:layout_width="160px"
+                android:layout_height="160px"
+                android:gravity="center"
+                android:layout_centerInParent="true"
+                android:text="文字"
+                android:textSize="20dp"
+                android:textStyle="bold"
+                android:background="#778899"
+                android:visibility="visible"
+                />
+
+            <ImageView
+                android:id="@+id/cell_img"
+                android:layout_width="160px"
+                android:layout_height="160px"
+                android:layout_centerInParent="true"
+                android:visibility="gone"/>
+
+            <ImageView
+                android:id="@+id/cell_video"
+                android:layout_width="160px"
+                android:layout_height="160px"
+                android:layout_centerInParent="true"
+                android:visibility="gone"/>
+
+            <TextView
+                android:id="@+id/cell_sound"
+                android:layout_width="160px"
+                android:layout_height="160px"
+                android:layout_centerInParent="true"
+                android:gravity="center"
+                android:text="音频"
+                android:textSize="20dp"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold"
+                android:background="@drawable/sound"
+                android:visibility="gone"
+                />
+
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            >
+
+            <TextView
+                android:id="@+id/cell_linear_content"
+                android:layout_width="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_height="25dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:textSize="20dp"
+                android:textStyle="bold"
+                android:text="list_linear_content"/>
+
+            <TextView
+                android:id="@+id/cell_linear_time"
+                android:layout_alignParentBottom="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:layout_marginLeft="20dp"
+                android:textSize="10dp"
+                android:text="list_linear_time" />
+
+            <TextView
+                android:id="@+id/cell_linear_owner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignBottom="@+id/cell_linear_time"
+                android:layout_marginRight="20dp"
+                android:textSize="10dp"
+                android:text="cell_linear_owner"
+                />
+        </RelativeLayout>
+    </LinearLayout>
+</LinearLayout>
