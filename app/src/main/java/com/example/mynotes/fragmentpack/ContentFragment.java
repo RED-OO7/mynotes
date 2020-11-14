@@ -38,15 +38,6 @@ import java.util.List;
 import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshLayout;
 
 public class ContentFragment extends Fragment implements View.OnClickListener, XListView.IXListViewListener {
-//
-//    @Override
-//    public View onCreateView( LayoutInflater inflater,  ViewGroup container,  Bundle savedInstanceState) {
-//        View view = inflater.inflate(R.layout.content_fragment,container,false);
-//        //这个view这里使得碎片绑定了content_fragment这个layout
-//        return view;
-//    }
-
-//    public static String local_owner_name;
 
     public static ContentFragment contentFragmentInstance = null;
     public static PullToRefreshLayout refreshLayout;//该布局用于下拉刷新(同步)
@@ -66,10 +57,10 @@ public class ContentFragment extends Fragment implements View.OnClickListener, X
 
     private NotesDB notesDB;
     private SQLiteDatabase dbWriter, dbReader;
-    private Cursor cursor;//该游标用于读取数据库
+//    private Cursor cursor;//该游标用于读取数据库
 
     private ShowListContentApdater showListContentAdapter;//该适配器用于显示每条记录
-    private List<Notes> notesList;//这是存储记事信息内容时用的队列
+    private static List<Notes> notesList;//这是存储记事信息内容时用的队列
     private Handler mHandler;//用于在子线程中更新UI使用
 
     @Override
@@ -106,13 +97,11 @@ public class ContentFragment extends Fragment implements View.OnClickListener, X
         //以上部分为新增实验代码
 
         initView();//初始化cellListView
-        initCursor();//初始化游标
-        notesList = Notes.getNotesListContent(cursor);//用游标获取记事记录
+
+        notesList = Notes.getNotesListContent(getContext(),MainActivity.getNowUsername());//用游标获取记事记录
 
         showListContentAdapter = new ShowListContentApdater(getContext(),R.id.cellListView,notesList);//创建适配器
         cellListView.setAdapter(showListContentAdapter);//设置适配器
-
-//        selectNotesDB();//获取全部记录的记事信息
 
         return view;
     }
@@ -134,11 +123,6 @@ public class ContentFragment extends Fragment implements View.OnClickListener, X
      *
      */
     public void initView() {
-
-//        notesDB = new NotesDB(getContext());
-//        dbReader = notesDB.getReadableDatabase();//获取可读数据库
-        initCursor();//初始化数据库游标
-
         cellListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {//这部分是点到每一行记录时的操作
@@ -146,26 +130,9 @@ public class ContentFragment extends Fragment implements View.OnClickListener, X
                     return;//所以选择直接返回
                 }
 
-                //先初始化了cursor
-//                cursor=dbReader.query(NotesDB.TABLE_NAME,null,null,null,null,null, null);
-//                cursor.moveToPosition(position - 1);//注意，这里为什么要减1呢？因为，下拉刷新的那一行居然也算是占了一位
                 Intent intent = new Intent(getContext(), Detail.class);//跳转意图，用以从main跳转到detail
-
                 Notes nowNote = notesList.get(position-1);//注意，这里为什么要减1呢？因为，下拉刷新的那一行居然也算是占了一位
-
                 intent.putExtra(Notes.CLASSNAME,nowNote);
-
-//                intent.putExtra(NotesDB.ID, cursor.getInt(cursor.getColumnIndex(NotesDB.ID)));//意图里装载使用游标查找到的ID
-//                intent.putExtra(NotesDB.TITLE, cursor.getString(cursor.getColumnIndex(NotesDB.TITLE)));//意图里装载使用游标查找到的标题
-//                intent.putExtra(NotesDB.CONTENT, cursor.getString(cursor.getColumnIndex(NotesDB.CONTENT)));//意图里装载使用游标查找到的文本
-//                intent.putExtra(NotesDB.TIME, cursor.getString(cursor.getColumnIndex(NotesDB.TIME)));//意图里装载使用游标查找到的时间
-//                intent.putExtra(NotesDB.CHANGE_TIME, cursor.getString(cursor.getColumnIndex(NotesDB.CHANGE_TIME)));//意图里装载使用游标查找到的修改时间
-//                intent.putExtra(NotesDB.PIC_PATH, cursor.getString(cursor.getColumnIndex(NotesDB.PIC_PATH)));//意图里装载使用游标查找到的图片
-//                intent.putExtra(NotesDB.VIDEO_PATH, cursor.getString(cursor.getColumnIndex(NotesDB.VIDEO_PATH)));//意图里装载使用游标查找到的视频
-//                intent.putExtra(NotesDB.SOUND_PATH, cursor.getString(cursor.getColumnIndex(NotesDB.SOUND_PATH)));//意图里装载使用游标查找到的录音
-//                intent.putExtra(NotesDB.OWNER, cursor.getString(cursor.getColumnIndex(NotesDB.OWNER)));//意图里装载使用游标查找到的信息
-
-
 
                 startActivity(intent);//跳转到详情页面开始
             }
@@ -210,51 +177,34 @@ public class ContentFragment extends Fragment implements View.OnClickListener, X
         }
     }
 
-    public void initCursor() {//该方法用于初始化游标
-        notesDB = new NotesDB(getContext());
-        dbReader = notesDB.getReadableDatabase();//获取可读数据库
-
-        MainActivity mainActivity = MainActivity.mainActivityInstance;//获取MainActivity
-        Boolean isLogin = mainActivity.isLogin;//获取是否登录的标识
-
-        String selectionArgs[] = new String[2];//是显示记录时的参数
-        selectionArgs[0] = NotesDB.LOCAL_OWNER_STRING;
-        selectionArgs[1] = NotesDB.LOCAL_OWNER_STRING;//初始化
-        if (isLogin) {//如果已登录
-            Account nowAccount = MainActivity.getNowAccount();//获取获取当前账号实例Account
-            String ownerStr = nowAccount.getUsername();//获取账号用户名
-            selectionArgs[1] = ownerStr;//用户名作为搜索记录的条件
-        } else {//如果未登录，则参数都设置为NotesDB.LOCAL_OWNER_STRING
-        }
-
-        //该cursor游标设置为使用NotesDB.OWNER限定搜索结果，再使用NotesDB.TIME排序
-        cursor = dbReader.query(NotesDB.TABLE_NAME, null, NotesDB.OWNER + " = ? or " + NotesDB.OWNER + " = ?", selectionArgs, null, null, NotesDB.CHANGE_TIME + " Desc");
-    }
-
-//    /**
-//     * 该方法用于查询数据库内容并
-//     */
-//    public void selectNotesDB() {
-//        initCursor();//初始化数据库游标
+//    public void initCursor() {//该方法用于初始化游标
+//        notesDB = new NotesDB(getContext());
+//        dbReader = notesDB.getReadableDatabase();//获取可读数据库
 //
-//        List notesList = Notes.get
+////        MainActivity mainActivity = MainActivity.mainActivityInstance;//获取MainActivity
+////        Boolean isLogin = mainActivity.isLogin;//获取是否登录的标识
 //
-//        showListContentAdapter = new ShowListContentApdater(getContext(), cursor);//将该适配器和该 主页面 绑定游标
-////        showListContentApdater.notifyDataSetChanged();//通知数据变化
-//        cellListView.setAdapter(showListContentAdapter);//将显示列表用的View绑定适配器
+//        String selectionArgs[] = new String[2];//是显示记录时的参数
+//        selectionArgs[0] = NotesDB.LOCAL_OWNER_STRING;
+//        selectionArgs[1] = MainActivity.getNowUsername();//初始化
+////        if (isLogin) {//如果已登录
+////            Account nowAccount = MainActivity.getNowAccount();//获取获取当前账号实例Account
+////            String ownerStr = nowAccount.getUsername();//获取账号用户名
+////            selectionArgs[1] = ownerStr;//用户名作为搜索记录的条件
+////        } else {//如果未登录，则参数都设置为NotesDB.LOCAL_OWNER_STRING
+////        }
+//
+//        //该cursor游标设置为使用NotesDB.OWNER限定搜索结果，再使用NotesDB.TIME排序
+////        cursor = dbReader.query(NotesDB.TABLE_NAME, null, NotesDB.OWNER + " = ? or " + NotesDB.OWNER + " = ?", selectionArgs, null, null, NotesDB.CHANGE_TIME + " Desc");
 //    }
 
-    /**
-     * 该方法用于设置本ContentFragement的ListView
-     */
-    public void setAdapater(ShowListContentApdater adapater){
-        cellListView.setAdapter(adapater);
-    }
+
 
     @Override
     public void onResume() {
         super.onResume();
 //        selectNotesDB();//这里用到是为了在别的活动结束后刷新记录列表
+        refreshNotesList();//刷新显示列表
     }
 
     /**
@@ -316,6 +266,16 @@ public class ContentFragment extends Fragment implements View.OnClickListener, X
         isRefreshing = false;//刷新中标识设置为false
 //        selectNotesDB();
         Toast.makeText(getContext(),"同步记录成功，共同步记录"+lastUpdateNum+"条",Toast.LENGTH_SHORT).show();
+    }
+
+    /**
+     * 该方法用于刷新记录列表
+     */
+    public void refreshNotesList(){
+        List<Notes> newNotesList = Notes.getNotesListContent(getContext(),MainActivity.getNowUsername());
+        notesList.clear();//清除旧记录
+        notesList.addAll(newNotesList);//增加新查出来的记录
+        showListContentAdapter.notifyDataSetChanged();//最后通知数据更新
     }
 
     /**

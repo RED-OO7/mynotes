@@ -1,10 +1,6 @@
 package com.example.mynotes.adapter;
 
 import android.content.Context;
-import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.media.ThumbnailUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,9 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ShowListContentApdater extends ArrayAdapter<Notes> {
-    private Cursor cursor;
-    //    private LinearLayout cellLayout;//该布局就是每一条记录的显示布局
-    private ArrayList<String> videoStr_list;
+
+//    private ArrayList<String> videoStr_list;
     private static MyVideoThumbLoader mVideoThumbLoader;//用于加载缩略图的自定义加载器
     private static int textViewResourceId = R.id.cellListView;//这是控件的id
 
@@ -71,13 +66,14 @@ public class ShowListContentApdater extends ArrayAdapter<Notes> {
         String content_str = nowNote.getContent();
         String title_str = nowNote.getTitle();
         String time_str = nowNote.getTime();
+        String changeTime_str = nowNote.getChange_time();
         String img_path = nowNote.getPic_path();
         String video_path = nowNote.getVideo_path();
         String sound_path = nowNote.getSound_path();
         String owner_str = nowNote.getOwner();
 
         myViewHolder.myCell_linear_content.setText(title_str);//给获取到的cell文本内容框设置数据库获取到的文本内容
-        myViewHolder.myCell_linear_time.setText(time_str);
+        myViewHolder.myCell_linear_time.setText(changeTime_str);
         myViewHolder.myCell_linear_owner.setText("记录者:" + owner_str);
 
         //原本那一大段显示与隐藏缩略图框的操作代码被移到了初始化view的if判断语句里面
@@ -112,7 +108,6 @@ public class ShowListContentApdater extends ArrayAdapter<Notes> {
         }
 
         return cellLayout;//原返回对象
-//        return convertView;
     }
 
 

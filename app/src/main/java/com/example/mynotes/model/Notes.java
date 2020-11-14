@@ -219,16 +219,28 @@ public class Notes implements Serializable {//该Notes是面向本地sqlite数�
             notesList.add(note);
         }
 
+        //最后关闭资源
+        cursor.close();
+        notesDB.close();
+
         return notesList;
     }
 
 
     /**
-     * 该方法返回的notes列表里的note只会含有需要显示在列表的信息
+     * 该方法返回的notes列表里的note适合显示在列表的或显示在详情里
      */
     @NonNull
-    public static List<Notes> getNotesListContent(Cursor cursor) {
+    public static List<Notes> getNotesListContent(Context context, String nowUsername) {
         List<Notes> notesList = new ArrayList<Notes>();//将要返回的笔记本列表
+
+        NotesDB notesDB = new NotesDB(context);
+        String selectionArgs[] = {NotesDB.LOCAL_OWNER_STRING, nowUsername};
+        SQLiteDatabase dbReader = notesDB.getReadableDatabase();//获取可读取数据库
+        //该cursor游标设置为使用NotesDB.OWNER限定搜索结果，再使用NotesDB.CHANGE_TIME排序
+        Cursor cursor = dbReader.query(NotesDB.TABLE_NAME, null,
+                NotesDB.OWNER + " = ? or " + NotesDB.OWNER + " = ? ",
+                selectionArgs, null, null, NotesDB.CHANGE_TIME + " Desc");
 
         while (cursor.moveToNext()) {//遍历游标里的所有数据
             int id = cursor.getInt(cursor.getColumnIndex(NotesDB.ID));
@@ -259,6 +271,9 @@ public class Notes implements Serializable {//该Notes是面向本地sqlite数�
 
             notesList.add(note);
         }
+        //最后关闭资源
+        cursor.close();
+        notesDB.close();
 
         return notesList;
     }
