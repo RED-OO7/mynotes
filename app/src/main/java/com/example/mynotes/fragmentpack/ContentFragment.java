@@ -6,12 +6,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -34,15 +32,10 @@ import com.example.mynotes.other_activities.Detail;
 import com.example.mynotes.widget.XListView;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import uk.co.senab.actionbarpulltorefresh.library.ActionBarPullToRefresh;
-import uk.co.senab.actionbarpulltorefresh.library.Options;
 import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshLayout;
-import uk.co.senab.actionbarpulltorefresh.library.listeners.OnRefreshListener;
 
 public class ContentFragment extends Fragment implements View.OnClickListener, XListView.IXListViewListener {
 //
@@ -114,7 +107,7 @@ public class ContentFragment extends Fragment implements View.OnClickListener, X
 
         initView();//初始化cellListView
         initCursor();//初始化游标
-        notesList = Notes.getNotesListContentByCursor(cursor);//用游标获取记事记录
+        notesList = Notes.getNotesListContent(cursor);//用游标获取记事记录
 
         showListContentAdapter = new ShowListContentApdater(getContext(),R.id.cellListView,notesList);//创建适配器
         cellListView.setAdapter(showListContentAdapter);//设置适配器
@@ -155,17 +148,25 @@ public class ContentFragment extends Fragment implements View.OnClickListener, X
 
                 //先初始化了cursor
 //                cursor=dbReader.query(NotesDB.TABLE_NAME,null,null,null,null,null, null);
-                cursor.moveToPosition(position - 1);//注意，这里为什么要减1呢？因为，下拉刷新的那一行居然也算是占了一位
+//                cursor.moveToPosition(position - 1);//注意，这里为什么要减1呢？因为，下拉刷新的那一行居然也算是占了一位
                 Intent intent = new Intent(getContext(), Detail.class);//跳转意图，用以从main跳转到detail
-                intent.putExtra(NotesDB.ID, cursor.getInt(cursor.getColumnIndex(NotesDB.ID)));//意图里装载使用游标查找到的ID
-                intent.putExtra(NotesDB.TITLE, cursor.getString(cursor.getColumnIndex(NotesDB.TITLE)));//意图里装载使用游标查找到的标题
-                intent.putExtra(NotesDB.CONTENT, cursor.getString(cursor.getColumnIndex(NotesDB.CONTENT)));//意图里装载使用游标查找到的文本
-                intent.putExtra(NotesDB.TIME, cursor.getString(cursor.getColumnIndex(NotesDB.TIME)));//意图里装载使用游标查找到的时间
-                intent.putExtra(NotesDB.CHANGE_TIME, cursor.getString(cursor.getColumnIndex(NotesDB.CHANGE_TIME)));//意图里装载使用游标查找到的修改时间
-                intent.putExtra(NotesDB.PIC_PATH, cursor.getString(cursor.getColumnIndex(NotesDB.PIC_PATH)));//意图里装载使用游标查找到的图片
-                intent.putExtra(NotesDB.VIDEO_PATH, cursor.getString(cursor.getColumnIndex(NotesDB.VIDEO_PATH)));//意图里装载使用游标查找到的视频
-                intent.putExtra(NotesDB.SOUND_PATH, cursor.getString(cursor.getColumnIndex(NotesDB.SOUND_PATH)));//意图里装载使用游标查找到的录音
-                intent.putExtra(NotesDB.OWNER, cursor.getString(cursor.getColumnIndex(NotesDB.OWNER)));//意图里装载使用游标查找到的信息
+
+                Notes nowNote = notesList.get(position-1);//注意，这里为什么要减1呢？因为，下拉刷新的那一行居然也算是占了一位
+
+                intent.putExtra(Notes.CLASSNAME,nowNote);
+
+//                intent.putExtra(NotesDB.ID, cursor.getInt(cursor.getColumnIndex(NotesDB.ID)));//意图里装载使用游标查找到的ID
+//                intent.putExtra(NotesDB.TITLE, cursor.getString(cursor.getColumnIndex(NotesDB.TITLE)));//意图里装载使用游标查找到的标题
+//                intent.putExtra(NotesDB.CONTENT, cursor.getString(cursor.getColumnIndex(NotesDB.CONTENT)));//意图里装载使用游标查找到的文本
+//                intent.putExtra(NotesDB.TIME, cursor.getString(cursor.getColumnIndex(NotesDB.TIME)));//意图里装载使用游标查找到的时间
+//                intent.putExtra(NotesDB.CHANGE_TIME, cursor.getString(cursor.getColumnIndex(NotesDB.CHANGE_TIME)));//意图里装载使用游标查找到的修改时间
+//                intent.putExtra(NotesDB.PIC_PATH, cursor.getString(cursor.getColumnIndex(NotesDB.PIC_PATH)));//意图里装载使用游标查找到的图片
+//                intent.putExtra(NotesDB.VIDEO_PATH, cursor.getString(cursor.getColumnIndex(NotesDB.VIDEO_PATH)));//意图里装载使用游标查找到的视频
+//                intent.putExtra(NotesDB.SOUND_PATH, cursor.getString(cursor.getColumnIndex(NotesDB.SOUND_PATH)));//意图里装载使用游标查找到的录音
+//                intent.putExtra(NotesDB.OWNER, cursor.getString(cursor.getColumnIndex(NotesDB.OWNER)));//意图里装载使用游标查找到的信息
+
+
+
                 startActivity(intent);//跳转到详情页面开始
             }
         });

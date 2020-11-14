@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ShowListContentApdater extends ArrayAdapter<Notes> {
-    private Context context;
     private Cursor cursor;
     //    private LinearLayout cellLayout;//该布局就是每一条记录的显示布局
     private ArrayList<String> videoStr_list;
@@ -44,7 +43,7 @@ public class ShowListContentApdater extends ArrayAdapter<Notes> {
 
         if (convertView == null) {//如果为空，则说明是刚创建
             /*------------------新操作----------------------*/
-            layoutInflater = LayoutInflater.from(context);//获取layoutInflater加载布局的系统服务
+            layoutInflater = LayoutInflater.from(getContext());//获取layoutInflater加载布局的系统服务
             cellLayout = layoutInflater.inflate(R.layout.cell, parent, false);//利用layoutInflater获取每条记录的布局
 
             //新建myViewHolder并初始化
@@ -67,14 +66,15 @@ public class ShowListContentApdater extends ArrayAdapter<Notes> {
             myViewHolder = (MyViewHolder) cellLayout.getTag();//取出ViewHolder并强制转换为MyViewHolder
         }
 
-        cursor.moveToPosition(position);//需要手动移动游标进行查询
-        String content_str = cursor.getString(cursor.getColumnIndex(NotesDB.CONTENT));//获取数据库的内容
-        String title_str = cursor.getString(cursor.getColumnIndex(NotesDB.TITLE));
-        String time_str = cursor.getString(cursor.getColumnIndex(NotesDB.CHANGE_TIME));
-        String img_path = cursor.getString(cursor.getColumnIndex(NotesDB.PIC_PATH));
-        String video_path = cursor.getString(cursor.getColumnIndex(NotesDB.VIDEO_PATH));
-        String sound_path = cursor.getString(cursor.getColumnIndex(NotesDB.SOUND_PATH));
-        String owner_str = cursor.getString(cursor.getColumnIndex(NotesDB.OWNER));
+        Notes nowNote = getItem(position);
+
+        String content_str = nowNote.getContent();
+        String title_str = nowNote.getTitle();
+        String time_str = nowNote.getTime();
+        String img_path = nowNote.getPic_path();
+        String video_path = nowNote.getVideo_path();
+        String sound_path = nowNote.getSound_path();
+        String owner_str = nowNote.getOwner();
 
         myViewHolder.myCell_linear_content.setText(title_str);//给获取到的cell文本内容框设置数据库获取到的文本内容
         myViewHolder.myCell_linear_time.setText(time_str);
@@ -120,7 +120,6 @@ public class ShowListContentApdater extends ArrayAdapter<Notes> {
      * 该类用于存储各种控件，如缩略图控件
      */
     private class MyViewHolder {
-        int id;//该id为记录的id，用以判别当前id是否一样，不一样则还是要找寻控件
         TextView myCell_linear_content;
         TextView myCell_linear_time;
         TextView myCell_linear_owner;

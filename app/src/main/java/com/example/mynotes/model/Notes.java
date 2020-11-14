@@ -14,10 +14,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Notes {//该Notes是面向本地sqlite数据库的
+public class Notes implements Serializable {//该Notes是面向本地sqlite数据库的
 
     public static final String CLASSNAME = "Notes";
 
@@ -226,10 +227,11 @@ public class Notes {//该Notes是面向本地sqlite数据库的
      * 该方法返回的notes列表里的note只会含有需要显示在列表的信息
      */
     @NonNull
-    public static List<Notes> getNotesListContentByCursor(Cursor cursor) {
+    public static List<Notes> getNotesListContent(Cursor cursor) {
         List<Notes> notesList = new ArrayList<Notes>();//将要返回的笔记本列表
 
         while (cursor.moveToNext()) {//遍历游标里的所有数据
+            int id = cursor.getInt(cursor.getColumnIndex(NotesDB.ID));
             String titleStr = cursor.getString(cursor.getColumnIndex(NotesDB.TITLE));
             String contentStr = cursor.getString(cursor.getColumnIndex(NotesDB.CONTENT));
             String pic_pathStr = cursor.getString(cursor.getColumnIndex(NotesDB.PIC_PATH));
@@ -242,6 +244,8 @@ public class Notes {//该Notes是面向本地sqlite数据库的
             String ownerStr = cursor.getString(cursor.getColumnIndex(NotesDB.OWNER));
 
             Notes note = new Notes();
+
+            note.setId(id);
             note.setTime(timeStr);
             note.setChange_time(changeTimeStr);
 //            note.setIs_change(isChange);
