@@ -75,7 +75,8 @@ public class ContentFragment extends Fragment implements View.OnClickListener, X
     private SQLiteDatabase dbWriter, dbReader;
     private Cursor cursor;//该游标用于读取数据库
 
-    private ShowListContentApdater showListContentApdater;//该适配器用于显示每条记录
+    private ShowListContentApdater showListContentAdapter;//该适配器用于显示每条记录
+    private List<Notes> notesList;//这是存储记事信息内容时用的队列
     private Handler mHandler;//用于在子线程中更新UI使用
 
     @Override
@@ -111,9 +112,14 @@ public class ContentFragment extends Fragment implements View.OnClickListener, X
 //        mListView.setRefreshTime();
         //以上部分为新增实验代码
 
-        initView();
+        initView();//初始化cellListView
+        initCursor();//初始化游标
+        notesList = Notes.getNotesListContentByCursor(cursor);//用游标获取记事记录
 
-        selectNotesDB();//获取全部记录的记事信息
+        showListContentAdapter = new ShowListContentApdater(getContext(),R.id.cellListView,notesList);//创建适配器
+        cellListView.setAdapter(showListContentAdapter);//设置适配器
+
+//        selectNotesDB();//获取全部记录的记事信息
 
         return view;
     }
@@ -129,10 +135,15 @@ public class ContentFragment extends Fragment implements View.OnClickListener, X
         super.onActivityCreated(savedInstanceState);
     }
 
-    public void initView() {//该方法用于初始化cellListView
 
-        notesDB = new NotesDB(getContext());
-        dbReader = notesDB.getReadableDatabase();//获取可读数据库
+    /**
+     * 该方法用于初始化cellListView
+     *
+     */
+    public void initView() {
+
+//        notesDB = new NotesDB(getContext());
+//        dbReader = notesDB.getReadableDatabase();//获取可读数据库
         initCursor();//初始化数据库游标
 
         cellListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -199,6 +210,9 @@ public class ContentFragment extends Fragment implements View.OnClickListener, X
     }
 
     public void initCursor() {//该方法用于初始化游标
+        notesDB = new NotesDB(getContext());
+        dbReader = notesDB.getReadableDatabase();//获取可读数据库
+
         MainActivity mainActivity = MainActivity.mainActivityInstance;//获取MainActivity
         Boolean isLogin = mainActivity.isLogin;//获取是否登录的标识
 
@@ -216,19 +230,30 @@ public class ContentFragment extends Fragment implements View.OnClickListener, X
         cursor = dbReader.query(NotesDB.TABLE_NAME, null, NotesDB.OWNER + " = ? or " + NotesDB.OWNER + " = ?", selectionArgs, null, null, NotesDB.CHANGE_TIME + " Desc");
     }
 
-    public void selectNotesDB() {//该方法用于查询数据库内容并绑定游标内容到适配器中
-        initCursor();//初始化数据库游标
+//    /**
+//     * 该方法用于查询数据库内容并
+//     */
+//    public void selectNotesDB() {
+//        initCursor();//初始化数据库游标
+//
+//        List notesList = Notes.get
+//
+//        showListContentAdapter = new ShowListContentApdater(getContext(), cursor);//将该适配器和该 主页面 绑定游标
+////        showListContentApdater.notifyDataSetChanged();//通知数据变化
+//        cellListView.setAdapter(showListContentAdapter);//将显示列表用的View绑定适配器
+//    }
 
-//        ContentFragment contentFragment=new ContentFragment();
-        showListContentApdater = new ShowListContentApdater(getContext(), cursor);//将该适配器和该 主页面 绑定游标
-//        showListContentApdater.notifyDataSetChanged();//通知数据变化
-        cellListView.setAdapter(showListContentApdater);//将显示列表用的View绑定适配器
+    /**
+     * 该方法用于设置本ContentFragement的ListView
+     */
+    public void setAdapater(ShowListContentApdater adapater){
+        cellListView.setAdapter(adapater);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        selectNotesDB();//这里用到是为了在别的活动结束后刷新记录列表
+//        selectNotesDB();//这里用到是为了在别的活动结束后刷新记录列表
     }
 
     /**
@@ -288,7 +313,7 @@ public class ContentFragment extends Fragment implements View.OnClickListener, X
         mListView.stopRefresh();
         mListView.stopLoadMore();
         isRefreshing = false;//刷新中标识设置为false
-        selectNotesDB();
+//        selectNotesDB();
         Toast.makeText(getContext(),"同步记录成功，共同步记录"+lastUpdateNum+"条",Toast.LENGTH_SHORT).show();
     }
 
@@ -303,6 +328,6 @@ public class ContentFragment extends Fragment implements View.OnClickListener, X
      * 该方法用于在刷新成功后通知数据改变
      */
     public void notifyChange() {
-        showListContentApdater.notifyDataSetChanged();
+        showListContentAdapter.notifyDataSetChanged();
     }
 }

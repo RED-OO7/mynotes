@@ -255,7 +255,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 notesDB = new NotesDB(this);
                 SQLiteDatabase notesWriter1 = notesDB.getWritableDatabase();
                 notesWriter1.insert(NotesDB.TABLE_NAME, null, contentValues1);
-                ContentFragment.contentFragmentInstance.selectNotesDB();//重新查询记录以刷新记录
+//                ContentFragment.contentFragmentInstance.selectNotesDB();//重新查询记录以刷新记录
 //                Toast.makeText(this, "这个按钮现在什么都没做", Toast.LENGTH_SHORT).show();
                 break;
 
@@ -305,7 +305,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 SQLiteDatabase notesWriter = notesDB.getWritableDatabase();
                 notesWriter.insert(NotesDB.TABLE_NAME, null, contentValues);
 
-                ContentFragment.contentFragmentInstance.selectNotesDB();//重新查询记录以刷新记录
+//                ContentFragment.contentFragmentInstance.selectNotesDB();//重新查询记录以刷新记录
                 break;
 
             default:
@@ -319,13 +319,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        selectNotesDB();
     }
 
-    public void selectNotesDB() {//该方法用于查询
-        //该cursor游标暂不初始化
-        Cursor cursor = dbReader.query(NotesDB.TABLE_NAME, null, null, null, null, null, null);
-        ContentFragment contentFragment = new ContentFragment();
-        showListContentApdater = new ShowListContentApdater(this, cursor);//将该适配器和该 主页面 绑定游标
-        cellListView.setAdapter(showListContentApdater);//将显示列表用的View绑定适配器
-    }
+//    public void selectNotesDB() {//该方法用于查询
+//        //该cursor游标暂不初始化
+//        Cursor cursor = dbReader.query(NotesDB.TABLE_NAME, null, null, null, null, null, null);
+//        ContentFragment contentFragment = new ContentFragment();
+//        showListContentApdater = new ShowListContentApdater(this,R.id.cellListView, cursor);//将该适配器和该 主页面 绑定游标
+//        cellListView.setAdapter(showListContentApdater);//将显示列表用的View绑定适配器
+//    }
 
     /**
      * 该方法用于保存账号信息到非易失文件

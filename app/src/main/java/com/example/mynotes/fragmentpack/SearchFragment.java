@@ -24,7 +24,10 @@ import com.example.mynotes.R;
 import com.example.mynotes.adapter.ShowListContentApdater;
 import com.example.mynotes.control.AddContent;
 import com.example.mynotes.database.NotesDB;
+import com.example.mynotes.model.Notes;
 import com.example.mynotes.other_activities.Detail;
+
+import java.util.List;
 
 public class SearchFragment extends Fragment implements View.OnClickListener{
 
@@ -151,7 +154,8 @@ public class SearchFragment extends Fragment implements View.OnClickListener{
         //该cursor游标暂不初始化
         cursor=dbReader.query(NotesDB.TABLE_NAME,null,null,null,null,null,null);
         SearchFragment searchFragment =new SearchFragment();
-        showListContentApdater = new ShowListContentApdater(getContext(),cursor);//将该适配器和该 主页面 绑定游标
+        List notesList = Notes.getNotesListContentByCursor(cursor);
+        showListContentApdater = new ShowListContentApdater(getContext(),R.id.);//将该适配器和该 主页面 绑定游标
         cellListView.setAdapter(showListContentApdater);//将显示列表用的View绑定适配器
     }
 

@@ -4,13 +4,11 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.MediaMetadataRetriever;
 import android.media.ThumbnailUtils;
-import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -19,92 +17,44 @@ import com.example.mynotes.MainActivity;
 import com.example.mynotes.R;
 import com.example.mynotes.control.MyVideoThumbLoader;
 import com.example.mynotes.database.NotesDB;
+import com.example.mynotes.model.Notes;
 
 import java.util.ArrayList;
+import java.util.List;
 
-public class ShowListContentApdater extends BaseAdapter {
+public class ShowListContentApdater extends ArrayAdapter<Notes> {
     private Context context;
     private Cursor cursor;
-//    private LinearLayout cellLayout;//该布局就是每一条记录的显示布局
+    //    private LinearLayout cellLayout;//该布局就是每一条记录的显示布局
     private ArrayList<String> videoStr_list;
     private static MyVideoThumbLoader mVideoThumbLoader;//用于加载缩略图的自定义加载器
+    private static int textViewResourceId = R.id.cellListView;//这是控件的id
 
-    TextView cell_linear_content;
-    TextView cell_linear_time;
-    TextView cell_linear_owner;
-    TextView cell_text;
-    TextView cell_sound;
-    ImageView cell_img;
-    ImageView cell_video;
-
-    public ShowListContentApdater(Context context, Cursor cursor) {
-        this.context = context;
-        this.cursor = cursor;
-    }
-
-    @Override
-    public int getCount() {
-        return cursor.getCount();
-    }
-
-    @Override
-    public Object getItem(int position) {//该方法用于返回物品
-        return cursor.getPosition();
-    }
-
-    @Override
-    public long getItemId(int position) {//该方法用于返回位置
-        return position;
+    public ShowListContentApdater(Context context, int textViewResourceId, List<Notes> objects) {
+        super(context, textViewResourceId, objects);
+        this.textViewResourceId = textViewResourceId;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-
-//        LayoutInflater layoutInflater = LayoutInflater.from(context);//获取layoutInflater加载布局的系统服务
-//        LinearLayout cellLayout = (LinearLayout) layoutInflater.inflate(R.layout.cell, null);//利用layoutInflater获取每条记录的布局
-        LayoutInflater layoutInflater ;//获取layoutInflater加载布局的系统服务
+        LayoutInflater layoutInflater;//获取layoutInflater加载布局的系统服务
         View cellLayout;//利用layoutInflater获取每条记录的布局
 
         MyViewHolder myViewHolder;
 
         if (convertView == null) {//如果为空，则说明是刚创建
-
-            /*------------------原操作----------------------*/
-//            layoutInflater = LayoutInflater.from(context);//获取layoutInflater加载布局的系统服务
-//            cellLayout = (LinearLayout) layoutInflater.inflate(R.layout.cell, null);//利用layoutInflater获取每条记录的布局
-//            cell_linear_content = cellLayout.findViewById(R.id.cell_linear_content);
-//            cell_linear_time = cellLayout.findViewById(R.id.cell_linear_time);
-//            cell_linear_owner = cellLayout.findViewById(R.id.cell_linear_owner);
-//            cell_text = cellLayout.findViewById(R.id.cell_text);
-//            cell_sound = cellLayout.findViewById(R.id.cell_sound);
-//            cell_img = cellLayout.findViewById(R.id.cell_img);
-//            cell_video = cellLayout.findViewById(R.id.cell_video);
-//
-//            //新建myViewHolder并初始化
-//            myViewHolder = new MyViewHolder();
-//            myViewHolder.myCell_linear_content = cell_linear_content;
-//            myViewHolder.myCell_linear_time = cell_linear_time;
-//            myViewHolder.myCell_linear_owner = cell_linear_owner;
-//            myViewHolder.myCell_text = cell_text;
-//            myViewHolder.myCell_sound = cell_sound;
-//            myViewHolder.myCell_img = cell_img;
-//            myViewHolder.myCell_video = cell_video;
-//
-//            cellLayout.setTag(myViewHolder);//给该m每一个单个个显示框设置viewHolder
-            /*------------------原操作----------------------*/
-
             /*------------------新操作----------------------*/
             layoutInflater = LayoutInflater.from(context);//获取layoutInflater加载布局的系统服务
-            cellLayout = layoutInflater.inflate(R.layout.cell, parent,false);//利用layoutInflater获取每条记录的布局
+            cellLayout = layoutInflater.inflate(R.layout.cell, parent, false);//利用layoutInflater获取每条记录的布局
 
             //新建myViewHolder并初始化
             myViewHolder = new MyViewHolder();
-            myViewHolder.myCell_linear_content =  cellLayout.findViewById(R.id.cell_linear_content);
+            myViewHolder.myCell_linear_content = cellLayout.findViewById(R.id.cell_linear_content);
             myViewHolder.myCell_linear_time = cellLayout.findViewById(R.id.cell_linear_time);
             myViewHolder.myCell_linear_owner = cellLayout.findViewById(R.id.cell_linear_owner);
             myViewHolder.myCell_text = cellLayout.findViewById(R.id.cell_text);
             myViewHolder.myCell_sound = cellLayout.findViewById(R.id.cell_sound);
-            myViewHolder.myCell_img =  cellLayout.findViewById(R.id.cell_img);
+            myViewHolder.myCell_img = cellLayout.findViewById(R.id.cell_img);
             myViewHolder.myCell_video = cellLayout.findViewById(R.id.cell_video);
 
             cellLayout.setTag(myViewHolder);//给该每一个单个个显示框设置viewHolder
@@ -116,12 +66,6 @@ public class ShowListContentApdater extends BaseAdapter {
             cellLayout = (LinearLayout) convertView;//取出convertView并强转为LinearLayout
             myViewHolder = (MyViewHolder) cellLayout.getTag();//取出ViewHolder并强制转换为MyViewHolder
         }
-
-//        cell_text = cellLayout.findViewById(R.id.cell_text);
-//        cell_sound = cellLayout.findViewById(R.id.cell_sound);
-//        cell_img = cellLayout.findViewById(R.id.cell_img);
-//        cell_video = cellLayout.findViewById(R.id.cell_video);
-
 
         cursor.moveToPosition(position);//需要手动移动游标进行查询
         String content_str = cursor.getString(cursor.getColumnIndex(NotesDB.CONTENT));//获取数据库的内容
@@ -143,7 +87,7 @@ public class ShowListContentApdater extends BaseAdapter {
         myViewHolder.myCell_video.setVisibility(View.GONE);
         myViewHolder.myCell_sound.setVisibility(View.GONE);
 
-        if ("null".equals(img_path) && "null".equals(video_path) && "null".equals(sound_path)){//三种模式路径都为空则说明为文字记录
+        if ("null".equals(img_path) && "null".equals(video_path) && "null".equals(sound_path)) {//三种模式路径都为空则说明为文字记录
             myViewHolder.myCell_text.setVisibility(View.VISIBLE);
         }
         if (!"null".equals(img_path) && !(img_path == null)) {//如果图片路径不为空，则显示
@@ -172,46 +116,8 @@ public class ShowListContentApdater extends BaseAdapter {
     }
 
 
-    public Bitmap getImageThumbnail(String img_path, int width, int height) {//该方法用于获取图片的缩略图
-        Bitmap bitmap = null;
-        BitmapFactory.Options options = new BitmapFactory.Options();//通过此对象获取缩略图
-        options.inJustDecodeBounds = true;
-        bitmap = BitmapFactory.decodeFile(img_path, options);
-        options.inJustDecodeBounds = false;
-        int beWidth = options.outWidth / width;
-        int beHeight = options.outHeight / height;
-        int be = 1;
-        if (beWidth < beHeight) {//be需要取最小的那个
-            be = beWidth;
-        } else {
-            be = beHeight;
-        }
-        if (be <= 0) {//be不能小于等于0
-            be = 1;
-        }
-
-        options.inSampleSize = be;
-        bitmap = BitmapFactory.decodeFile(img_path, options);
-        bitmap = ThumbnailUtils.extractThumbnail(bitmap, width, height, ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
-
-        return bitmap;
-    }
-
-
-    public Bitmap getVideoThumbnail(String video_path, int width, int height, int kind) {//该方法用于获取视频的缩略图
-        Bitmap bitmap = null;
-        bitmap = ThumbnailUtils.createVideoThumbnail(video_path, kind);
-        bitmap = ThumbnailUtils.extractThumbnail(bitmap, width, height, ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
-
-//        MediaMetadataRetriever media = new MediaMetadataRetriever();
-//        media.setDataSource(video_path);
-//        Bitmap bitmap = media.getFrameAtTime();
-
-        return bitmap;
-    }
-
     /**
-     * 该类用于存储缩略图
+     * 该类用于存储各种控件，如缩略图控件
      */
     private class MyViewHolder {
         int id;//该id为记录的id，用以判别当前id是否一样，不一样则还是要找寻控件
