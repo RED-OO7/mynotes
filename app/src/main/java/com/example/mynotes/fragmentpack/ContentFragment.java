@@ -117,30 +117,6 @@ public class ContentFragment extends Fragment implements View.OnClickListener, X
         super.onActivityCreated(savedInstanceState);
     }
 
-
-    /**
-     * 该方法用于初始化cellListView
-     *
-     */
-    public void initView() {
-        cellListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {//这部分是点到每一行记录时的操作
-                if (position == 0) {//如果位置等于0，则说明是第一位，第一位是刷新位，刷新位必须没有任何点击事件
-                    return;//所以选择直接返回
-                }
-
-                Intent intent = new Intent(getContext(), Detail.class);//跳转意图，用以从main跳转到detail
-                Notes nowNote = notesList.get(position-1);//注意，这里为什么要减1呢？因为，下拉刷新的那一行居然也算是占了一位
-                intent.putExtra(Notes.CLASSNAME,nowNote);
-
-                startActivity(intent);//跳转到详情页面开始
-            }
-        });
-
-    }
-
-
     @Override
     public void onClick(View view) {//设置点击后的事件
         MainActivity mainActivity = (MainActivity) getActivity();//获取活动，为了获取当前是否有账号登录的标记
@@ -176,28 +152,6 @@ public class ContentFragment extends Fragment implements View.OnClickListener, X
                 break;
         }
     }
-
-//    public void initCursor() {//该方法用于初始化游标
-//        notesDB = new NotesDB(getContext());
-//        dbReader = notesDB.getReadableDatabase();//获取可读数据库
-//
-////        MainActivity mainActivity = MainActivity.mainActivityInstance;//获取MainActivity
-////        Boolean isLogin = mainActivity.isLogin;//获取是否登录的标识
-//
-//        String selectionArgs[] = new String[2];//是显示记录时的参数
-//        selectionArgs[0] = NotesDB.LOCAL_OWNER_STRING;
-//        selectionArgs[1] = MainActivity.getNowUsername();//初始化
-////        if (isLogin) {//如果已登录
-////            Account nowAccount = MainActivity.getNowAccount();//获取获取当前账号实例Account
-////            String ownerStr = nowAccount.getUsername();//获取账号用户名
-////            selectionArgs[1] = ownerStr;//用户名作为搜索记录的条件
-////        } else {//如果未登录，则参数都设置为NotesDB.LOCAL_OWNER_STRING
-////        }
-//
-//        //该cursor游标设置为使用NotesDB.OWNER限定搜索结果，再使用NotesDB.TIME排序
-////        cursor = dbReader.query(NotesDB.TABLE_NAME, null, NotesDB.OWNER + " = ? or " + NotesDB.OWNER + " = ?", selectionArgs, null, null, NotesDB.CHANGE_TIME + " Desc");
-//    }
-
 
 
     @Override
@@ -253,17 +207,38 @@ public class ContentFragment extends Fragment implements View.OnClickListener, X
     }
 
     /**
+     * 该方法用于初始化cellListView
+     */
+    public void initView() {
+        cellListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {//这部分是点到每一行记录时的操作
+                if (position == 0) {//如果位置等于0，则说明是第一位，第一位是刷新位，刷新位必须没有任何点击事件
+                    return;//所以选择直接返回
+                }
+
+                Intent intent = new Intent(getContext(), Detail.class);//跳转意图，用以从main跳转到detail
+                Notes nowNote = notesList.get(position-1);//注意，这里为什么要减1呢？因为，下拉刷新的那一行居然也算是占了一位
+                intent.putExtra(Notes.CLASSNAME,nowNote);
+
+                startActivity(intent);//跳转到详情页面开始
+            }
+        });
+    }
+
+    /**
      * 该方法用于关闭"刷新中"动画
      */
     public void onLoad() {
-//        try {
-//            Thread.sleep(2000);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
+        try {
+            Thread.sleep(20);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         mListView.stopRefresh();
         mListView.stopLoadMore();
         isRefreshing = false;//刷新中标识设置为false
+        refreshNotesList();//刷新记录列表
 //        selectNotesDB();
         Toast.makeText(getContext(),"同步记录成功，共同步记录"+lastUpdateNum+"条",Toast.LENGTH_SHORT).show();
     }
