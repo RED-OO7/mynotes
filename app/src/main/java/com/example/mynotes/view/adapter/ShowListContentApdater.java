@@ -1,4 +1,4 @@
-package com.example.mynotes.adapter;
+package com.example.mynotes.view.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -11,11 +11,9 @@ import android.widget.TextView;
 
 import com.example.mynotes.MainActivity;
 import com.example.mynotes.R;
-import com.example.mynotes.control.MyVideoThumbLoader;
-import com.example.mynotes.database.NotesDB;
+import com.example.mynotes.util.MyVideoThumbLoader;
 import com.example.mynotes.model.Notes;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ShowListContentApdater extends ArrayAdapter<Notes> {

@@ -152,41 +152,4 @@ public class DataJsonPack {// 该类为封装了类对象数据的json格式传�
         return listJsonArray;
     }
 
-
-    /**
-     * 该方法可以解析 并操作 DataJsonPack的数据包
-     * @param dataStr 必须是DataJsonPack的Json格式字符串
-     */
-    public static DataJsonPack resolveDataPack(String dataStr) {
-
-        DataJsonPack backDataJsonPack = new DataJsonPack();//该类为返回的结果
-        backDataJsonPack.setOperation("initial text");
-
-        try {
-            JSONObject sourceJsonObject = new JSONObject(dataStr);
-
-            String classStr = sourceJsonObject.getString("CLASSNAME");
-
-            if (classStr.equals(CLASSNAME)) {//要json包的验证类名和本类名一致时才能解析该json包
-                String operationStr = sourceJsonObject.getString("operation");// 获取操作字符串
-                System.out.println("该数据包操作类型为:" + operationStr);
-
-                switch (operationStr) {
-//                    case SyncNotesDownload:// 错的 这里是下载数据Notes到客户端的操作(这里是客户端)
-//                        JSONArray dataJsonArray = sourceJsonObject.getJSONArray("dataObject");//获取Data类型的JSONArray
-//                        break;
-//                    case SyncNotesUpload:// (这里是客户端)
-//                        break;
-                    default:
-                        break;
-                }
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-            System.out.println("该输入的数据包并非规定的json格式的数据包!!!");
-        }
-
-        return backDataJsonPack;//暂时先让该解析返回空以通过编译
-    }
-
 }

@@ -1,4 +1,4 @@
-package com.example.mynotes.fragmentpack;
+package com.example.mynotes.view.fragments;
 
 import android.graphics.Color;
 import android.os.Bundle;
@@ -15,8 +15,9 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.example.mynotes.MainActivity;
 import com.example.mynotes.R;
-import com.example.mynotes.control.TCPConnectUtil;
+import com.example.mynotes.controller.TCPConnectController;
 import com.example.mynotes.model.Account;
 import com.example.mynotes.model.ClientSendString;
 import com.example.mynotes.model.DataJsonPack;
@@ -59,13 +60,6 @@ public class RegisterFragment extends Fragment implements View.OnClickListener{
         registerFragementInstance = this;//初始化本静态实例
     }
 
-    private void replaceMainFragment(Fragment fragment){
-        FragmentManager fragmentManager = getFragmentManager();
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.replace(R.id.main_fragment,fragment);//将main_fragement这个id的碎片控件替换为别的碎片
-        transaction.commit();//提交更改
-    }
-
     @Override
     public void onClick(View v) {
         String username = reg_username.getText().toString().trim();
@@ -91,7 +85,7 @@ public class RegisterFragment extends Fragment implements View.OnClickListener{
                         dataSend.setDataObject(accountRegister);
                         dataSend.setOperation(ClientSendString.RegisterAccount);//设置操作为注册账户
 
-                        new TCPConnectUtil().sendTCPRequestAndRespone(dataSend);//发送数据
+                        new TCPConnectController().sendTCPRequestAndRespone(dataSend);//发送数据
 
 //                            Toast.makeText(getContext(), "注册成功,请返回登录", Toast.LENGTH_SHORT).show();
                     } else {
@@ -101,54 +95,23 @@ public class RegisterFragment extends Fragment implements View.OnClickListener{
                 break;
 
             case R.id.reg_btn_login:
-                LoginFragement loginFragement = new LoginFragement();
-                replaceMainFragment(loginFragement);
+                LoginFragment loginFragment = new LoginFragment();
+                replaceMainFragment(loginFragment);
                 break;
 
         }
     }
-//    public class RegisterButton implements View.OnClickListener {
-//        @Override
-//        public void onClick(View v) {
-//            String username = reg_username.getText().toString().trim();
-//            String password = reg_password.getText().toString().trim();
-//            String password2 = reg_password2.getText().toString().trim();
-//            String mail = reg_mail.getText().toString().trim();
-//            switch (v.getId()) {
-//                //注册开始，判断注册条件
-//                case R.id.reg_btn_sure:
-//                    if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password) || TextUtils.isEmpty(password2) || TextUtils.isEmpty(mail)) {
-//                        Toast.makeText(getContext(), "各项均不能为空", Toast.LENGTH_SHORT).show();
-//                    } else {
-//                        if (TextUtils.equals(password, password2)) {
-//                            //执行注册操作
-//                            Account accountRegister = new Account();
-//                            accountRegister.setUsername(username);
-//                            accountRegister.setPassword(password);
-//                            accountRegister.setEmail(mail);
-//
-//                            DataJsonPack dataSend = new DataJsonPack();
-//                            dataSend.setDataObject(accountRegister);
-//                            dataSend.setOperation(ClientSendString.RegisterAccount);//设置操作为注册账户
-//
-//                            new TCPConnectUtil().sendTCPRequestAndRespone(dataSend);//发送数据
-//
-////                            Toast.makeText(getContext(), "注册成功,请返回登录", Toast.LENGTH_SHORT).show();
-//                        } else {
-//                            Toast.makeText(getContext(), "两次输入的密码不一样", Toast.LENGTH_SHORT).show();
-//                        }
-//                    }
-//                    break;
-//
-//                case R.id.reg_btn_login:
-//                    LoginFragement loginFragement = new LoginFragement();
-//                    replaceMainFragment(loginFragement);
-//                    break;
-//
-//            }
-//        }
-//    }
 
+
+    private void replaceMainFragment(Fragment fragment){
+//        FragmentManager fragmentManager = getFragmentManager();
+//        FragmentTransaction transaction = fragmentManager.beginTransaction();
+//        transaction.replace(R.id.main_fragment,fragment);//将main_fragement这个id的碎片控件替换为别的碎片
+//        transaction.commit();//提交更改
+
+        MainActivity mainActivity = MainActivity.getMainActivityInstance();
+        mainActivity.replaceMainFragment(fragment);
+    }
 
     /**
      * 该方法用于使注册按钮和跳转按钮不可用，该方法只能在RegisterFragment被初始化完成后使用！

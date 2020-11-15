@@ -1,4 +1,4 @@
-package com.example.mynotes.fragmentpack;
+package com.example.mynotes.view.fragments;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -20,18 +20,18 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.example.mynotes.MainActivity;
 import com.example.mynotes.R;
-import com.example.mynotes.control.SaveInfo;
-import com.example.mynotes.control.TCPConnectUtil;
+import com.example.mynotes.controller.TCPConnectController;
 import com.example.mynotes.model.Account;
 import com.example.mynotes.model.ClientSendString;
 import com.example.mynotes.model.DataJsonPack;
 
 import java.util.Map;
 
-public class LoginFragement extends Fragment implements View.OnClickListener {
+public class LoginFragment extends Fragment implements View.OnClickListener {
 
-    public static  LoginFragement loginFragementInstance = null;//本登录碎片的静态对象
+    public static LoginFragment loginFragmentInstance = null;//本登录碎片的静态对象
 
     public static final String btn_login_color = "#3c8dc4";
     public static final String btn_register_color = "#2b7cb3";
@@ -105,7 +105,7 @@ public class LoginFragement extends Fragment implements View.OnClickListener {
         super.onCreate(savedInstanceState);
 //        accountData = SaveInfo.getSaveInformation(getContext());
 //        accountData = SaveInfo.getAccountsMap(getContext());
-        loginFragementInstance = this;//实例化本静态实例
+        loginFragmentInstance = this;//实例化本静态实例
     }
 
     @Override
@@ -141,7 +141,7 @@ public class LoginFragement extends Fragment implements View.OnClickListener {
                     dataSend.setDataObject(accountLogin);
                     dataSend.setOperation(ClientSendString.LoginAccount);//设置操作为登录账户
 
-                    new TCPConnectUtil().sendTCPRequestAndRespone(dataSend);//发送数据
+                    new TCPConnectController().sendTCPRequestAndRespone(dataSend);//发送数据
                 }
                 break;
             //当点击注册按钮事件时
@@ -153,10 +153,13 @@ public class LoginFragement extends Fragment implements View.OnClickListener {
     }
 
     private void replaceMainFragment(Fragment fragment) {
-        FragmentManager fragmentManager = getFragmentManager();
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.replace(R.id.main_fragment, fragment);//将main_fragement这个id的碎片控件替换为别的碎片
-        transaction.commit();//提交更改
+//        FragmentManager fragmentManager = getFragmentManager();
+//        FragmentTransaction transaction = fragmentManager.beginTransaction();
+//        transaction.replace(R.id.main_fragment, fragment);//将main_fragement这个id的碎片控件替换为别的碎片
+//        transaction.commit();//提交更改
+
+        MainActivity mainActivity = MainActivity.getMainActivityInstance();
+        mainActivity.replaceMainFragment(fragment);
     }
 
     /**

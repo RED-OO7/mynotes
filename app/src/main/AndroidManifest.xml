@@ -29,12 +29,12 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.example.mynotes.control.AddContent"
+            android:name="com.example.mynotes.view.activities.AddContentActivity"
             android:screenOrientation="portrait">
         </activity>
         <!--  com.example.mynotes.other_activities.Detail是屏幕详情页的跳转活动      -->
         <activity
-            android:name="com.example.mynotes.other_activities.Detail"
+            android:name=".view.activities.DetailActivity"
             android:screenOrientation="portrait">
         </activity>
     </application>

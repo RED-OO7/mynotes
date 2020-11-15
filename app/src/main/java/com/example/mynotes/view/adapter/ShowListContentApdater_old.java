@@ -1,12 +1,10 @@
-package com.example.mynotes.adapter;
+package com.example.mynotes.view.adapter;
 
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.MediaMetadataRetriever;
 import android.media.ThumbnailUtils;
-import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,8 +15,8 @@ import android.widget.TextView;
 
 import com.example.mynotes.MainActivity;
 import com.example.mynotes.R;
-import com.example.mynotes.control.MyVideoThumbLoader;
-import com.example.mynotes.database.NotesDB;
+import com.example.mynotes.util.MyVideoThumbLoader;
+import com.example.mynotes.dao.NotesDB;
 
 import java.util.ArrayList;
 

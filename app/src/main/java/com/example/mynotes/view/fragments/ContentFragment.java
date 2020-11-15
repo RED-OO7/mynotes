@@ -1,8 +1,7 @@
-package com.example.mynotes.fragmentpack;
+package com.example.mynotes.view.fragments;
 
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
@@ -20,15 +19,14 @@ import androidx.fragment.app.Fragment;
 
 import com.example.mynotes.MainActivity;
 import com.example.mynotes.R;
-import com.example.mynotes.adapter.ShowListContentApdater;
-import com.example.mynotes.control.AddContent;
-import com.example.mynotes.control.TCPConnectUtil;
-import com.example.mynotes.database.NotesDB;
-import com.example.mynotes.model.Account;
+import com.example.mynotes.view.adapter.ShowListContentApdater;
+import com.example.mynotes.view.activities.AddContentActivity;
+import com.example.mynotes.controller.TCPConnectController;
+import com.example.mynotes.dao.NotesDB;
 import com.example.mynotes.model.ClientSendString;
 import com.example.mynotes.model.DataJsonPack;
 import com.example.mynotes.model.Notes;
-import com.example.mynotes.other_activities.Detail;
+import com.example.mynotes.view.activities.DetailActivity;
 import com.example.mynotes.widget.XListView;
 
 import org.json.JSONArray;
@@ -120,9 +118,9 @@ public class ContentFragment extends Fragment implements View.OnClickListener, X
     @Override
     public void onClick(View view) {//设置点击后的事件
         MainActivity mainActivity = (MainActivity) getActivity();//获取活动，为了获取当前是否有账号登录的标记
-        Boolean isLogin = mainActivity.isLogin;//获取是否登录
+        Boolean isLogin = MainActivity.getIsLogin();//获取是否登录
 
-        intent = new Intent(getContext(), AddContent.class);
+        intent = new Intent(getContext(), AddContentActivity.class);
 
         if (isLogin) {//如果已登录，则获取已登录的用户名
             intent.putExtra("owner", MainActivity.getNowAccount().getUsername());
@@ -185,7 +183,7 @@ public class ContentFragment extends Fragment implements View.OnClickListener, X
                         dataJsonPack.setDataObject(notesJsonArray);
                         dataJsonPack.setUsername(username);//设置数据包的用户名
 
-                        new TCPConnectUtil().sendTCPRequestAndRespone(dataJsonPack);
+                        new TCPConnectController().sendTCPRequestAndRespone(dataJsonPack);
                     }
                 },1);
 //                });
@@ -217,17 +215,17 @@ public class ContentFragment extends Fragment implements View.OnClickListener, X
                     return;//所以选择直接返回
                 }
 
-                Intent intent = new Intent(getContext(), Detail.class);//跳转意图，用以从main跳转到detail
+                Intent intent = new Intent(getContext(), DetailActivity.class);//跳转意图，用以从main跳转到detail
                 Notes nowNote = notesList.get(position-1);//注意，这里为什么要减1呢？因为，下拉刷新的那一行居然也算是占了一位
                 intent.putExtra(Notes.CLASSNAME,nowNote);
 
-                startActivity(intent);//跳转到详情页面开始
+                startActivity(intent);//跳转到详情页面
             }
         });
     }
 
     /**
-     * 该方法用于关闭"刷新中"动画
+     * 该方法用于关闭"刷新中"动画，设置刷新中标识，和刷新记录列表
      */
     public void onLoad() {
         try {
@@ -239,31 +237,31 @@ public class ContentFragment extends Fragment implements View.OnClickListener, X
         mListView.stopLoadMore();
         isRefreshing = false;//刷新中标识设置为false
         refreshNotesList();//刷新记录列表
-//        selectNotesDB();
-        Toast.makeText(getContext(),"同步记录成功，共同步记录"+lastUpdateNum+"条",Toast.LENGTH_SHORT).show();
+
+        if(lastUpdateNum > 1){//如果更新记录数大于0，则显示通知记录数
+            Toast.makeText(getContext(),"记录同步成功，共同步记录"+lastUpdateNum+"条",Toast.LENGTH_LONG).show();
+        }else{
+            Toast.makeText(getContext(),"记录已更新至最新！",Toast.LENGTH_LONG).show();
+        }
+
     }
 
     /**
      * 该方法用于刷新记录列表
      */
     public void refreshNotesList(){
-        List<Notes> newNotesList = Notes.getNotesListContent(getContext(),MainActivity.getNowUsername());
+        List<Notes> newNotesList = Notes.getNotesListContent(getContext(),MainActivity.getNowUsername());//获取新记录
         notesList.clear();//清除旧记录
-        notesList.addAll(newNotesList);//增加新查出来的记录
-        showListContentAdapter.notifyDataSetChanged();//最后通知数据更新
+        notesList.addAll(newNotesList);//增加新记录
+        showListContentAdapter.notifyDataSetChanged();//最后通知适配器数据更新
     }
 
     /**
      * 该方法用于在刷新成功后设置刷新时间
      */
     public void setRefreshTime() {
-        mListView.setRefreshTime(AddContent.getNowTimeStr().substring(0, 17));
+        mListView.setRefreshTime(AddContentActivity.getNowTimeStr().substring(0, 17));
     }
 
-    /**
-     * 该方法用于在刷新成功后通知数据改变
-     */
-    public void notifyChange() {
-        showListContentAdapter.notifyDataSetChanged();
-    }
+
 }

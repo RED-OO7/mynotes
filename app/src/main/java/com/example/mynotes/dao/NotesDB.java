@@ -1,4 +1,4 @@
-package com.example.mynotes.database;
+package com.example.mynotes.dao;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -6,10 +6,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-
-import com.example.mynotes.control.AddContent;
-import com.example.mynotes.fragmentpack.ContentFragment;
-import com.example.mynotes.model.Notes;
 
 public class NotesDB extends SQLiteOpenHelper {
 

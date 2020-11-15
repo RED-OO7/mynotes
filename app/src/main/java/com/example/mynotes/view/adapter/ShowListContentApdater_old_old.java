@@ -1,4 +1,4 @@
-package com.example.mynotes.adapter;
+package com.example.mynotes.view.adapter;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -15,7 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.mynotes.R;
-import com.example.mynotes.database.NotesDB;
+import com.example.mynotes.dao.NotesDB;
 
 public class ShowListContentApdater_old_old extends BaseAdapter {
     private Context context;

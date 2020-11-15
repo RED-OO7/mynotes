@@ -1,4 +1,4 @@
-package com.example.mynotes.control;
+package com.example.mynotes.view.activities;
 
 import android.app.Activity;
 import android.content.ContentValues;
@@ -29,14 +29,16 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
 import com.example.mynotes.R;
-import com.example.mynotes.database.NotesDB;
+import com.example.mynotes.util.FileUtil;
+import com.example.mynotes.util.PermisionUtils;
+import com.example.mynotes.dao.NotesDB;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class AddContent extends Activity implements View.OnClickListener {
+public class AddContentActivity extends Activity implements View.OnClickListener {
 
     /* 原始requestCode 1代表文字，2代表图片，3代表视频，4代表录音*/
     public static final int TEXT_REQUEST_CODE = 101;
@@ -174,7 +176,7 @@ public class AddContent extends Activity implements View.OnClickListener {
             add_linearSound.setVisibility(View.GONE);
             Intent img_intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
-            FileIO.makeDir(Environment.getExternalStorageDirectory().getAbsoluteFile().getAbsolutePath() +
+            FileUtil.makeDir(Environment.getExternalStorageDirectory().getAbsoluteFile().getAbsolutePath() +
                     "/MyNotes");
             imgFile = new File(Environment.getExternalStorageDirectory().getAbsoluteFile().getAbsolutePath() +
                     "/MyNotes/img" + getNowNameStr() + ".jpg");//新建图片
@@ -189,7 +191,7 @@ public class AddContent extends Activity implements View.OnClickListener {
             add_img.setVisibility(View.GONE);
             add_video.setVisibility(View.VISIBLE);
             add_linearSound.setVisibility(View.GONE);
-            FileIO.makeDir(Environment.getExternalStorageDirectory().getAbsoluteFile().getAbsolutePath() +
+            FileUtil.makeDir(Environment.getExternalStorageDirectory().getAbsoluteFile().getAbsolutePath() +
                     "/MyNotes");
             videoFile = new File(Environment.getExternalStorageDirectory().getAbsoluteFile().getAbsolutePath() +
                     "/MyNotes/video" + getNowNameStr() + ".mp4");//新建视频
@@ -209,7 +211,7 @@ public class AddContent extends Activity implements View.OnClickListener {
             add_linearSound.setVisibility(View.GONE);
             add_linearListen.setVisibility(View.VISIBLE);
 
-            FileIO.makeDir(Environment.getExternalStorageDirectory().getAbsoluteFile().getAbsolutePath() +
+            FileUtil.makeDir(Environment.getExternalStorageDirectory().getAbsoluteFile().getAbsolutePath() +
                     "/MyNotes");
 
             bt_finish.setEnabled(false);
