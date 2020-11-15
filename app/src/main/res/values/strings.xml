@@ -10,7 +10,7 @@
 
     <string name="header_hint_refresh_normal">拖动以同步记录</string><!--拖动以刷新的字符串-->
     <string name="header_hint_refresh_ready">释放以同步记录</string><!--释放刷新时的字符串-->
-    <string name="header_hint_refresh_loading">同步记录中！&#8230;</string><!--刷新时的字符串&#8230;是省略号-->
+    <string name="header_hint_refresh_loading">同步记录中！</string><!--刷新时的字符串&#8230;是省略号-->
     <string name="header_hint_refresh_time"></string><!--上次同步的时间-->
     <string name="footer_hint_load_normal">Load more</string>
     <string name="footer_hint_load_ready">Release to load more</string>

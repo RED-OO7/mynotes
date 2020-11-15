@@ -328,7 +328,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     /**
      * 该方法用于保存账号信息到非易失文件
-     *
      * @param account    参数是Account类的账号信息
      * @param isRemember 参数是是否记住密码
      */
@@ -383,11 +382,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      * 由于此方法会被网络连接的管理类所调用，同时该方法有执行UI改变操作，所以它必须在.runOnUiThread()方法中执行！
      */
     public void afterLoginSuccess() {
-
         MainActivity.this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Log.d("", "nowAccount.getUsername():" + nowAccount.getUsername());
                 tv_username.setText(nowAccount.getUsername());//把名字显示在名字框
                 tv_email.setText(nowAccount.getEmail());//把邮箱显示在邮箱框
 
@@ -402,7 +399,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 else //否则就新造
                     contentFragment = new ContentFragment();
 
-//                contentFragment.selectNotesDB();//刷新记事内容(不一定有必要)
                 replaceMainFragment(contentFragment);//将当前界面(登录界面)换成记事内容界面
                 isLogin = true;//登录过后登录标识改为 真
             }
@@ -505,19 +501,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     /**
-     * 该方法用于其它类调用以关闭刷新动画，同时还会刷新记录
+     * 该方法用于控制器类调用以关闭刷新动画，同时还会刷新记录
      */
-    public void stopRefresh() {
+    public void afterRefreshSucceed() {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 if (ContentFragment.contentFragmentInstance != null) {//不为空时才能操作
-                    ContentFragment.contentFragmentInstance.onLoad();//
+                    ContentFragment.contentFragmentInstance.afterRefresh();//
                 }
             }
         });
-
-
     }
 
+    /**
+     * 该方法用于控制器类调用以关闭刷新动画，同时还会刷新记录
+     */
+    public void afterRefreshFailed() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (ContentFragment.contentFragmentInstance != null) {//不为空时才能操作
+                    ContentFragment.contentFragmentInstance.stopRefresh();
+                }
+            }
+        });
+    }
 }
