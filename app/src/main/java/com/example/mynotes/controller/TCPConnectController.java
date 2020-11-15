@@ -102,9 +102,9 @@ public class TCPConnectController {
 
                             MainActivity mainActivity = MainActivity.getMainActivityInstance();
 
-                            switch (MainActivity.fragment_type) {
+                            switch (MainActivity.fragment_type) {//根据碎片的状态而选择异常处理的策略
                                 case MainActivity.CONTENT_FRAGMENT_CODE:
-                                    mainActivity.stopRefresh();//关闭刷新动画
+                                    mainActivity.afterRefreshFailed();//关闭刷新动画
                                     break;
                                 case MainActivity.LOGIN_FRAGMENT_CODE:
                                     mainActivity.afterLoginFailed();//失败后也要释放登录碎片的按钮
@@ -114,7 +114,8 @@ public class TCPConnectController {
                                     break;
                             }
 
-                            mainActivity.sendToastTextWouldBlock("socket错误，错误为:\n" + e);
+//                            mainActivity.sendToastTextWouldBlock("socket错误，错误为:\n" + e);
+                            mainActivity.sendToastTextWouldBlock("无法连接至服务器！");
                         }
                     }
                 }
@@ -190,19 +191,19 @@ public class TCPConnectController {
                         break;
 
                     case ClientReceiveString.UnknownOperation:
-                        mainActivity.stopRefresh();//停止刷新
+                        mainActivity.afterRefreshSucceed();//停止刷新
                         mainActivity.sendToastTextWouldBlock("服务器发来了未知的操作指令！");
                         break;
                     case ClientReceiveString.NotesDownload:
                         username = sourceJsonObject.getString("username");
                         JSONArray notesArray = sourceJsonObject.getJSONArray("dataObject");
-                        mainActivity.stopRefresh();//停止刷新
+                        mainActivity.afterRefreshSucceed();//停止刷新
                         int n = Notes.updateUserTextNotes(mainActivity.getBaseContext(), notesArray, username);
                         ContentFragment.lastUpdateNum = n;
 //                        MainActivity.mainActivityInstance.sendToastTextWouldBlock("同步记录成功，共同步记录"+n+"条");
                         break;
                     default:
-                        mainActivity.stopRefresh();//停止刷新
+                        mainActivity.afterRefreshSucceed();//停止刷新
                         mainActivity.sendToastTextWouldBlock("服务器发来了未知的操作指令！\n" + operationStr);
                         break;
                 }
@@ -217,10 +218,6 @@ public class TCPConnectController {
     }
 
     public void resolveException(Exception e) {
-
-    }
-
-    public void loginSuccess() {
 
     }
 
