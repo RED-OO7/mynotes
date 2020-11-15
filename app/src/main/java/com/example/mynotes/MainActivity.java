@@ -7,7 +7,6 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -27,25 +26,27 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.mynotes.adapter.ShowListContentApdater;
-import com.example.mynotes.control.AddContent;
-import com.example.mynotes.control.MyVideoThumbLoader;
-import com.example.mynotes.database.NotesDB;
-import com.example.mynotes.fragmentpack.ContentFragment;
-import com.example.mynotes.fragmentpack.LoginFragement;
-import com.example.mynotes.fragmentpack.RegisterFragment;
-import com.example.mynotes.fragmentpack.SearchFragment;
+import com.example.mynotes.view.activities.AddContentActivity;
+import com.example.mynotes.util.MyVideoThumbLoader;
+import com.example.mynotes.dao.NotesDB;
+import com.example.mynotes.view.fragments.ContentFragment;
+import com.example.mynotes.view.fragments.LoginFragment;
+import com.example.mynotes.view.fragments.RegisterFragment;
+import com.example.mynotes.view.fragments.SearchFragment;
 import com.example.mynotes.model.Account;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     //AppCompatActivity
-    public static MainActivity mainActivityInstance;
     public static ContentFragment mainContentFragment;//显示记事内容的碎片
-    public static LoginFragement mainLoginFragment;//显示登录内容的碎片
+    public static LoginFragment mainLoginFragment;//显示登录内容的碎片
     public static RegisterFragment mainRegisterFragment;//显示注册内容的碎片
     public static MyVideoThumbLoader mainVideoThumbLoader;//用于异步加载缩略图的方法
+    
+    public static int fragment_type;//该变量为当前碎片的种类，根据不同种类而进行不同的操作
 
-    public static Boolean isLogin = false;//isLogin是用来检测当前用户是否登录用的
+    public static final int CONTENT_FRAGMENT_CODE = 1001;//ContentFragment的代号
+    public static final int LOGIN_FRAGMENT_CODE = 1002;//LoginFragment的代号
+    public static final int REGISTER_FRAGMENT_CODE = 1003;//RegisterFragment的代号
 
     //    Button bt_text;//输入文字按钮
 //    Button bt_pic;//拍照按钮
@@ -77,15 +78,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     private NotesDB notesDB;
-    private SQLiteDatabase dbWriter, dbReader;
+    private SQLiteDatabase dbWriter;
     private Cursor cursor;//该游标用于读取数据库
 
+    private static MainActivity mainActivityInstance;
+    private static Boolean isLogin = false;//isLogin是用来检测当前用户是否登录用的
     private static Account nowAccount = null;//目前已登录的账号信息
-
-    private ShowListContentApdater showListContentApdater;//该适配器用于显示每条记录
 
     private static SharedPreferences preferences = null;//保存密码用的非易失文件
     private static SharedPreferences.Editor editor = null;
+
+
 
     public static Account getNowAccount() {
         return nowAccount;
@@ -101,6 +104,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public static void setIsLogin(Boolean isLogin) {
         MainActivity.isLogin = isLogin;
+    }
+
+    public static MainActivity getMainActivityInstance() {
+        return mainActivityInstance;
+    }
+
+    public static void setMainActivityInstance(MainActivity mainActivityInstance) {
+        MainActivity.mainActivityInstance = mainActivityInstance;
     }
 
     /**
@@ -132,13 +143,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         toolbar.setTitle("");//将工具栏里的标题设置为空
         setSupportActionBar(toolbar);
 
-//        LoginFragement loginFragement = new LoginFragement();
         mainContentFragment = new ContentFragment();
         replaceMainFragment(mainContentFragment);//更换为主内容碎片
-
-//        notesDB = new NotesDB(this);
-//        dbWriter = notesDB.getWritableDatabase();
-//        addDB();//测试数据库的生成和添加信息
 
         initView();
 
@@ -146,12 +152,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mainVideoThumbLoader = new MyVideoThumbLoader();//初始化缩略图异步加载类
     }
 
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        // Inflate the menu; this adds items to the action bar if it is present.
-//        getMenuInflater().inflate(R.menu.main, menu);
-//        return true;
-//    }
 
     /**
      * 该方法用于初始化MainActivity的控件们
@@ -211,25 +211,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-    /**
-     * 该方法用于把主碎片给替换成其它碎片
-     */
-    public void replaceMainFragment(Fragment fragment) {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.replace(R.id.main_fragment, fragment);//将main_fragement这个id的碎片控件替换为别的碎片
-        transaction.commit();//提交更改
-    }
-
     @Override
     public void onClick(View view) {//设置点击后的事件
-        intent = new Intent(this, AddContent.class);
+        intent = new Intent(this, AddContentActivity.class);
         switch (view.getId()) {
             case R.id.bt_login:
 //                bt_login.setVisibility(View.GONE);//纯粹测试用，记得注释掉
 //                afterLogin("red007");//使用red007测试登录
                 Toast.makeText(this, "点击了登录按钮", Toast.LENGTH_SHORT).show();
-                mainLoginFragment = new LoginFragement();
+                mainLoginFragment = new LoginFragment();
                 replaceMainFragment(mainLoginFragment);//更换为登录碎片
 //                replaceFragment.replaceMainFragment(loginFragement);
                 break;
@@ -238,7 +228,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 replaceMainFragment(mainRegisterFragment);//更换为注册碎片
                 break;
             case R.id.bt_cancel:
-                afterCanelLogin();//注销后的操作
+                afterLogout();//注销后的操作
                 Toast.makeText(this, "注销成功", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.bt_tosearch:
@@ -260,8 +250,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 //id不需要放入是因为设置了id自增
                 contentValues1.put(NotesDB.TITLE, "无序号的空内容记录2");
                 contentValues1.put(NotesDB.CONTENT, "");//添加文本输入框里的内容进数据库
-                contentValues1.put(NotesDB.TIME, AddContent.getNowTimeStr());//添加当前的时间
-                contentValues1.put(NotesDB.CHANGE_TIME, AddContent.getNowTimeStr());//添加修改的时间
+                contentValues1.put(NotesDB.TIME, AddContentActivity.getNowTimeStr());//添加当前的时间
+                contentValues1.put(NotesDB.CHANGE_TIME, AddContentActivity.getNowTimeStr());//添加修改的时间
                 contentValues1.put(NotesDB.PIC_PATH, null + "");//添加图片路径  我怀疑这个路径有问题
                 contentValues1.put(NotesDB.VIDEO_PATH, null + "");//添加视频路径
                 contentValues1.put(NotesDB.SOUND_PATH, null + "");//添加录音路径
@@ -311,7 +301,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 ContentValues contentValues = new ContentValues();
                 //id不需要放入是因为设置了id自增
                 contentValues.put(NotesDB.CONTENT, "我是无序号的本地测试记录");//添加文本输入框里的内容进数据库
-                contentValues.put(NotesDB.TIME, AddContent.getNowTimeStr());//添加当前的时间
+                contentValues.put(NotesDB.TIME, AddContentActivity.getNowTimeStr());//添加当前的时间
                 contentValues.put(NotesDB.PIC_PATH, null + "");//添加图片路径  我怀疑这个路径有问题
                 contentValues.put(NotesDB.VIDEO_PATH, null + "");//添加视频路径
                 contentValues.put(NotesDB.SOUND_PATH, null + "");//添加录音路径
@@ -335,13 +325,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        selectNotesDB();
     }
 
-//    public void selectNotesDB() {//该方法用于查询
-//        //该cursor游标暂不初始化
-//        Cursor cursor = dbReader.query(NotesDB.TABLE_NAME, null, null, null, null, null, null);
-//        ContentFragment contentFragment = new ContentFragment();
-//        showListContentApdater = new ShowListContentApdater(this,R.id.cellListView, cursor);//将该适配器和该 主页面 绑定游标
-//        cellListView.setAdapter(showListContentApdater);//将显示列表用的View绑定适配器
-//    }
 
     /**
      * 该方法用于保存账号信息到非易失文件
@@ -370,6 +353,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         editor.apply();//提交更改
     }
+
+
+    /**
+     * 该方法用于把主碎片给替换成其它碎片
+     */
+    public void replaceMainFragment(Fragment fragment) {
+        //判断需要替换的碎片类型并设置碎片的代号
+        if (fragment instanceof ContentFragment){
+            fragment_type = CONTENT_FRAGMENT_CODE;
+        }
+        if (fragment instanceof LoginFragment){
+            fragment_type = LOGIN_FRAGMENT_CODE;
+        }
+        if (fragment instanceof RegisterFragment){
+            fragment_type = REGISTER_FRAGMENT_CODE;
+        }
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.replace(R.id.main_fragment, fragment);//将main_fragement这个id的碎片控件替换为别的碎片
+        transaction.commit();//提交更改
+    }
+
 
     /**
      * 该方法用于执行登录成功后的切换操作<br/>
@@ -411,16 +417,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         MainActivity.this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (LoginFragement.loginFragementInstance != null) {//不为空时才能操作
-                    LoginFragement.loginFragementInstance.releaseLoginButton();//释放按钮
+                if (LoginFragment.loginFragmentInstance != null) {//不为空时才能操作
+                    LoginFragment.loginFragmentInstance.releaseLoginButton();//释放按钮
                     isLogin = false;//登录失败后登录标识改为 假
                 }
             }
         });
-//        sendToastText("登录失败，尝试释放按钮");
-//        Toast.makeText(this, "登录失败，尝试释放按钮", Toast.LENGTH_SHORT).show();
-//        LoginFragement.loginFragementInstance.releaseLoginButton();//尝试释放按钮
-//        isLogin = false;//登录过后登录标识改为 真
     }
 
     /**
@@ -451,7 +453,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-    public void afterCanelLogin() {//该方法用于执行注销后的UI切换操作
+    public void afterLogout() {//该方法用于执行注销后的UI切换操作
         nowAccount = null;//现有登录的账户改为null
 
         voidLayout.setVisibility(View.VISIBLE);//显示占位
@@ -466,12 +468,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ContentFragment contentFragment = new ContentFragment();
         replaceMainFragment(contentFragment);//说白了就是强制刷新显示内容
 
-//        preferences = getSharedPreferences("AccountPreference", Context.MODE_PRIVATE);
-//        editor = preferences.edit();
-//        editor.putString("username", "");
-//        editor.putString("password", "");
-//        editor.putBoolean("remember_password", false);
-//        editor.apply();//提交更改
     }
 
     /**
@@ -497,12 +493,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-//    public String getNowTimeStr(){
-//        SimpleDateFormat format = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss");
-//        Date nowDate = new Date();
-//        String dateStr=format.format(nowDate);
-//        return dateStr;
-//    }
 
     /**
      * 该方法用于外部类调用以发送Toast消息
@@ -512,13 +502,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Looper.prepare();
         Toast.makeText(this, str, Toast.LENGTH_SHORT).show();
         Looper.loop();//这里有极高概率会导致阻塞
-//        runOnUiThread(new Runnable() {
-//            @Override
-//            public void run() {
-//                Toast.makeText(getBaseContext(), str, Toast.LENGTH_SHORT).show();
-//            }
-//        });
-
     }
 
     /**
@@ -530,8 +513,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void run() {
                 if (ContentFragment.contentFragmentInstance != null) {//不为空时才能操作
                     ContentFragment.contentFragmentInstance.onLoad();//
-//                  ContentFragment.contentFragmentInstance.selectNotesDB();//重新查询以刷新记录
-//                    ContentFragment.contentFragmentInstance.selectNotesDB();
                 }
             }
         });

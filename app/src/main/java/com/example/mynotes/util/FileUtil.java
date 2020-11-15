@@ -1,13 +1,11 @@
-package com.example.mynotes.control;
+package com.example.mynotes.util;
 
 import android.content.Context;
 import android.widget.Toast;
 
-import com.example.mynotes.other_activities.Detail;
-
 import java.io.File;
 
-public class FileIO {//该类用于进行文件的输入输出
+public class FileUtil {//该类用于进行文件的输入输出
 
     public static void deleteBoth(Context context, String file_path){//该方法用于文件和文件夹的删除。context用于显示提示信息
         File delete_file=new File(file_path);

@@ -1,4 +1,4 @@
-package com.example.mynotes.other_activities;
+package com.example.mynotes.view.activities;
 
 import android.app.Activity;
 import android.content.ContentValues;
@@ -23,14 +23,12 @@ import android.widget.VideoView;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
-import com.example.mynotes.MainActivity;
 import com.example.mynotes.R;
-import com.example.mynotes.control.AddContent;
-import com.example.mynotes.control.FileIO;
-import com.example.mynotes.database.NotesDB;
+import com.example.mynotes.util.FileUtil;
+import com.example.mynotes.dao.NotesDB;
 import com.example.mynotes.model.Notes;
 
-public class Detail extends Activity implements View.OnClickListener {
+public class DetailActivity extends Activity implements View.OnClickListener {
     private Button bt_delete, bt_return, bt_display, bt_stop;
     private ImageView detail_img;
     private VideoView detail_video;
@@ -151,7 +149,7 @@ public class Detail extends Activity implements View.OnClickListener {
         //id不需要放入是因为设置了id自增
         contentValues.put(NotesDB.TITLE, title_input);
         contentValues.put(NotesDB.CONTENT,content_input);
-        contentValues.put(NotesDB.CHANGE_TIME, AddContent.getNowTimeStr());//修改时间改了
+        contentValues.put(NotesDB.CHANGE_TIME, AddContentActivity.getNowTimeStr());//修改时间改了
         contentValues.put(NotesDB.IS_CHANGE, 1);//is_change标识为1表示需要服务器更新
         int resultInt = notesWriter.update(NotesDB.TABLE_NAME, contentValues,NotesDB.ID + " = " + id,null);
 
@@ -204,19 +202,19 @@ public class Detail extends Activity implements View.OnClickListener {
                 if ("null".equals(picPath_str) || picPath_str == null) {
 //                    Toast.makeText(this,"该图片不存在！删除失败！",Toast.LENGTH_SHORT ).show();
                 } else {
-                    FileIO.deleteBoth(this, picPath_str);//删除图片
+                    FileUtil.deleteBoth(this, picPath_str);//删除图片
                 }
                 //如果获取到视频路径的为空，则不删除,否则得删除
                 if ("null".equals(videoPath_str) || videoPath_str == null) {
 //                    Toast.makeText(this,"该文件不存在！删除失败！",Toast.LENGTH_SHORT ).show();
                 } else {
-                    FileIO.deleteBoth(this, videoPath_str);//删除视频
+                    FileUtil.deleteBoth(this, videoPath_str);//删除视频
                 }
                 //如果获取到录音路径的为空，则不删除,否则得删除
                 if ("null".equals(soundPath_str) || soundPath_str == null) {
 //                    Toast.makeText(this,"该文件不存在！删除失败！",Toast.LENGTH_SHORT ).show();
                 } else {
-                    FileIO.deleteBoth(this, soundPath_str);//删除录音
+                    FileUtil.deleteBoth(this, soundPath_str);//删除录音
                 }
 
                 deleteItem();//删除记录

@@ -4,11 +4,10 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
-import com.example.mynotes.database.NotesDB;
+import com.example.mynotes.dao.NotesDB;
 
 import org.json.JSONArray;
 import org.json.JSONException;

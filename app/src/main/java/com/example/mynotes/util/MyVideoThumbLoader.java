@@ -1,4 +1,4 @@
-package com.example.mynotes.control;
+package com.example.mynotes.util;
 
 import android.annotation.SuppressLint;
 import android.graphics.Bitmap;

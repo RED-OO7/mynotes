@@ -1,4 +1,4 @@
-package com.example.mynotes.fragmentpack;
+package com.example.mynotes.view.fragments;
 
 import android.content.Context;
 import android.content.Intent;
@@ -20,10 +20,10 @@ import androidx.fragment.app.Fragment;
 
 import com.example.mynotes.MainActivity;
 import com.example.mynotes.R;
-import com.example.mynotes.adapter.ShowListContentApdater;
-import com.example.mynotes.database.NotesDB;
+import com.example.mynotes.view.adapter.ShowListContentApdater;
+import com.example.mynotes.dao.NotesDB;
 import com.example.mynotes.model.Notes;
-import com.example.mynotes.other_activities.Detail;
+import com.example.mynotes.view.activities.DetailActivity;
 
 import java.util.List;
 
@@ -95,7 +95,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener{
                 //先初始化了cursor
                 cursor=dbReader.query(NotesDB.TABLE_NAME,null,null,null,null,null,null);
                 cursor.moveToPosition(position);
-                Intent intent = new Intent(getContext(), Detail.class);//跳转意图，用以从main跳转到detail
+                Intent intent = new Intent(getContext(), DetailActivity.class);//跳转意图，用以从main跳转到detail
                 intent.putExtra(NotesDB.ID,cursor.getInt(cursor.getColumnIndex(NotesDB.ID)));//意图里装载使用游标查找到的ID
                 intent.putExtra(NotesDB.CONTENT,cursor.getString(cursor.getColumnIndex(NotesDB.CONTENT)));//意图里装载使用游标查找到的文本
                 intent.putExtra(NotesDB.TIME,cursor.getString(cursor.getColumnIndex(NotesDB.TIME)));//意图里装载使用游标查找到的时间
@@ -120,7 +120,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener{
                 //先初始化了cursor
                 cursor=dbReader.query(NotesDB.TABLE_NAME, null, search_sql, null, null, null, null);
                 cursor.moveToPosition(position);
-                Intent intent = new Intent(getContext(), Detail.class);//跳转意图，用以从main跳转到detail
+                Intent intent = new Intent(getContext(), DetailActivity.class);//跳转意图，用以从main跳转到detail
                 intent.putExtra(NotesDB.ID,cursor.getInt(cursor.getColumnIndex(NotesDB.ID)));//意图里装载使用游标查找到的ID
                 intent.putExtra(NotesDB.CONTENT,cursor.getString(cursor.getColumnIndex(NotesDB.CONTENT)));//意图里装载使用游标查找到的文本
                 intent.putExtra(NotesDB.TIME,cursor.getString(cursor.getColumnIndex(NotesDB.TIME)));//意图里装载使用游标查找到的时间
@@ -131,7 +131,6 @@ public class SearchFragment extends Fragment implements View.OnClickListener{
             }
         });
     }
-
 
     @Override
     public void onClick(View view) {//设置点击后的事件
@@ -144,6 +143,19 @@ public class SearchFragment extends Fragment implements View.OnClickListener{
                 break;
             default:
                 break;
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        preferences = getActivity().getSharedPreferences("AccountPreference", Context.MODE_PRIVATE);
+        String search_get = preferences.getString("search_str", "");
+        if (search_get!=null&&!"".equals(search_get)){//不为空时执行搜素
+            et_search.setText(search_get);//将搜索文字设置到搜索框
+            selectNotesDB(search_get);//根据条件搜索记录
+        }else {//为空时搜索全部
+            selectNotesDB();//获取全部记录的记事信息
         }
     }
 
@@ -170,16 +182,5 @@ public class SearchFragment extends Fragment implements View.OnClickListener{
 
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        preferences = getActivity().getSharedPreferences("AccountPreference", Context.MODE_PRIVATE);
-        String search_get = preferences.getString("search_str", "");
-        if (search_get!=null&&!"".equals(search_get)){//不为空时执行搜素
-            et_search.setText(search_get);//将搜索文字设置到搜索框
-            selectNotesDB(search_get);//根据条件搜索记录
-        }else {//为空时搜索全部
-            selectNotesDB();//获取全部记录的记事信息
-        }
-    }
+
 }
