@@ -44,7 +44,6 @@ public class AddContentActivity extends Activity implements View.OnClickListener
     public static final int TEXT_REQUEST_CODE = 101;
     public static final int PICTURE_REQUEST_CODE = 102;
     public static final int VIDEO_REQUEST_CODE = 103;
-    public static final int SOUND_REQUEST_CODE = 104;
 
 
     private String flag_str;
@@ -157,6 +156,9 @@ public class AddContentActivity extends Activity implements View.OnClickListener
         contentValues.put(NotesDB.OWNER, owner);//添加当前拥有者名
         contentValues.put(NotesDB.IS_CHANGE, 1);//添加是否修改的标识
         notesWriter.insert(NotesDB.TABLE_NAME, null, contentValues);
+
+
+
     }
 
 

@@ -22,6 +22,9 @@ import com.example.mynotes.model.Account;
 import com.example.mynotes.model.ClientSendString;
 import com.example.mynotes.model.DataJsonPack;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class RegisterFragment extends Fragment implements View.OnClickListener{
 
     public static  RegisterFragment registerFragementInstance = null;//本注册碎片的静态对象
@@ -36,7 +39,10 @@ public class RegisterFragment extends Fragment implements View.OnClickListener{
     private EditText reg_mail;
     private Button reg_btn_sure;
     private Button reg_btn_login;
-
+    Pattern p;
+    Matcher m;
+    Matcher m1;
+    String str;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.register_fragment,container,false);
@@ -69,9 +75,24 @@ public class RegisterFragment extends Fragment implements View.OnClickListener{
         switch (v.getId()) {
             //注册开始，判断注册条件
             case R.id.reg_btn_sure:
+                if(!TextUtils.isEmpty(mail)){
+                    str = "^([a-zA-Z0-9_\\-\\.]+)@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.)|(([a-zA-Z0-9\\-]+\\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\\]?)$";
+                    p = Pattern.compile(str);
+                    m = p.matcher(mail);
+                    if(m.matches()==false){
+                        Toast.makeText(getContext(), "地址格式有问题", Toast.LENGTH_SHORT).show();
+                    }
+                }
                 if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password) || TextUtils.isEmpty(password2) || TextUtils.isEmpty(mail)) {
                     Toast.makeText(getContext(), "各项均不能为空", Toast.LENGTH_SHORT).show();
                 } else {
+                    //str="^[a-zA-Z\\d\\.@]{6,20}$";
+                    str="^[a-zA-Z][a-zA-Z0-9]{6,20}$";
+                    p = Pattern.compile(str);
+                    m = p.matcher(username);
+                    if(m.matches()==false){
+                        Toast.makeText(getContext(), "账号长度格式有问题", Toast.LENGTH_SHORT).show();
+                    }
                     if (TextUtils.equals(password, password2)) {
                         lockRegisterButton();//先锁住按钮
 
