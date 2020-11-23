@@ -8,6 +8,8 @@ public class ClientSendString {
 
 	public static final String NotesUpload="NotesUpload";//(客户上传记事到服务器的操作)
 
+	public static final String NoteAdd="NoteAdd"; //(客户添加一条需同步请求）
+
 	public static final String LoginAccount="LoginAccount";//(登录账号)
 
 	public static final String RegisterAccount="RegisterAccount";//(注册账号)

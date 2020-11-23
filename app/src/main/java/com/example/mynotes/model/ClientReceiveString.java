@@ -16,5 +16,8 @@ public class ClientReceiveString {
 
 	public static final String NotesDownload="NotesDownload";//(客户端接收记事的下载操作)
 
+	public static final String NoteAddSuccess="NoteAddSuccess";//(添加一条记录上传成功）
+	public static final String NoteAddFailed="NoteAddFailed";//(添加一条记录上传失败)
+
 	public static final String UnknownOperation = "UnknownOperation";//(未知的接收操作)
 }
