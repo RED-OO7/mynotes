@@ -1,7 +1,9 @@
 package com.example.mynotes.view.fragments;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
@@ -15,6 +17,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.example.mynotes.MainActivity;
@@ -116,6 +120,23 @@ public class ContentFragment extends Fragment implements View.OnClickListener, X
     }
 
     @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode){
+            case 1:
+                if(grantResults.length>0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    intent.putExtra("flag", "2");
+                    startActivity(intent);
+                }else{
+                    Toast.makeText(getContext(), "当前没有录音权限", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            default:
+        }
+
+
+    }
+
+    @Override
     public void onClick(View view) {//设置点击后的事件
         MainActivity mainActivity = (MainActivity) getActivity();//获取活动，为了获取当前是否有账号登录的标记
         Boolean isLogin = MainActivity.getIsLogin();//获取是否登录
@@ -135,14 +156,33 @@ public class ContentFragment extends Fragment implements View.OnClickListener, X
                 startActivity(intent);
                 break;
             case R.id.bt_pic:
-                intent.putExtra("flag", "2");
-                startActivity(intent);
+                if(ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA)!=
+                PackageManager.PERMISSION_GRANTED||ContextCompat.checkSelfPermission(getContext(),
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE)!=
+                        PackageManager.PERMISSION_GRANTED ){
+                    ActivityCompat.requestPermissions(getActivity(),new String[]{Manifest.permission.CAMERA},1);
+                }else{
+                    intent.putExtra("flag", "2");
+                    startActivity(intent);
+                }
                 break;
             case R.id.bt_video:
+                if(ContextCompat.checkSelfPermission(getContext(), Manifest.permission.RECORD_AUDIO)!=
+                        PackageManager.PERMISSION_GRANTED||ContextCompat.checkSelfPermission(getContext(),
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE)!=
+                        PackageManager.PERMISSION_GRANTED ){
+                    Toast.makeText(getContext(), "当前没有录像权限", Toast.LENGTH_SHORT).show();
+                }
                 intent.putExtra("flag", "3");
                 startActivity(intent);
                 break;
             case R.id.bt_sound:
+                if(ContextCompat.checkSelfPermission(getContext(), Manifest.permission.RECORD_AUDIO)!=
+                        PackageManager.PERMISSION_GRANTED||ContextCompat.checkSelfPermission(getContext(),
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE)!=
+                        PackageManager.PERMISSION_GRANTED){
+                Toast.makeText(getContext(), "当前没有录音权限", Toast.LENGTH_SHORT).show();
+            }
                 intent.putExtra("flag", "4");
                 startActivity(intent);
                 break;
