@@ -226,7 +226,7 @@
             android:layout_marginTop="5dp"
             android:background="@android:color/transparent"
             android:gravity="left"
-            android:text="测试按钮(直接增加未登录的记录)"
+            android:text="测试按钮(测试连接spring后端)"
             android:textColor="#FFFFFF"
             android:textSize="20dp"
             android:textStyle="bold"

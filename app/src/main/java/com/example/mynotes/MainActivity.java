@@ -35,6 +35,15 @@ import com.example.mynotes.view.fragments.RegisterFragment;
 import com.example.mynotes.view.fragments.SearchFragment;
 import com.example.mynotes.model.Account;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     //AppCompatActivity
     public static ContentFragment mainContentFragment;//显示记事内容的碎片
@@ -298,20 +307,36 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
 
             case R.id.bt_test4:
-                ContentValues contentValues = new ContentValues();
-                //id不需要放入是因为设置了id自增
-                contentValues.put(NotesDB.CONTENT, "我是无序号的本地测试记录");//添加文本输入框里的内容进数据库
-                contentValues.put(NotesDB.TIME, AddContentActivity.getNowTimeStr());//添加当前的时间
-                contentValues.put(NotesDB.PIC_PATH, null + "");//添加图片路径  我怀疑这个路径有问题
-                contentValues.put(NotesDB.VIDEO_PATH, null + "");//添加视频路径
-                contentValues.put(NotesDB.SOUND_PATH, null + "");//添加录音路径
-                contentValues.put(NotesDB.OWNER, NotesDB.LOCAL_OWNER_STRING);//添加当前拥有者名
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        BufferedReader reader = null;
 
-                notesDB = new NotesDB(this);
-                SQLiteDatabase notesWriter = notesDB.getWritableDatabase();
-                notesWriter.insert(NotesDB.TABLE_NAME, null, contentValues);
+                        try {
+                            URL url = new URL("http://10.0.80.64:8080/users");
+                            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                            connection.setRequestMethod("GET");
+                            connection.setConnectTimeout(3000);
+                            connection.setReadTimeout(3000);
 
-//                ContentFragment.contentFragmentInstance.selectNotesDB();//重新查询记录以刷新记录
+                            InputStream in = new BufferedInputStream(connection.getInputStream());
+                            reader = new BufferedReader(new InputStreamReader(in));
+                            StringBuffer stringBuffer = new StringBuffer();
+                            String line;
+
+                            while ((line = reader.readLine()) != null){
+                                stringBuffer.append(line);
+                            }
+
+                            sendToastTextWouldBlock(stringBuffer.toString());
+
+                        } catch (MalformedURLException e) {
+                            e.printStackTrace();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }).start();
                 break;
 
             default:
