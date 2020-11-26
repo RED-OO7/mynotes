@@ -29,7 +29,7 @@ import java.net.SocketAddress;
 
 public class TCPConnectController {
     //"10.3.49.170"本地wifi ip地址，"139.224.128.87"是远程服务端的地址
-    private static String serverAddress_str = "10.3.49.170";
+    private static String serverAddress_str = "139.224.128.87";
     private static int PORT = 19200;
 
     private static Handler mHandler = new Handler();//创建Handler

@@ -150,7 +150,7 @@ public class DetailActivity extends Activity implements View.OnClickListener {
         contentValues.put(NotesDB.TITLE, title_input);
         contentValues.put(NotesDB.CONTENT,content_input);
         contentValues.put(NotesDB.CHANGE_TIME, AddContentActivity.getNowTimeStr());//修改时间改了
-        contentValues.put(NotesDB.IS_CHANGE, 1);//is_change标识为1表示需要服务器更新
+        contentValues.put(NotesDB.NOTE_STATUS, Notes.NOTE_NEED_UPLOAD);//NotesDB.NOTE_NEED_UPLOAD标识表示需要服务器更新
         int resultInt = notesWriter.update(NotesDB.TABLE_NAME, contentValues,NotesDB.ID + " = " + id,null);
 
         if (resultInt == 1){//如果修改数量为1，说明修改成功
@@ -164,7 +164,11 @@ public class DetailActivity extends Activity implements View.OnClickListener {
         notesDB = new NotesDB(this);
         notesWriter = notesDB.getWritableDatabase();//创建数据库写入器
         int id = ((Notes)getIntent().getSerializableExtra(Notes.CLASSNAME)).getId();//获取该行数据的id
-        notesWriter.delete(NotesDB.TABLE_NAME, NotesDB.ID + " = " + id, null);//根据id删除该行数据
+//        notesWriter.delete(NotesDB.TABLE_NAME, NotesDB.ID + " = " + id, null);//根据id删除该行数据
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(NotesDB.NOTE_STATUS, Notes.NOTE_NEED_DELETE);//把状态改为需要删除
+        notesWriter.update(NotesDB.TABLE_NAME, contentValues, NotesDB.ID + " = " + id,null);//根据id删除该行数据
+
     }
 
 
