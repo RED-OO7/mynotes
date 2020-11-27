@@ -36,6 +36,7 @@
         <!--  com.example.mynotes.other_activities.Detail是屏幕详情页的跳转活动      -->
         <activity
             android:name=".view.activities.DetailActivity"
+            android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait">
         </activity>
     </application>

@@ -29,6 +29,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
 import com.example.mynotes.R;
+import com.example.mynotes.model.Notes;
 import com.example.mynotes.util.FileUtil;
 import com.example.mynotes.util.PermisionUtils;
 import com.example.mynotes.dao.NotesDB;
@@ -155,7 +156,7 @@ public class AddContentActivity extends Activity implements View.OnClickListener
         contentValues.put(NotesDB.VIDEO_PATH, videoFile + "");//添加视频路径
         contentValues.put(NotesDB.SOUND_PATH, soundFile + "");//添加录音路径
         contentValues.put(NotesDB.OWNER, owner);//添加当前拥有者名
-        contentValues.put(NotesDB.IS_CHANGE, 1);//添加是否修改的标识
+        contentValues.put(NotesDB.NOTE_STATUS, Notes.NOTE_NEED_UPLOAD);//NOTE_NEED_UPLOAD表示需要服务器上传
         notesWriter.insert(NotesDB.TABLE_NAME, null, contentValues);
     }
 
