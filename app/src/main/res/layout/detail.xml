@@ -9,7 +9,7 @@
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBar"
-        android:layout_height="250dp"
+        android:layout_height="600dp"
         android:layout_width="match_parent">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
@@ -20,40 +20,33 @@
             app:contentScrim="@color/colorPrimary"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
             <!--  如果没有配置layout_scrollFlags则CollapsingToolbarLayout包裹内容内容就会固定在顶部，不会滚动          -->
-
-            <TextView
-                android:id="@+id/detail_time"
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="30dp"
-                android:layout_centerInParent="true"
-                android:layout_alignParentTop="true"
-                android:gravity="center"
-                android:textSize="20dp"
-                android:textStyle="bold"
-                android:text="暂无日期"/>
+                android:layout_height="match_parent">
+                <ImageView
+                    android:id="@+id/detail_img"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:layout_alignParentTop="true"
+                    android:visibility="gone"/>
 
-            <ImageView
-                android:id="@+id/detail_img"
-                android:layout_width="250dp"
-                android:layout_height="500dp"
-                android:layout_centerInParent="true"
-                android:layout_alignParentTop="true"
-                android:visibility="gone"/>
+                <VideoView
+                    android:id="@+id/detail_video"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:layout_alignParentTop="true"
+                    android:visibility="gone" />
 
-            <VideoView
-                android:id="@+id/detail_video"
-                android:layout_width="250dp"
-                android:layout_height="500dp"
-                android:layout_centerInParent="true"
-                android:layout_alignParentTop="true"
-                android:visibility="gone" />
+                <TextView
+                    android:id="@+id/detail_seize1"
+                    android:layout_width="match_parent"
+                    android:layout_height="500dp"
+                    android:layout_alignParentTop="true"
+                    android:visibility="visible" />
 
-            <TextView
-                android:id="@+id/detail_seize1"
-                android:layout_width="match_parent"
-                android:layout_height="500dp"
-                android:layout_alignParentTop="true"
-                android:visibility="visible" />
+            </RelativeLayout>
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/detail_toolBar"
@@ -72,77 +65,17 @@
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
+
+
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="15dp"
-                android:layout_marginLeft="15dp"
-                android:layout_marginRight="15dp"
-                android:layout_marginTop="35dp"
-                app:cardCornerRadius="4dp">
-
-                <RelativeLayout
-                    xmlns:android="http://schemas.android.com/apk/res/android"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:gravity="center">
-
-                    <EditText
-                        android:id="@+id/detail_title"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="40dp"
-                        android:layout_marginBottom="-50dp"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginRight="20dp"
-                        android:background="@null"
-                        android:gravity="center_vertical"
-                        android:textSize="24dp"
-                        android:textStyle="bold"
-                        android:maxLength="10"
-                        android:hint="请在此输入记录的标题" />
-
-                    <!-- 该view 是分隔线 -->
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="2dp"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginRight="20dp"
-                        android:layout_marginBottom="1dp"
-                        android:background="#778899"
-                        android:layout_alignBottom="@+id/detail_title">
-                    </View>
-
-                    <EditText
-                        android:id="@+id/detail_text"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_alignTop="@+id/detail_title"
-
-                        android:layout_marginTop="40dp"
-                        android:layout_marginBottom="20dp"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginRight="20dp"
-                        android:textSize="20dp" />
-
-
-                </RelativeLayout>
-
-            </androidx.cardview.widget.CardView>
-            <!-- 下面是录音的播放和暂停按钮 -->
             <LinearLayout
                 android:id="@+id/detail_linearSound"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:layout_alignBottom="@+id/detail_linearBt"
-                android:layout_marginBottom="50dp"
-                android:background="#FFFFFF"
                 android:gravity="bottom"
                 android:orientation="horizontal"
                 android:weightSum="5"
@@ -178,15 +111,91 @@
                     android:layout_weight="1.5" />
             </LinearLayout>
 
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="15dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginTop="35dp"
+                app:cardCornerRadius="4dp">
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/detail_time"
+                        android:layout_width="match_parent"
+                        android:layout_height="30dp"
+                        android:layout_centerInParent="true"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginRight="20dp"
+                        android:layout_marginBottom="20dp"
+                        android:gravity="left"
+                        android:textSize="20dp"
+                        android:textStyle="bold"
+                        android:text="XXXX年11月XX日 00:00:00"/>
+
+                    <EditText
+                        android:id="@+id/detail_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginTop="50dp"
+                        android:layout_marginRight="20dp"
+                        android:layout_marginBottom="-50dp"
+                        android:background="@null"
+                        android:gravity="center_vertical"
+                        android:hint="请在此输入记录的标题"
+                        android:maxLength="10"
+                        android:textSize="24dp"
+                        android:textStyle="bold" />
+
+                    <!-- 该view 是分隔线 -->
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp"
+                        android:layout_alignBottom="@+id/detail_title"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginRight="20dp"
+                        android:layout_marginBottom="1dp"
+                        android:background="#778899"></View>
+
+                    <EditText
+                        android:id="@+id/detail_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignTop="@+id/detail_title"
+
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginTop="40dp"
+                        android:layout_marginRight="20dp"
+                        android:layout_marginBottom="20dp"
+                        android:textSize="20dp" />
+
+                </RelativeLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <!-- 下面是原录音的播放和暂停按钮 -->
+
+            <!-- 下面是保存和删除按钮 -->
             <LinearLayout
                 android:id="@+id/detail_linearBt"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:background="#FFFFFF"
                 android:orientation="horizontal"
+                android:layout_marginBottom="50dp"
                 android:layout_alignParentBottom="true"
                 android:gravity="bottom"
-                android:weightSum="5">
+                android:weightSum="5"
+                android:visibility="gone">
 
                 <TextView
                     android:layout_width="wrap_content"
