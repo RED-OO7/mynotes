@@ -217,7 +217,7 @@ public class ContentFragment extends Fragment implements View.OnClickListener, X
 
                 Intent intent = new Intent(getContext(), DetailActivity.class);//跳转意图，用以从main跳转到detail
                 Notes nowNote = notesList.get(position - 1);//注意，这里为什么要减1呢？因为，下拉刷新的那一行居然也算是占了一位
-                intent.putExtra(Notes.CLASSNAME, nowNote);
+                intent.putExtra(Notes.CLASSNAME, nowNote);//传递记事对象到详情活动
 
                 startActivity(intent);//跳转到详情页面
             }

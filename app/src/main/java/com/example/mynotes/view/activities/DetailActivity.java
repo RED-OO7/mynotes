@@ -22,12 +22,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.view.GravityCompat;
+import androidx.core.widget.NestedScrollView;
 
 import com.example.mynotes.MainActivity;
 import com.example.mynotes.R;
@@ -35,6 +38,7 @@ import com.example.mynotes.util.FileUtil;
 import com.example.mynotes.dao.NotesDB;
 import com.example.mynotes.model.Notes;
 import com.example.mynotes.view.fragments.ContentFragment;
+import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -48,6 +52,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     private TextView detail_time;
 
     private LinearLayout detail_linearSound;//该add_linearSound用于存放播放和暂停按钮
+    private AppBarLayout detail_appBar;
 
     private NotesDB notesDB;
     private SQLiteDatabase notesWriter;//该dbWriter用以删除数据库的记录
@@ -66,6 +71,8 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         toolbar.setTitle("");//将工具栏里的标题设置为空
         CollapsingToolbarLayout collapsingToolbar =
                 (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
+        detail_appBar = findViewById(R.id.detail_appBar);
+
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -104,11 +111,15 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
 
         detail_time.setText(nowNote.getTime());//设置时间
         detail_time.bringToFront();//设置到最上层
+
+        disabledScrolling();//初始时禁用滑动
+
         //如果获取到图片路径的为空，则不显示
-        String imgPath_get = nowNote.getPic_path();//这里获取的居然是string类型的null？？？
+        String imgPath_get = nowNote.getPic_path();//这里获取的居然是string类型的"null"？？？
         if ("null".equals(imgPath_get)) {
             detail_img.setVisibility(View.GONE);
         } else {
+            enabledScrolling();//启用滑动
             Toast.makeText(this, "该图片路径为：" + imgPath_get, Toast.LENGTH_SHORT).show();
             detail_img.setVisibility(View.VISIBLE);
             detail_seize1.setVisibility(View.VISIBLE);
@@ -120,6 +131,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         if ("null".equals(videoPath_get)) {
             detail_video.setVisibility(View.GONE);
         } else {
+            enabledScrolling();//启用滑动
             detail_video.setVisibility(View.VISIBLE);
             detail_seize1.setVisibility(View.VISIBLE);
 //            detail_video.setVideoURI(Uri.parse(videoPath_get));//直接使用uri加载视频
@@ -181,6 +193,47 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         }
         return true;
     }
+
+    /**
+     * 该方法用于禁用滑动
+     */
+    public void disabledScrolling(){
+        //使收缩栏不打开
+        detail_appBar.setExpanded(false);
+        //做以下操作使得不能拖动
+        CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) detail_appBar.getLayoutParams();
+        //在xml中设置layout_behavior使得DetailActivity获取behavior时不会返回null
+        AppBarLayout.Behavior behavior = (AppBarLayout.Behavior) params.getBehavior();
+        behavior.setDragCallback(new AppBarLayout.Behavior.DragCallback() {
+            @Override
+            public boolean canDrag(@NonNull AppBarLayout appBarLayout) {
+                return false;
+            }
+        });
+        NestedScrollView detail_nestedScrollView = findViewById(R.id.detail_nestedScrollView);
+        detail_nestedScrollView.setNestedScrollingEnabled(false);
+    }
+
+    /**
+     * 该方法用于启用滑动
+     */
+    public void enabledScrolling(){
+        //使收缩栏打开
+        detail_appBar.setExpanded(true);
+        //做以下操作使得能拖动
+        CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) detail_appBar.getLayoutParams();
+        //在xml中设置layout_behavior使得DetailActivity获取behavior时不会返回null
+        AppBarLayout.Behavior behavior = (AppBarLayout.Behavior) params.getBehavior();
+        behavior.setDragCallback(new AppBarLayout.Behavior.DragCallback() {
+            @Override
+            public boolean canDrag(@NonNull AppBarLayout appBarLayout) {
+                return true;
+            }
+        });
+        NestedScrollView detail_nestedScrollView = findViewById(R.id.detail_nestedScrollView);
+        detail_nestedScrollView.setNestedScrollingEnabled(true);
+    }
+
 
     /**
      * 该方法用于更新一条数据
