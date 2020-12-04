@@ -11,7 +11,7 @@
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/detail_appBar"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$Behavior"
-        android:layout_height="480dp"
+        android:layout_height="450dp"
         android:layout_width="match_parent">
         <!-- 设置layout_behavior使得DetailActivity获取behavior时不会返回null       -->
 
@@ -31,16 +31,18 @@
                 android:layout_height="match_parent">
                 <ImageView
                     android:id="@+id/detail_img"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_width="250dp"
+                    android:layout_height="wrap_content"
+                    android:scaleType="centerInside"
                     android:layout_centerInParent="true"
                     android:layout_alignParentTop="true"
                     android:visibility="gone"/>
 
                 <VideoView
                     android:id="@+id/detail_video"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_width="250dp"
+                    android:layout_height="wrap_content"
+                    android:scaleType="centerInside"
                     android:layout_centerInParent="true"
                     android:layout_alignParentTop="true"
                     android:visibility="gone" />

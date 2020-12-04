@@ -418,10 +418,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 bt_login.setVisibility(View.GONE);//不显示左侧菜单登录按钮
                 bt_cancel.setVisibility(View.VISIBLE);//显示左侧菜单注销按钮
 
-                ContentFragment contentFragment = null;
-                if (ContentFragment.contentFragmentInstance != null)//如果ContentFragment.contentFragmentInstance不为空，则重复利用
-                    contentFragment = ContentFragment.contentFragmentInstance;
-                else //否则就新造
+                ContentFragment contentFragment = ContentFragment.getContentFragmentInstance();
+                if (contentFragment != null){//如果ContentFragment.contentFragmentInstance不为空，则重复利用
+//                    contentFragment = ContentFragment.contentFragmentInstance;
+                } else //否则就新造
                     contentFragment = new ContentFragment();
 
                 replaceMainFragment(contentFragment);//将当前界面(登录界面)换成记事内容界面
@@ -532,8 +532,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (ContentFragment.contentFragmentInstance != null) {//不为空时才能操作
-                    ContentFragment.contentFragmentInstance.afterRefresh();//
+                ContentFragment fragment = ContentFragment.getContentFragmentInstance();
+                if (fragment != null) {//不为空时才能操作
+                    fragment.afterRefresh();//
                 }
             }
         });
@@ -546,8 +547,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (ContentFragment.contentFragmentInstance != null) {//不为空时才能操作
-                    ContentFragment.contentFragmentInstance.stopRefresh();
+                ContentFragment fragment = ContentFragment.getContentFragmentInstance();
+                if (fragment != null) {//不为空时才能操作
+                    fragment.stopRefresh();
                 }
             }
         });

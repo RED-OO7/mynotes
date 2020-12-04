@@ -1,200 +1,509 @@
-<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?><!--<RelativeLayout-->
+<!--    xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--    android:layout_width="match_parent"-->
+<!--    android:layout_height="match_parent"-->
+<!--    android:orientation="vertical"-->
+<!--    >-->
+
+<!--    <ImageView-->
+<!--        android:id="@+id/add_img"-->
+<!--        android:layout_width="250dp"-->
+<!--        android:layout_height="500dp"-->
+<!--        android:layout_centerInParent="true"-->
+<!--        android:layout_alignParentTop="true"-->
+<!--        android:visibility="gone" />-->
+
+<!--    <VideoView-->
+<!--        android:id="@+id/add_video"-->
+<!--        android:layout_width="250dp"-->
+<!--        android:layout_height="500dp"-->
+<!--        android:layout_centerInParent="true"-->
+<!--        android:layout_alignParentTop="true"-->
+<!--        android:visibility="visible" />-->
+
+<!--    <TextView-->
+<!--        android:id="@+id/add_seize1"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="500dp"-->
+<!--        android:layout_alignParentTop="true"-->
+<!--        android:visibility="visible" />-->
+
+<!--    <EditText-->
+<!--        android:id="@+id/add_title"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="50dp"-->
+<!--        android:layout_alignBottom="@id/add_seize1"-->
+<!--        android:layout_marginTop="40dp"-->
+<!--        android:layout_marginBottom="-50dp"-->
+<!--        android:layout_marginLeft="20dp"-->
+<!--        android:layout_marginRight="20dp"-->
+<!--        android:background="@null"-->
+<!--        android:gravity="center_vertical"-->
+<!--        android:textSize="24dp"-->
+<!--        android:textStyle="bold"-->
+<!--        android:hint="请在此输入记录的标题" />-->
+
+<!--    &lt;!&ndash; 该view 是分隔线 &ndash;&gt;-->
+<!--    <View-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="2dp"-->
+<!--        android:layout_marginLeft="20dp"-->
+<!--        android:layout_marginRight="20dp"-->
+<!--        android:layout_marginBottom="1dp"-->
+<!--        android:background="#778899"-->
+<!--        android:layout_alignBottom="@+id/add_title">-->
+<!--    </View>-->
+
+<!--    <EditText-->
+<!--        android:id="@+id/add_text"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_alignTop="@id/add_title"-->
+<!--        android:layout_marginTop="50dp"-->
+<!--        android:layout_marginLeft="20dp"-->
+<!--        android:layout_marginRight="20dp"-->
+<!--        android:background="@null"-->
+<!--        android:gravity="top"-->
+<!--        android:hint="请在此输入你要记录的内容" />-->
+
+
+<!--    &lt;!&ndash; 下面是录音的开始和停止按钮 &ndash;&gt;-->
+<!--    <LinearLayout-->
+<!--        android:id="@+id/add_linearListen"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="50dp"-->
+<!--        android:layout_alignBottom="@+id/add_linearBt"-->
+<!--        android:layout_marginBottom="50dp"-->
+<!--        android:background="#FFFFFF"-->
+<!--        android:gravity="bottom"-->
+<!--        android:orientation="horizontal"-->
+<!--        android:visibility="gone"-->
+<!--        android:weightSum="5">-->
+
+<!--        <TextView-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_weight="1.5" />-->
+
+<!--        <Button-->
+<!--            android:id="@+id/bt_start"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_weight="0.5"-->
+<!--            android:text="开始录音" />-->
+
+<!--        <TextView-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_weight="1" />-->
+
+<!--        <Button-->
+<!--            android:id="@+id/bt_finish"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_weight="0.5"-->
+<!--            android:text="停止录音" />-->
+
+<!--        <TextView-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_weight="1.5" />-->
+<!--    </LinearLayout>-->
+
+<!--    &lt;!&ndash; 下面是录音的播放和暂停按钮 &ndash;&gt;-->
+<!--    <LinearLayout-->
+<!--        android:id="@+id/detail_linearSound"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="50dp"-->
+<!--        android:layout_alignBottom="@+id/add_linearBt"-->
+<!--        android:layout_marginBottom="50dp"-->
+<!--        android:background="#FFFFFF"-->
+<!--        android:gravity="bottom"-->
+<!--        android:orientation="horizontal"-->
+<!--        android:weightSum="5"-->
+<!--        android:visibility="gone">-->
+
+<!--        <TextView-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_weight="1.5" />-->
+
+<!--        <Button-->
+<!--            android:id="@+id/bt_display"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_weight="0.5"-->
+<!--            android:text="录音播放" />-->
+
+<!--        <TextView-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_weight="1" />-->
+
+<!--        <Button-->
+<!--            android:id="@+id/bt_stop"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_weight="0.5"-->
+<!--            android:text="停止播放" />-->
+
+<!--        <TextView-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_weight="1.5" />-->
+<!--    </LinearLayout>-->
+
+
+<!--    &lt;!&ndash; 下面是保存和取消按钮 &ndash;&gt;-->
+<!--    <LinearLayout-->
+<!--        android:id="@+id/add_linearBt"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="50dp"-->
+<!--        android:orientation="horizontal"-->
+<!--        android:layout_alignParentBottom="true"-->
+<!--        android:background="#FFFFFF"-->
+<!--        android:gravity="bottom"-->
+<!--        android:weightSum="5">-->
+
+<!--        <TextView-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_weight="1.5"></TextView>-->
+
+<!--        <Button-->
+<!--            android:id="@+id/bt_save"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_weight="0.5"-->
+<!--            android:text="保存" />-->
+
+<!--        <TextView-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_weight="1"></TextView>-->
+
+<!--        <Button-->
+<!--            android:id="@+id/bt_cancel"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_weight="0.5"-->
+<!--            android:text="取消" />-->
+
+<!--        <TextView-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_weight="1.5"></TextView>-->
+<!--    </LinearLayout>-->
+
+
+<!--</RelativeLayout>-->
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    >
+    tools:context=".view.activities.DetailActivity">
 
-    <ImageView
-        android:id="@+id/add_img"
-        android:layout_width="250dp"
-        android:layout_height="500dp"
-        android:layout_centerInParent="true"
-        android:layout_alignParentTop="true"
-        android:visibility="gone" />
-
-    <VideoView
-        android:id="@+id/add_video"
-        android:layout_width="250dp"
-        android:layout_height="500dp"
-        android:layout_centerInParent="true"
-        android:layout_alignParentTop="true"
-        android:visibility="visible" />
-
-    <TextView
-        android:id="@+id/add_seize1"
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/add_appBar"
         android:layout_width="match_parent"
-        android:layout_height="500dp"
-        android:layout_alignParentTop="true"
-        android:visibility="visible" />
+        android:layout_height="450dp"
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$Behavior">
+        <!-- 设置layout_behavior使得DetailActivity获取behavior时不会返回null       -->
 
-    <EditText
-        android:id="@+id/add_title"
+        <com.google.android.material.appbar.CollapsingToolbarLayout
+            android:id="@+id/collapsing_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/side_nav_bar"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:contentScrim="@drawable/side_nav_bar"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed">
+            <!--  app:contentScrim="@color/colorPrimary"          -->
+
+            <!--  如果没有配置layout_scrollFlags则CollapsingToolbarLayout包裹内容内容就会固定在顶部，不会滚动          -->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/add_img"
+                    android:layout_width="250dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerInParent="true"
+                    android:scaleType="centerInside"
+                    android:visibility="gone" />
+
+                <VideoView
+                    android:id="@+id/add_video"
+                    android:layout_width="250dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerInParent="true"
+                    android:scaleType="centerInside"
+                    android:visibility="gone" />
+
+            </RelativeLayout>
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/add_toolBar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:layout_collapseMode="pin"></androidx.appcompat.widget.Toolbar>
+
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <!--  下面部分为可滑动的记录详情的布局  -->
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/add_nestedScrollView"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_alignBottom="@id/add_seize1"
-        android:layout_marginTop="40dp"
-        android:layout_marginBottom="-50dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:background="@null"
-        android:gravity="center_vertical"
-        android:textSize="24dp"
-        android:textStyle="bold"
-        android:hint="请在此输入记录的标题" />
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-    <!-- 该view 是分隔线 -->
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:layout_marginBottom="1dp"
-        android:background="#778899"
-        android:layout_alignBottom="@+id/add_title">
-    </View>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-    <EditText
-        android:id="@+id/add_text"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@id/add_title"
-        android:layout_marginTop="50dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:background="@null"
-        android:gravity="top"
-        android:hint="请在此输入你要记录的内容" />
+            <LinearLayout
+                android:id="@+id/add_linearSound"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="20dp"
+                android:gravity="bottom"
+                android:orientation="horizontal"
+                android:visibility="gone"
+                android:weightSum="5">
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1.5" />
 
-    <!-- 下面是录音的开始和停止按钮 -->
-    <LinearLayout
-        android:id="@+id/add_linearListen"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_alignBottom="@+id/add_linearBt"
-        android:layout_marginBottom="50dp"
-        android:background="#FFFFFF"
-        android:gravity="bottom"
-        android:orientation="horizontal"
-        android:visibility="gone"
-        android:weightSum="5">
+                <Button
+                    android:id="@+id/bt_display"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:text="录音播放" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1.5" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
 
-        <Button
-            android:id="@+id/bt_start"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.5"
-            android:text="开始录音" />
+                <Button
+                    android:id="@+id/bt_stop"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:text="停止播放" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1.5" />
+            </LinearLayout>
 
-        <Button
-            android:id="@+id/bt_finish"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.5"
-            android:text="停止录音" />
+            <LinearLayout
+                android:id="@+id/add_linearListen"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="20dp"
+                android:gravity="bottom"
+                android:orientation="horizontal"
+                android:visibility="gone"
+                android:weightSum="5">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1.5" />
-    </LinearLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1.5" />
 
-    <!-- 下面是录音的播放和暂停按钮 -->
-    <LinearLayout
-        android:id="@+id/detail_linearSound"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_alignBottom="@+id/add_linearBt"
-        android:layout_marginBottom="50dp"
-        android:background="#FFFFFF"
-        android:gravity="bottom"
-        android:orientation="horizontal"
-        android:weightSum="5"
-        android:visibility="gone">
+                <Button
+                    android:id="@+id/bt_start"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:text="开始录音" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1.5" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
 
-        <Button
-            android:id="@+id/bt_display"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.5"
-            android:text="录音播放" />
+                <Button
+                    android:id="@+id/bt_finish"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:text="停止录音" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1.5" />
+            </LinearLayout>
 
-        <Button
-            android:id="@+id/bt_stop"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.5"
-            android:text="停止播放" />
+            <LinearLayout
+                android:id="@+id/add_linearBt"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_alignParentBottom="true"
+                android:background="#FFFFFF"
+                android:gravity="bottom"
+                android:orientation="horizontal"
+                android:weightSum="5">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1.5" />
-    </LinearLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1.5"></TextView>
 
+                <Button
+                    android:id="@+id/bt_save"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:text="保存" />
 
-    <!-- 下面是保存和取消按钮 -->
-    <LinearLayout
-        android:id="@+id/add_linearBt"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:orientation="horizontal"
-        android:layout_alignParentBottom="true"
-        android:background="#FFFFFF"
-        android:gravity="bottom"
-        android:weightSum="5">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"></TextView>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1.5"></TextView>
+                <Button
+                    android:id="@+id/bt_cancel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:text="取消" />
 
-        <Button
-            android:id="@+id/bt_save"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.5"
-            android:text="保存" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1.5"></TextView>
+            </LinearLayout>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"></TextView>
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="35dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginBottom="15dp"
+                app:cardCornerRadius="4dp">
 
-        <Button
-            android:id="@+id/bt_cancel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.5"
-            android:text="取消" />
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:orientation="vertical">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1.5"></TextView>
-    </LinearLayout>
+<!--                    <TextView-->
+<!--                        android:id="@+id/add_time"-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="30dp"-->
+<!--                        android:layout_alignParentTop="true"-->
+<!--                        android:layout_centerInParent="true"-->
+<!--                        android:layout_marginLeft="20dp"-->
+<!--                        android:layout_marginTop="20dp"-->
+<!--                        android:layout_marginRight="20dp"-->
+<!--                        android:layout_marginBottom="20dp"-->
+<!--                        android:gravity="left"-->
+<!--                        android:text="XXXX年11月XX日 00:00:00"-->
+<!--                        android:textSize="20dp"-->
+<!--                        android:textStyle="bold" />-->
 
+                    <EditText
+                        android:id="@+id/add_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginTop="50dp"
+                        android:layout_marginRight="20dp"
+                        android:layout_marginBottom="-50dp"
+                        android:background="@null"
+                        android:gravity="center_vertical"
+                        android:hint="请在此输入记录的标题"
+                        android:maxLength="10"
+                        android:textSize="24dp"
+                        android:textStyle="bold" />
 
-</RelativeLayout>
+                    <!-- 该view 是分隔线 -->
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp"
+                        android:layout_alignBottom="@+id/add_title"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginRight="20dp"
+                        android:layout_marginBottom="1dp"
+                        android:background="#778899"></View>
+
+                    <EditText
+                        android:id="@+id/add_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignTop="@+id/add_title"
+                        android:hint="请在此输入记录的内容"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginTop="40dp"
+                        android:layout_marginRight="20dp"
+                        android:layout_marginBottom="20dp"
+                        android:textSize="20dp" />
+
+                </RelativeLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <!-- 下面是保存和删除按钮 -->
+            <LinearLayout
+                android:id="@+id/detail_linearBt"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="50dp"
+                android:background="#FFFFFF"
+                android:gravity="bottom"
+                android:orientation="horizontal"
+                android:visibility="gone"
+                android:weightSum="5">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1.5"></TextView>
+
+                <Button
+                    android:id="@+id/bt_delete"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:text="删除" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"></TextView>
+
+                <Button
+                    android:id="@+id/bt_return"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:text="返回" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1.5"></TextView>
+            </LinearLayout>
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
+

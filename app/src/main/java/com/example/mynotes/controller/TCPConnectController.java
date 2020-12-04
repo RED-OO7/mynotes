@@ -194,12 +194,18 @@ public class TCPConnectController {
                         mainActivity.afterRefreshSucceed();//停止刷新
                         mainActivity.sendToastTextWouldBlock("服务器发来了未知的操作指令！");
                         break;
+
                     case ClientReceiveString.NotesDownload:
                         username = sourceJsonObject.getString("username");
                         JSONArray notesArray = sourceJsonObject.getJSONArray("dataObject");
-                        mainActivity.afterRefreshSucceed();//停止刷新
                         int n = Notes.updateUserTextNotes(mainActivity.getBaseContext(), notesArray, username);
                         ContentFragment.lastUpdateNum = n;
+                        try {
+                            Thread.sleep(200);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        mainActivity.afterRefreshSucceed();//停止刷新
 //                        MainActivity.mainActivityInstance.sendToastTextWouldBlock("同步记录成功，共同步记录"+n+"条");
                         break;
                     default:

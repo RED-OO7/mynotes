@@ -2,6 +2,7 @@ package com.example.mynotes.view.activities;
 
 import android.app.Activity;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
@@ -9,6 +10,8 @@ import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.MediaController;
@@ -18,6 +21,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
@@ -262,19 +266,31 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
-    public void deleteItem() {//该方法用于删除一条数据
+    /**
+     * 该方法用于删除一条记事记录
+     */
+    public void deleteItem() {
         notesDB = new NotesDB(this);
         notesWriter = notesDB.getWritableDatabase();//创建数据库写入器
-        int id = ((Notes) getIntent().getSerializableExtra(Notes.CLASSNAME)).getId();//获取该行数据的id
+        Notes note = (Notes) getIntent().getSerializableExtra(Notes.CLASSNAME);
+        int id = note.getId();//获取该行数据的id
 //        notesWriter.delete(NotesDB.TABLE_NAME, NotesDB.ID + " = " + id, null);//根据id删除该行数据
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(NotesDB.NOTE_STATUS, Notes.NOTE_NEED_DELETE);//把状态改为需要删除
-        notesWriter.update(NotesDB.TABLE_NAME, contentValues, NotesDB.ID + " = " + id, null);//根据id删除该行数据
 
+        if ("null".equals(note.getPic_path())&&
+                "null".equals(note.getVideo_path())&&
+                "null".equals(note.getSound_path())){//如果条件成立，则为记事记录
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(NotesDB.NOTE_STATUS, Notes.NOTE_NEED_DELETE);//把状态改为需要删除
+            notesWriter.update(NotesDB.TABLE_NAME, contentValues, NotesDB.ID + " = " + id, null);//根据id修改该行数据
+        }else{//否则不是记事记录，直接删除
+            notesWriter.delete(NotesDB.TABLE_NAME, NotesDB.ID + " = " + id, null);//根据id修改该行数据
+        }
     }
 
-
-    public void display() {//播放录音按钮
+    /**
+     * 播放录音操作
+     */
+    public void display() {
         try {
 //            mediaPlayer.setDataSource(getIntent().getStringExtra(NotesDB.SOUND_PATH));
 //            mediaPlayer.prepare();
@@ -284,6 +300,9 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
+    /**
+     * 停止播放操作
+     */
     public void stopDisplay() {//这是停止播放的方法
 //        mediaPlayer.stop();
     }
@@ -404,7 +423,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         runOnUiThread(new Runnable() {//刷新显示的记录内容
             @Override
             public void run() {
-                ContentFragment.contentFragmentInstance.refreshNotesList();
+                ContentFragment.getContentFragmentInstance().refreshNotesList();
             }
         });
 //        notesWriter.close();

@@ -330,8 +330,10 @@ public class Notes implements Serializable {//该Notes是面向本地sqlite数�
                         updateSuccessCV.clear();
                         iUpdateSuccess++;
                         break;
+
                     case Notes.NOTE_UPDATE_FAILED://这是更新失败的情况
                         break;
+
                     case Notes.NOTE_NEED_DOWNLOAD://这是服务器回传的需更新的记录的情况
                         ContentValues downloadCV = new ContentValues();
 
@@ -367,6 +369,7 @@ public class Notes implements Serializable {//该Notes是面向本地sqlite数�
                         downloadCV.clear();//在下次更新前必须先清理旧的值
                         iUpdateSuccess++;
                         break;
+
                     case Notes.NOTE_DELETE_SUCCESS:
                         time = noteObject.getString(NotesDB.TIME);//获取创建时间，用作识别标识
                         owner = noteObject.getString(NotesDB.OWNER);//获取该记录用户，用作识别标识

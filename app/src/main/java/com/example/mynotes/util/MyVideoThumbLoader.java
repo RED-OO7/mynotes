@@ -1,13 +1,20 @@
 package com.example.mynotes.util;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.media.ThumbnailUtils;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.util.LruCache;
 import android.widget.ImageView;
+
+import com.example.mynotes.MainActivity;
+import com.example.mynotes.R;
 
 public class MyVideoThumbLoader {
     private ImageView imgView;
@@ -31,7 +38,22 @@ public class MyVideoThumbLoader {
 
     public void addVideoThumbToCache(String path, Bitmap bitmap) {
         if (getVideoThumbToCache(path) == null) {
+            if (bitmap == null) {
+                int width = 300, height = 200;
+                int[] colors = new int[width * height];
+                for (int y = 0; y < height; y++) {
+                    for (int x = 0; x < width; x++) {
+                        int r = x * 255 / (width - 1);
+                        int g = y * 255 / (width - 1);
+                        int b = 255 - Math.min(r, g);
+                        int a = Math.max(r, g);
+                        colors[y * width + x] = Color.argb(a, r, g, b);
+                    }
+                }
+                bitmap = Bitmap.createBitmap(colors, width, height, Bitmap.Config.ARGB_8888);
+            }
             //当前地址没有缓存时，就添加
+            Log.e("mymsg", "           path:" + path + ",  bitmap:" + bitmap);
             lruCache.put(path, bitmap);
         }
     }
@@ -119,7 +141,8 @@ public class MyVideoThumbLoader {
             String img_path = params[0];
             BitmapFactory.Options options = new BitmapFactory.Options();//通过此对象获取缩略图
             options.inJustDecodeBounds = true;
-            bitmap = BitmapFactory.decodeFile(img_path, options);
+//            bitmap = BitmapFactory.decodeFile(img_path, options);
+
             options.inJustDecodeBounds = false;
             int beWidth = options.outWidth / 160;
             int beHeight = options.outHeight / 160;
@@ -134,7 +157,10 @@ public class MyVideoThumbLoader {
             }
 
             options.inSampleSize = be;
+//            bitmap = BitmapFactory.decodeFile(img_path, options);
+
             bitmap = BitmapFactory.decodeFile(img_path, options);
+
             bitmap = ThumbnailUtils.extractThumbnail(bitmap, 160, 160, ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
             //加入缓存中
             if (getVideoThumbToCache(params[0]) == null) {
