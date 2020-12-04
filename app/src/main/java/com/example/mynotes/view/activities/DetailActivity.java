@@ -48,7 +48,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     private VideoView detail_video;
     private EditText detail_title;
     private EditText detail_text;
-    private TextView detail_seize1;
+//    private TextView detail_seize1;
     private TextView detail_time;
 
     private LinearLayout detail_linearSound;//该add_linearSound用于存放播放和暂停按钮
@@ -90,7 +90,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         detail_video = findViewById(R.id.detail_video);
         detail_title = findViewById(R.id.detail_title);
         detail_text = findViewById(R.id.detail_text);
-        detail_seize1 = findViewById(R.id.detail_seize1);
+//        detail_seize1 = findViewById(R.id.detail_seize1);
         detail_time = findViewById(R.id.detail_time);
         detail_linearSound = findViewById(R.id.detail_linearSound);
 
@@ -104,7 +104,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         Intent get_intent = getIntent();//获取到传递过来的意图
         nowNote = (Notes) get_intent.getSerializableExtra(Notes.CLASSNAME);//获取传递过来的Notes实例
 
-        detail_seize1.setVisibility(View.GONE);
+//        detail_seize1.setVisibility(View.GONE);
         detail_title.setText(nowNote.getTitle());
         detail_text.setText(nowNote.getContent());//给文本框设置内容
 //        Toast.makeText(this,get_intent.getStringExtra(NotesDB.CONTENT),Toast.LENGTH_LONG).show();//显示意图传递的content
@@ -122,7 +122,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             enabledScrolling();//启用滑动
             Toast.makeText(this, "该图片路径为：" + imgPath_get, Toast.LENGTH_SHORT).show();
             detail_img.setVisibility(View.VISIBLE);
-            detail_seize1.setVisibility(View.VISIBLE);
+//            detail_seize1.setVisibility(View.VISIBLE);
             Bitmap bitmap = BitmapFactory.decodeFile(imgPath_get);//使用bitmap装载图片
             detail_img.setImageBitmap(bitmap);//使用bitmap来显示图片
         }
@@ -133,7 +133,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         } else {
             enabledScrolling();//启用滑动
             detail_video.setVisibility(View.VISIBLE);
-            detail_seize1.setVisibility(View.VISIBLE);
+//            detail_seize1.setVisibility(View.VISIBLE);
 //            detail_video.setVideoURI(Uri.parse(videoPath_get));//直接使用uri加载视频
 //            String temp_path="/storage/emulated/0/MyNotes/VID_20200619_170036.mp4";
 //            String temp_path="/storage/emulated/0/MyNotes/img2020年06月19日153042.mp4";
@@ -151,7 +151,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
 //            detail_video.setVisibility(View.GONE);
 //            Toast.makeText(this,"该录音路径为："+soundPath_get,Toast.LENGTH_SHORT).show();
         } else {
-            detail_seize1.setVisibility(View.GONE);
+//            detail_seize1.setVisibility(View.GONE);
             detail_linearSound.setVisibility(View.VISIBLE);
             bt_display.setEnabled(true);
             bt_stop.setEnabled(false);

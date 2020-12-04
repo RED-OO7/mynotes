@@ -11,7 +11,7 @@
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/detail_appBar"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$Behavior"
-        android:layout_height="600dp"
+        android:layout_height="480dp"
         android:layout_width="match_parent">
         <!-- 设置layout_behavior使得DetailActivity获取behavior时不会返回null       -->
 
@@ -19,10 +19,12 @@
             android:id="@+id/collapsing_toolbar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:fitsSystemWindows="true"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            app:contentScrim="@color/colorPrimary"
+            android:background="@drawable/side_nav_bar"
+            app:contentScrim="@drawable/side_nav_bar"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
+            <!--  app:contentScrim="@color/colorPrimary"          -->
+
             <!--  如果没有配置layout_scrollFlags则CollapsingToolbarLayout包裹内容内容就会固定在顶部，不会滚动          -->
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -30,26 +32,18 @@
                 <ImageView
                     android:id="@+id/detail_img"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_centerInParent="true"
                     android:layout_alignParentTop="true"
-                    android:fitsSystemWindows="true"
                     android:visibility="gone"/>
 
                 <VideoView
                     android:id="@+id/detail_video"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:layout_centerInParent="true"
                     android:layout_alignParentTop="true"
                     android:visibility="gone" />
-
-                <TextView
-                    android:id="@+id/detail_seize1"
-                    android:layout_width="match_parent"
-                    android:layout_height="500dp"
-                    android:layout_alignParentTop="true"
-                    android:visibility="visible" />
 
             </RelativeLayout>
 
@@ -71,8 +65,6 @@
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-
-
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
@@ -82,6 +74,7 @@
                 android:id="@+id/detail_linearSound"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
+                android:layout_marginTop="20dp"
                 android:gravity="bottom"
                 android:orientation="horizontal"
                 android:weightSum="5"
