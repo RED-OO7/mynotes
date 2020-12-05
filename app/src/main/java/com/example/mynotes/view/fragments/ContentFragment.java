@@ -124,8 +124,10 @@ public class ContentFragment extends Fragment implements View.OnClickListener, X
         switch (requestCode){
             case 1:
                 if(grantResults.length>0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                    intent.putExtra("flag", "2");
-                    startActivity(intent);
+                    Toast.makeText(getContext(),"11111",Toast.LENGTH_LONG).show();
+
+                    //intent.putExtra("flag", "2");
+                    //startActivity(intent);
                 }else{
                     Toast.makeText(getContext(), "当前没有录音权限", Toast.LENGTH_SHORT).show();
                 }
@@ -156,33 +158,30 @@ public class ContentFragment extends Fragment implements View.OnClickListener, X
                 startActivity(intent);
                 break;
             case R.id.bt_pic:
-                if(ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA)!=
-                PackageManager.PERMISSION_GRANTED||ContextCompat.checkSelfPermission(getContext(),
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE)!=
-                        PackageManager.PERMISSION_GRANTED ){
+                if(ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CAMERA)!=
+                PackageManager.PERMISSION_GRANTED){
+                    //Toast.makeText(getContext(),"123",Toast.LENGTH_LONG).show();
                     ActivityCompat.requestPermissions(getActivity(),new String[]{Manifest.permission.CAMERA},1);
                 }else{
+                    //Toast.makeText(getContext(),"123456",Toast.LENGTH_LONG).show();
                     intent.putExtra("flag", "2");
                     startActivity(intent);
                 }
                 break;
             case R.id.bt_video:
-                if(ContextCompat.checkSelfPermission(getContext(), Manifest.permission.RECORD_AUDIO)!=
-                        PackageManager.PERMISSION_GRANTED||ContextCompat.checkSelfPermission(getContext(),
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE)!=
-                        PackageManager.PERMISSION_GRANTED ){
-                    Toast.makeText(getContext(), "当前没有录像权限", Toast.LENGTH_SHORT).show();
+
+                if(ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CAMERA)!=
+                        PackageManager.PERMISSION_GRANTED){
+                    //Toast.makeText(getContext(),"123",Toast.LENGTH_LONG).show();
+                    ActivityCompat.requestPermissions(getActivity(),new String[]{Manifest.permission.CAMERA},1);
+                }else{
+                    //Toast.makeText(getContext(),"123456",Toast.LENGTH_LONG).show();
+                    intent.putExtra("flag", "3");
+                    startActivity(intent);
                 }
-                intent.putExtra("flag", "3");
-                startActivity(intent);
                 break;
             case R.id.bt_sound:
-                if(ContextCompat.checkSelfPermission(getContext(), Manifest.permission.RECORD_AUDIO)!=
-                        PackageManager.PERMISSION_GRANTED||ContextCompat.checkSelfPermission(getContext(),
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE)!=
-                        PackageManager.PERMISSION_GRANTED){
-                Toast.makeText(getContext(), "当前没有录音权限", Toast.LENGTH_SHORT).show();
-            }
+
                 intent.putExtra("flag", "4");
                 startActivity(intent);
                 break;
