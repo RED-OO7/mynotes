@@ -267,7 +267,7 @@ public class AddContentActivity extends AppCompatActivity implements View.OnClic
         note.setSound_path(soundFile + "");
         note.setTime(nowTimeStr);
         note.setChange_time(nowTimeStr);
-        note.setIs_change(true);
+        note.setNote_status(Notes.NOTE_NEED_UPLOAD);//NOTE_NEED_UPLOAD是服务器需要上传的标识
         note.setOwner(owner);
 
         DataJsonPack dataJsonPack = new DataJsonPack(note, ClientSendString.NoteAdd);

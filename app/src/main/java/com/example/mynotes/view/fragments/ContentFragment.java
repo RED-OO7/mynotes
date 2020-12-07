@@ -6,7 +6,6 @@ import android.content.Intent;
 
 import android.content.pm.PackageManager;
 import android.content.SharedPreferences;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -25,7 +24,6 @@ import androidx.fragment.app.Fragment;
 
 import com.example.mynotes.MainActivity;
 import com.example.mynotes.R;
-import com.example.mynotes.model.Account;
 import com.example.mynotes.view.adapter.ShowListContentApdater;
 import com.example.mynotes.view.activities.AddContentActivity;
 import com.example.mynotes.controller.TCPConnectController;
@@ -45,6 +43,8 @@ import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshLayout;
 public class ContentFragment extends Fragment implements View.OnClickListener, XListView.IXListViewListener {
     public static PullToRefreshLayout refreshLayout;//该布局用于下拉刷新(同步)
     public static int lastUpdateNum = 0;//上一次的更新记录条数
+    public static final int PICTURE_RESULT_CODE = 1;
+    public static final int VIDEO_RESULT_CODE = 2;
 
     public static boolean isRefreshing = false;//是否正在刷新的标识
 
@@ -130,25 +130,6 @@ public class ContentFragment extends Fragment implements View.OnClickListener, X
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode){
-            case 1:
-                if(grantResults.length>0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                    Toast.makeText(getContext(),"11111",Toast.LENGTH_LONG).show();
-
-                    //intent.putExtra("flag", "2");
-                    //startActivity(intent);
-                }else{
-                    Toast.makeText(getContext(), "当前没有录音权限", Toast.LENGTH_SHORT).show();
-                }
-                break;
-            default:
-        }
-
-
-    }
-
-    @Override
     public void onClick(View view) {//设置点击后的事件
         Boolean isLogin = MainActivity.getIsLogin();//获取是否登录
 
@@ -166,31 +147,32 @@ public class ContentFragment extends Fragment implements View.OnClickListener, X
                 intent.putExtra("flag", "1");
                 startActivity(intent);
                 break;
+
             case R.id.bt_pic:
-                if(ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CAMERA)!=
-                PackageManager.PERMISSION_GRANTED){
-                    //Toast.makeText(getContext(),"123",Toast.LENGTH_LONG).show();
-                    ActivityCompat.requestPermissions(getActivity(),new String[]{Manifest.permission.CAMERA},1);
+                if(ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA)!=
+                PackageManager.PERMISSION_GRANTED ||
+                        ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)!=
+                        PackageManager.PERMISSION_GRANTED){
+                    requestPermissions(new String[]{Manifest.permission.CAMERA,Manifest.permission.WRITE_EXTERNAL_STORAGE}, PICTURE_RESULT_CODE);
                 }else{
-                    //Toast.makeText(getContext(),"123456",Toast.LENGTH_LONG).show();
                     intent.putExtra("flag", "2");
                     startActivity(intent);
                 }
                 break;
-            case R.id.bt_video:
 
-                if(ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CAMERA)!=
-                        PackageManager.PERMISSION_GRANTED){
-                    //Toast.makeText(getContext(),"123",Toast.LENGTH_LONG).show();
-                    ActivityCompat.requestPermissions(getActivity(),new String[]{Manifest.permission.CAMERA},1);
+            case R.id.bt_video:
+                if(ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA)!=
+                        PackageManager.PERMISSION_GRANTED||
+                        ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)!=
+                                PackageManager.PERMISSION_GRANTED){
+                    requestPermissions(new String[]{Manifest.permission.CAMERA,Manifest.permission.WRITE_EXTERNAL_STORAGE}, VIDEO_RESULT_CODE);
                 }else{
-                    //Toast.makeText(getContext(),"123456",Toast.LENGTH_LONG).show();
                     intent.putExtra("flag", "3");
                     startActivity(intent);
                 }
                 break;
-            case R.id.bt_sound:
 
+            case R.id.bt_sound:
                 intent.putExtra("flag", "4");
                 startActivity(intent);
                 break;
@@ -199,6 +181,45 @@ public class ContentFragment extends Fragment implements View.OnClickListener, X
         }
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        Boolean isPermit = true;
+        switch (requestCode){
+            case PICTURE_RESULT_CODE:
+
+                for (int result: grantResults) {
+                    if (result != PackageManager.PERMISSION_GRANTED){
+                        isPermit = false;
+                    }
+                }
+                if (grantResults.length<=0){
+                    isPermit = false;
+                }
+
+                if(isPermit){
+                    Toast.makeText(getContext(),"11111",Toast.LENGTH_LONG).show();
+
+                    intent.putExtra("flag", "2");
+                    startActivity(intent);
+                }else{
+                    Toast.makeText(getContext(), "当前没有录音权限", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case VIDEO_RESULT_CODE:
+                if(grantResults.length>0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    Toast.makeText(getContext(),"11111",Toast.LENGTH_LONG).show();
+
+                    intent.putExtra("flag", "3");
+                    startActivity(intent);
+                }else{
+                    Toast.makeText(getContext(), "当前没有录音权限", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            default:
+        }
+
+
+    }
 
     @Override
     public void onResume() {
