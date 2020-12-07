@@ -5,7 +5,10 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.media.ThumbnailUtils;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
@@ -14,9 +17,8 @@ import android.util.LruCache;
 import android.widget.ImageView;
 
 import com.example.mynotes.MainActivity;
-import com.example.mynotes.R;
 
-public class MyVideoThumbLoader {
+public class ThumbLoaderUtil {
     private ImageView imgView;
     private String path;
     //创建cache
@@ -24,7 +26,7 @@ public class MyVideoThumbLoader {
     private static int cacheSize = 16 * 1024 * 1024; // 缓存大小16MiB
 
     @SuppressLint("NewApi")
-    public MyVideoThumbLoader() {
+    public ThumbLoaderUtil() {
         int maxMemory = (int) Runtime.getRuntime().maxMemory();//获取最大的运行内存
         int maxSize = maxMemory / 4;//拿到缓存的内存大小
         lruCache = new LruCache<String, Bitmap>(maxSize) {
@@ -36,21 +38,60 @@ public class MyVideoThumbLoader {
         };
     }
 
-    public void addVideoThumbToCache(String path, Bitmap bitmap) {
-        if (getVideoThumbToCache(path) == null) {
+    /**
+     * 该方法用于返回一个提示图片已丢失的bitmap
+     */
+    public Bitmap getTempBitmap(){
+        int width = 160, height = 160;
+        int[] colors = new int[width * height];
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+//                int r = x * 255 / (width - 1);
+//                int g = y * 255 / (width - 1);
+//                int b = 255 - Math.min(r, g);
+                int r = 100;
+                int g = 100;
+                int b = 100;
+                int a = Math.max(r, g);
+                colors[y * width + x] = Color.argb(a, r, g, b);
+            }
+        }
+        Bitmap bitmap = Bitmap.createBitmap(colors, width, height, Bitmap.Config.ARGB_8888);
+        Bitmap newBitmap = bitmap.copy(bitmap.getConfig(),true);
+
+        Resources resources = ((Context)((MainActivity)MainActivity.getMainActivityInstance())).getResources();
+        float scale = resources.getDisplayMetrics().density;
+
+        Canvas canvas = new Canvas(newBitmap);
+        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG); // new antialised Paint
+        paint.setColor(Color.rgb(110, 110, 110));       // text color - #3D3D3D
+        paint.setTextSize((int)(14 * scale));           // text size in pixels
+        paint.setShadowLayer(1f, 0f, 1f, Color.DKGRAY); // text shadow
+
+        // draw text to the Canvas center
+        Rect bounds1 = new Rect();
+        bounds1.set(0,0,160,80);
+        String text1 = "图像";
+        String text2 = "损坏";
+        paint.getTextBounds(text1, 0, text1.length(), bounds1);
+        int x = (bitmap.getWidth() - bounds1.width()) / 5;
+        int y = (bitmap.getHeight() + bounds1.height()) / 5;
+
+        canvas.drawText(text1, x * scale , y * scale, paint);
+
+        Rect bounds2 = new Rect();
+        bounds2.set(0,80,160,160);
+        paint.getTextBounds(text1, 0, text1.length(), bounds2);
+        canvas.drawText(text2, x * scale , y * scale, paint);
+
+        return newBitmap;
+    }
+
+
+    public void addThumbToCache(String path, Bitmap bitmap) {
+        if (getThumbFromCache(path) == null) {
             if (bitmap == null) {
-                int width = 300, height = 200;
-                int[] colors = new int[width * height];
-                for (int y = 0; y < height; y++) {
-                    for (int x = 0; x < width; x++) {
-                        int r = x * 255 / (width - 1);
-                        int g = y * 255 / (width - 1);
-                        int b = 255 - Math.min(r, g);
-                        int a = Math.max(r, g);
-                        colors[y * width + x] = Color.argb(a, r, g, b);
-                    }
-                }
-                bitmap = Bitmap.createBitmap(colors, width, height, Bitmap.Config.ARGB_8888);
+                bitmap = getTempBitmap();
             }
             //当前地址没有缓存时，就添加
             Log.e("mymsg", "           path:" + path + ",  bitmap:" + bitmap);
@@ -58,38 +99,34 @@ public class MyVideoThumbLoader {
         }
     }
 
-    public Bitmap getVideoThumbToCache(String path) {
+    public Bitmap getThumbFromCache(String path) {
         return lruCache.get(path);
     }
 
-    public void showThumbByAsynctack(String path, ImageView imgview) {
-
-        if (getVideoThumbToCache(path) == null) {
+    public void showThumbByAsyncTask_forVideo(String path, ImageView imgview) {
+        if (getThumbFromCache(path) == null) {
             //异步加载
-            new MyBobAsynctack(imgview, path).execute(path);
+            new MyBobAsyncTask_forVideo(imgview, path).execute(path);
         } else {
-            imgview.setImageBitmap(getVideoThumbToCache(path));
+            imgview.setImageBitmap(getThumbFromCache(path));
         }
-
     }
 
-    public void showThumbByAsynctack_forImg(String path, ImageView imgview) {
-
-        if (getVideoThumbToCache(path) == null) {
+    public void showThumbByAsyncTask_forImg(String path, ImageView imgview) {
+        if (getThumbFromCache(path) == null) {
             //异步加载
-            new MyBobAsynctack_forImg(imgview, path).execute(path);
+            new MyBobAsyncTask_forImg(imgview, path).execute(path);
         } else {
-            imgview.setImageBitmap(getVideoThumbToCache(path));
+            imgview.setImageBitmap(getThumbFromCache(path));
         }
-
     }
 
 
-    class MyBobAsynctack extends AsyncTask<String, Void, Bitmap> {
+    class MyBobAsyncTask_forVideo extends AsyncTask<String, Void, Bitmap> {
         private ImageView imgView;
         private String path;
 
-        public MyBobAsynctack(ImageView imageView, String path) {
+        public MyBobAsyncTask_forVideo(ImageView imageView, String path) {
             this.imgView = imageView;
             this.path = path;
         }
@@ -100,16 +137,22 @@ public class MyVideoThumbLoader {
 //        Bitmap bitmap = VideoUtil.createVideoThumbnail(params[0], 200, 200, MediaStore.Video.Thumbnails.MICRO_KIND);
 
             Bitmap bitmap = null;
-            bitmap = ThumbnailUtils.createVideoThumbnail(params[0], MediaStore.Images.Thumbnails.MICRO_KIND);
-            bitmap = ThumbnailUtils.extractThumbnail(bitmap, 160, 160, ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
+
+            try {
+                bitmap = ThumbnailUtils.createVideoThumbnail(params[0], MediaStore.Images.Thumbnails.MICRO_KIND);
+                bitmap = ThumbnailUtils.extractThumbnail(bitmap, 160, 160, ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
+            }catch (Exception e){
+                e.printStackTrace();
+                bitmap = getTempBitmap();
+            }
 
             //加入缓存中
-            if (getVideoThumbToCache(params[0]) == null) {
-                addVideoThumbToCache(path, bitmap);
+            if (getThumbFromCache(params[0]) == null) {
+                addThumbToCache(path, bitmap);
             }
 //            //加入缓存中
-//            if (!"null".equals(getVideoThumbToCache(params[0]))) {//这里原本没有加 非
-//                addVideoThumbToCache(path, bitmap);
+//            if (!"null".equals(getThumbFromCache(params[0]))) {//这里原本没有加 非
+//                addThumbToCache(path, bitmap);
 //            }
             return bitmap;
         }
@@ -123,11 +166,11 @@ public class MyVideoThumbLoader {
     }
 
 
-    class MyBobAsynctack_forImg extends AsyncTask<String, Void, Bitmap> {
+    class MyBobAsyncTask_forImg extends AsyncTask<String, Void, Bitmap> {
         private ImageView imgView;
         private String path;
 
-        public MyBobAsynctack_forImg(ImageView imageView, String path) {
+        public MyBobAsyncTask_forImg(ImageView imageView, String path) {
             this.imgView = imageView;
             this.path = path;
         }
@@ -163,12 +206,12 @@ public class MyVideoThumbLoader {
 
             bitmap = ThumbnailUtils.extractThumbnail(bitmap, 160, 160, ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
             //加入缓存中
-            if (getVideoThumbToCache(params[0]) == null) {
-                addVideoThumbToCache(path, bitmap);
+            if (getThumbFromCache(params[0]) == null) {
+                addThumbToCache(path, bitmap);
             }
 //            //加入缓存中
-//            if (!"null".equals(getVideoThumbToCache(params[0]))) {//这里原本没有加 非
-//                addVideoThumbToCache(path, bitmap);
+//            if (!"null".equals(getThumbFromCache(params[0]))) {//这里原本没有加 非
+//                addThumbToCache(path, bitmap);
 //            }
             return bitmap;
         }

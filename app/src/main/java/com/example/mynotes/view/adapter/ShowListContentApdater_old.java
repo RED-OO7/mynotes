@@ -15,7 +15,7 @@ import android.widget.TextView;
 
 import com.example.mynotes.MainActivity;
 import com.example.mynotes.R;
-import com.example.mynotes.util.MyVideoThumbLoader;
+import com.example.mynotes.util.ThumbLoaderUtil;
 import com.example.mynotes.dao.NotesDB;
 
 import java.util.ArrayList;
@@ -25,7 +25,7 @@ public class ShowListContentApdater_old extends BaseAdapter {
     private Cursor cursor;
 //    private LinearLayout cellLayout;//该布局就是每一条记录的显示布局
     private ArrayList<String> videoStr_list;
-    private static MyVideoThumbLoader mVideoThumbLoader;//用于加载缩略图的自定义加载器
+    private static ThumbLoaderUtil mVideoThumbLoader;//用于加载缩略图的自定义加载器
 
     TextView cell_linear_content;
     TextView cell_linear_time;
@@ -150,7 +150,7 @@ public class ShowListContentApdater_old extends BaseAdapter {
 //            cell_img.setImageBitmap(getImageThumbnail(img_path,200,200));//原设置缩略图的方法
             String path = img_path;
             myViewHolder.myCell_img.setTag(path);//绑定imageview
-            mVideoThumbLoader.showThumbByAsynctack_forImg(path, myViewHolder.myCell_img);
+            mVideoThumbLoader.showThumbByAsyncTask_forImg(path, myViewHolder.myCell_img);
         }
         if (!"null".equals(video_path) && !(video_path == null)) {//如果视频路径不为空，则显示
             myViewHolder.myCell_text.setVisibility(View.GONE);
@@ -158,7 +158,7 @@ public class ShowListContentApdater_old extends BaseAdapter {
 //            cell_video.setImageBitmap(getVideoThumbnail(video_path,200,200, MediaStore.Images.Thumbnails.MICRO_KIND));
             String path = video_path;
             myViewHolder.myCell_video.setTag(path);//绑定imageview
-            mVideoThumbLoader.showThumbByAsynctack(path, myViewHolder.myCell_video);
+            mVideoThumbLoader.showThumbByAsyncTask_forVideo(path, myViewHolder.myCell_video);
         }
         if (!"null".equals(sound_path) && !(sound_path == null)) {//如果录音路径不为空，则显示
             myViewHolder.myCell_text.setVisibility(View.GONE);

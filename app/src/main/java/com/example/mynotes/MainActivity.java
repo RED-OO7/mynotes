@@ -17,7 +17,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
@@ -27,7 +26,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.mynotes.view.activities.AddContentActivity;
-import com.example.mynotes.util.MyVideoThumbLoader;
+import com.example.mynotes.util.ThumbLoaderUtil;
 import com.example.mynotes.dao.NotesDB;
 import com.example.mynotes.view.fragments.ContentFragment;
 import com.example.mynotes.view.fragments.LoginFragment;
@@ -49,7 +48,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public static ContentFragment mainContentFragment;//显示记事内容的碎片
     public static LoginFragment mainLoginFragment;//显示登录内容的碎片
     public static RegisterFragment mainRegisterFragment;//显示注册内容的碎片
-    public static MyVideoThumbLoader mainVideoThumbLoader;//用于异步加载缩略图的方法
+    public static ThumbLoaderUtil mainVideoThumbLoader;//用于异步加载缩略图的方法
     
     public static int fragment_type;//该变量为当前碎片的种类，根据不同种类而进行不同的操作
 
@@ -158,7 +157,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         initView();
 
         mainActivityInstance = this;//自己的单例实例化完成
-        mainVideoThumbLoader = new MyVideoThumbLoader();//初始化缩略图异步加载类
+        mainVideoThumbLoader = new ThumbLoaderUtil();//初始化缩略图异步加载类
     }
 
 
