@@ -3,7 +3,9 @@ package com.example.mynotes.view.fragments;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+
 import android.content.pm.PackageManager;
+import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
@@ -23,6 +25,7 @@ import androidx.fragment.app.Fragment;
 
 import com.example.mynotes.MainActivity;
 import com.example.mynotes.R;
+import com.example.mynotes.model.Account;
 import com.example.mynotes.view.adapter.ShowListContentApdater;
 import com.example.mynotes.view.activities.AddContentActivity;
 import com.example.mynotes.controller.TCPConnectController;
@@ -57,13 +60,12 @@ public class ContentFragment extends Fragment implements View.OnClickListener, X
 
     Intent intent;
 
-    private NotesDB notesDB;
-    private SQLiteDatabase dbWriter, dbReader;
-//    private Cursor cursor;//该游标用于读取数据库
-
     private ShowListContentApdater showListContentAdapter;//该适配器用于显示每条记录
-    private static List<Notes> notesList;//这是存储记事信息内容时用的队列
     private Handler mHandler;//用于在子线程中更新UI使用
+
+    private static List<Notes> notesList;//这是存储记事信息内容时用的队列
+    private static SharedPreferences preferences = null;//保存密码用的非易失文件
+    private static SharedPreferences.Editor editor = null;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -98,11 +100,12 @@ public class ContentFragment extends Fragment implements View.OnClickListener, X
 //        mListView.setRefreshTime();
         //以上部分为新增实验代码
 
+        getRefreshTimeAndShow();//在初始时获取刷新时间并显示
         initView();//初始化cellListView
 
-        notesList = Notes.getNotesListContent(getContext(),MainActivity.getNowUsername());//用游标获取记事记录
+        notesList = Notes.getNotesListContent(getContext(), MainActivity.getNowUsername());//用游标获取记事记录
 
-        showListContentAdapter = new ShowListContentApdater(getContext(),R.id.cellListView,notesList);//创建适配器
+        showListContentAdapter = new ShowListContentApdater(getContext(), R.id.cellListView, notesList);//创建适配器
         cellListView.setAdapter(showListContentAdapter);//设置适配器
 
         return view;
@@ -140,7 +143,6 @@ public class ContentFragment extends Fragment implements View.OnClickListener, X
 
     @Override
     public void onClick(View view) {//设置点击后的事件
-        MainActivity mainActivity = (MainActivity) getActivity();//获取活动，为了获取当前是否有账号登录的标记
         Boolean isLogin = MainActivity.getIsLogin();//获取是否登录
 
         intent = new Intent(getContext(), AddContentActivity.class);
@@ -194,7 +196,6 @@ public class ContentFragment extends Fragment implements View.OnClickListener, X
     @Override
     public void onResume() {
         super.onResume();
-//        selectNotesDB();//这里用到是为了在别的活动结束后刷新记录列表
         refreshNotesList();//刷新显示列表
     }
 
@@ -207,9 +208,9 @@ public class ContentFragment extends Fragment implements View.OnClickListener, X
         if (!isRefreshing) {//不在刷新时才能进行刷新
             isRefreshing = true;//刷新中设置为true
 
-            if (MainActivity.getIsLogin()){//在登录时才能进行同步
-                mHandler.postDelayed(new Runnable() {
-//                mHandler.post(new Runnable() {
+            if (MainActivity.getIsLogin()) {//在登录时才能进行同步
+//                mHandler.postDelayed(new Runnable() {
+                mHandler.post(new Runnable() {
                     @Override
                     public void run() {
                         String username = MainActivity.getNowAccount().getUsername();
@@ -224,11 +225,11 @@ public class ContentFragment extends Fragment implements View.OnClickListener, X
 
                         new TCPConnectController().sendTCPRequestAndRespone(dataJsonPack);
                     }
-                },1);
-//                });
-            }else {
+//                },1);
+                });
+            } else {
                 Toast.makeText(getContext(), "尚未登录，无法同步！", Toast.LENGTH_SHORT).show();
-                onLoad();
+                afterRefresh();
             }
         } else {
             Toast.makeText(getContext(), "刷新中，请稍后！", Toast.LENGTH_SHORT).show();
@@ -255,8 +256,8 @@ public class ContentFragment extends Fragment implements View.OnClickListener, X
                 }
 
                 Intent intent = new Intent(getContext(), DetailActivity.class);//跳转意图，用以从main跳转到detail
-                Notes nowNote = notesList.get(position-1);//注意，这里为什么要减1呢？因为，下拉刷新的那一行居然也算是占了一位
-                intent.putExtra(Notes.CLASSNAME,nowNote);
+                Notes nowNote = notesList.get(position - 1);//注意，这里为什么要减1呢？因为，下拉刷新的那一行居然也算是占了一位
+                intent.putExtra(Notes.CLASSNAME, nowNote);
 
                 startActivity(intent);//跳转到详情页面
             }
@@ -264,42 +265,77 @@ public class ContentFragment extends Fragment implements View.OnClickListener, X
     }
 
     /**
-     * 该方法用于关闭"刷新中"动画，设置刷新中标识，和刷新记录列表
+     * 该方法用于关闭"刷新中"动画
      */
-    public void onLoad() {
-        try {
-            Thread.sleep(20);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+    public void stopRefresh() {
         mListView.stopRefresh();
         mListView.stopLoadMore();
         isRefreshing = false;//刷新中标识设置为false
-        refreshNotesList();//刷新记录列表
-
-        if(lastUpdateNum > 1){//如果更新记录数大于0，则显示通知记录数
-            Toast.makeText(getContext(),"记录同步成功，共同步记录"+lastUpdateNum+"条",Toast.LENGTH_LONG).show();
-        }else{
-            Toast.makeText(getContext(),"记录已更新至最新！",Toast.LENGTH_LONG).show();
-        }
-
     }
 
     /**
      * 该方法用于刷新记录列表
      */
-    public void refreshNotesList(){
-        List<Notes> newNotesList = Notes.getNotesListContent(getContext(),MainActivity.getNowUsername());//获取新记录
+    public void refreshNotesList() {
+        List<Notes> newNotesList = Notes.getNotesListContent(getContext(), MainActivity.getNowUsername());//获取新记录
         notesList.clear();//清除旧记录
         notesList.addAll(newNotesList);//增加新记录
         showListContentAdapter.notifyDataSetChanged();//最后通知适配器数据更新
     }
 
     /**
-     * 该方法用于在刷新成功后设置刷新时间
+     * 该方法用于关闭"刷新中"动画，设置刷新中标识，和刷新记录列表
+     */
+    public void afterRefresh() {
+        try {
+            Thread.sleep(20);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        stopRefresh();//关闭刷新中动画
+        setRefreshTime();//设置刷新的时间
+        refreshNotesList();//刷新记录列表
+
+        if (lastUpdateNum > 1) {//如果更新记录数大于0，则显示通知记录数
+            Toast.makeText(getContext(), "记录同步成功，共同步记录" + lastUpdateNum + "条", Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(getContext(), "记录已更新至最新！", Toast.LENGTH_LONG).show();
+        }
+
+    }
+
+    /**
+     * 该方法用于在刷新成功后设置刷新时间，并保存到非易失文件中
      */
     public void setRefreshTime() {
-        mListView.setRefreshTime(AddContentActivity.getNowTimeStr().substring(0, 17));
+        String refresh_time = AddContentActivity.getNowTimeStr().substring(0, 17);
+        mListView.setRefreshTime(refresh_time);
+
+        if (preferences == null) {//若未初始化则初始化
+            preferences = MainActivity.getMainActivityInstance().getSharedPreferences("AccountPreference", Context.MODE_PRIVATE);
+        }
+        if (editor == null) {//若未初始化则初始化
+            editor = preferences.edit();
+        }
+
+        editor.putString("refresh_time", refresh_time);
+        editor.apply();//提交更改
+    }
+
+    /**
+     * 该方法是用于在非易失文件中获取上次记录同步时间并显示
+     */
+    public void getRefreshTimeAndShow() {
+        if (preferences == null) {//若未初始化则初始化
+            preferences = MainActivity.getMainActivityInstance().getSharedPreferences("AccountPreference", Context.MODE_PRIVATE);
+        }
+        String refresh_time;
+        refresh_time = preferences.getString("refresh_time", "");
+
+        if(!"".equals(refresh_time)){//如果刷新时间不为空
+            mListView.setRefreshTime(refresh_time);//则显示出来
+        }
     }
 
 

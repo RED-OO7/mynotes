@@ -125,13 +125,8 @@ public class RegisterFragment extends Fragment implements View.OnClickListener{
 
 
     private void replaceMainFragment(Fragment fragment){
-//        FragmentManager fragmentManager = getFragmentManager();
-//        FragmentTransaction transaction = fragmentManager.beginTransaction();
-//        transaction.replace(R.id.main_fragment,fragment);//将main_fragement这个id的碎片控件替换为别的碎片
-//        transaction.commit();//提交更改
-
         MainActivity mainActivity = MainActivity.getMainActivityInstance();
-        mainActivity.replaceMainFragment(fragment);
+        mainActivity.replaceMainFragment(fragment);//调用主活动的碎片替换方法
     }
 
     /**
