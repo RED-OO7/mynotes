@@ -13,6 +13,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.StrictMode;
+import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -34,7 +35,13 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.widget.NestedScrollView;
 
+import com.example.mynotes.MainActivity;
 import com.example.mynotes.R;
+
+import com.example.mynotes.controller.TCPConnectController;
+import com.example.mynotes.model.ClientSendString;
+import com.example.mynotes.model.DataJsonPack;
+
 import com.example.mynotes.model.Notes;
 import com.example.mynotes.util.FileUtil;
 import com.example.mynotes.util.PermisionUtils;
@@ -54,7 +61,6 @@ public class AddContentActivity extends AppCompatActivity implements View.OnClic
     public static final int TEXT_REQUEST_CODE = 101;
     public static final int PICTURE_REQUEST_CODE = 102;
     public static final int VIDEO_REQUEST_CODE = 103;
-    public static final int SOUND_REQUEST_CODE = 104;
 
     private AppBarLayout add_appBar;
 
@@ -252,6 +258,22 @@ public class AddContentActivity extends AppCompatActivity implements View.OnClic
         contentValues.put(NotesDB.OWNER, owner);//添加当前拥有者名
         contentValues.put(NotesDB.NOTE_STATUS, Notes.NOTE_NEED_UPLOAD);//NOTE_NEED_UPLOAD表示需要服务器上传
         notesWriter.insert(NotesDB.TABLE_NAME, null, contentValues);
+
+        Notes note = new Notes();
+        note.setTitle(title_input);
+        note.setContent(content_input);
+        note.setPic_path(imgFile + "");
+        note.setVideo_path(videoFile + "");
+        note.setSound_path(soundFile + "");
+        note.setTime(nowTimeStr);
+        note.setChange_time(nowTimeStr);
+        note.setIs_change(true);
+        note.setOwner(owner);
+
+        DataJsonPack dataJsonPack = new DataJsonPack(note, ClientSendString.NoteAdd);
+        TCPConnectController savesend = new TCPConnectController();
+        savesend.sendTCPRequestAndRespone(dataJsonPack);
+
     }
 
 
