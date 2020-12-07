@@ -3,6 +3,7 @@ package com.example.mynotes.controller;
 import android.os.Handler;
 
 import com.example.mynotes.MainActivity;
+import com.example.mynotes.model.ClientSendString;
 import com.example.mynotes.view.fragments.ContentFragment;
 import com.example.mynotes.view.fragments.LoginFragment;
 import com.example.mynotes.model.Account;
@@ -201,6 +202,14 @@ public class TCPConnectController {
                         int n = Notes.updateUserTextNotes(mainActivity.getBaseContext(), notesArray, username);
                         ContentFragment.lastUpdateNum = n;
 //                        MainActivity.mainActivityInstance.sendToastTextWouldBlock("同步记录成功，共同步记录"+n+"条");
+                        break;
+                    case ClientReceiveString.NoteAddSuccess:
+
+
+                        break;
+                    case ClientReceiveString.NoteAddFailed:
+
+
                         break;
                     default:
                         mainActivity.afterRefreshSucceed();//停止刷新

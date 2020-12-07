@@ -14,6 +14,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.StrictMode;
+import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
@@ -28,7 +29,12 @@ import android.widget.VideoView;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
+import com.example.mynotes.MainActivity;
 import com.example.mynotes.R;
+import com.example.mynotes.controller.TCPConnectController;
+import com.example.mynotes.model.ClientSendString;
+import com.example.mynotes.model.DataJsonPack;
+import com.example.mynotes.model.Notes;
 import com.example.mynotes.util.FileUtil;
 import com.example.mynotes.util.PermisionUtils;
 import com.example.mynotes.dao.NotesDB;
@@ -44,7 +50,6 @@ public class AddContentActivity extends Activity implements View.OnClickListener
     public static final int TEXT_REQUEST_CODE = 101;
     public static final int PICTURE_REQUEST_CODE = 102;
     public static final int VIDEO_REQUEST_CODE = 103;
-    public static final int SOUND_REQUEST_CODE = 104;
 
 
     private String flag_str;
@@ -157,6 +162,22 @@ public class AddContentActivity extends Activity implements View.OnClickListener
         contentValues.put(NotesDB.OWNER, owner);//添加当前拥有者名
         contentValues.put(NotesDB.IS_CHANGE, 1);//添加是否修改的标识
         notesWriter.insert(NotesDB.TABLE_NAME, null, contentValues);
+
+        Notes note = new Notes();
+        note.setTitle(title_input);
+        note.setContent(content_input);
+        note.setPic_path(imgFile + "");
+        note.setVideo_path(videoFile + "");
+        note.setSound_path(soundFile + "");
+        note.setTime(nowTimeStr);
+        note.setChange_time(nowTimeStr);
+        note.setIs_change(true);
+        note.setOwner(owner);
+
+        DataJsonPack dataJsonPack = new DataJsonPack(note, ClientSendString.NoteAdd);
+        TCPConnectController savesend = new TCPConnectController();
+        savesend.sendTCPRequestAndRespone(dataJsonPack);
+
     }
 
 
