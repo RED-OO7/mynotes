@@ -30,7 +30,7 @@ import java.net.SocketAddress;
 
 public class TCPConnectController {
     //"10.3.49.170"本地wifi ip地址，"139.224.128.87"是远程服务端的地址
-    private static String serverAddress_str = "10.3.49.170";
+    private static String serverAddress_str = "139.224.128.87";
     private static int PORT = 19200;
 
     private static Handler mHandler = new Handler();//创建Handler
@@ -195,12 +195,18 @@ public class TCPConnectController {
                         mainActivity.afterRefreshSucceed();//停止刷新
                         mainActivity.sendToastTextWouldBlock("服务器发来了未知的操作指令！");
                         break;
+
                     case ClientReceiveString.NotesDownload:
                         username = sourceJsonObject.getString("username");
                         JSONArray notesArray = sourceJsonObject.getJSONArray("dataObject");
-                        mainActivity.afterRefreshSucceed();//停止刷新
                         int n = Notes.updateUserTextNotes(mainActivity.getBaseContext(), notesArray, username);
                         ContentFragment.lastUpdateNum = n;
+                        try {
+                            Thread.sleep(200);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        mainActivity.afterRefreshSucceed();//停止刷新
 //                        MainActivity.mainActivityInstance.sendToastTextWouldBlock("同步记录成功，共同步记录"+n+"条");
                         break;
                     case ClientReceiveString.NoteAddSuccess:

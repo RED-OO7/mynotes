@@ -163,7 +163,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener{
     public void selectNotesDB(){//该方法用于查询
         //该cursor游标暂不初始化
         cursor=dbReader.query(NotesDB.TABLE_NAME,null,null,null,null,null,null);
-        SearchFragment searchFragment =new SearchFragment();
+//        SearchFragment searchFragment =new SearchFragment();
         List notesList = Notes.getNotesListContent(getContext(), MainActivity.getNowUsername());
         showListContentApdater = new ShowListContentApdater(getContext(),R.id.cellListView,notesList);//将该适配器和该 主页面 绑定游标
         cellListView.setAdapter(showListContentApdater);//将显示列表用的View绑定适配器

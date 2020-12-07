@@ -43,8 +43,6 @@ import java.util.List;
 import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshLayout;
 
 public class ContentFragment extends Fragment implements View.OnClickListener, XListView.IXListViewListener {
-
-    public static ContentFragment contentFragmentInstance = null;
     public static PullToRefreshLayout refreshLayout;//该布局用于下拉刷新(同步)
     public static int lastUpdateNum = 0;//上一次的更新记录条数
 
@@ -63,9 +61,18 @@ public class ContentFragment extends Fragment implements View.OnClickListener, X
     private ShowListContentApdater showListContentAdapter;//该适配器用于显示每条记录
     private Handler mHandler;//用于在子线程中更新UI使用
 
+    private static ContentFragment contentFragmentInstance = null;
     private static List<Notes> notesList;//这是存储记事信息内容时用的队列
     private static SharedPreferences preferences = null;//保存密码用的非易失文件
     private static SharedPreferences.Editor editor = null;
+
+    public static ContentFragment getContentFragmentInstance() {
+        return contentFragmentInstance;
+    }
+
+    public static void setContentFragmentInstance(ContentFragment contentFragmentInstance) {
+        ContentFragment.contentFragmentInstance = contentFragmentInstance;
+    }
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -257,7 +264,7 @@ public class ContentFragment extends Fragment implements View.OnClickListener, X
 
                 Intent intent = new Intent(getContext(), DetailActivity.class);//跳转意图，用以从main跳转到detail
                 Notes nowNote = notesList.get(position - 1);//注意，这里为什么要减1呢？因为，下拉刷新的那一行居然也算是占了一位
-                intent.putExtra(Notes.CLASSNAME, nowNote);
+                intent.putExtra(Notes.CLASSNAME, nowNote);//传递记事对象到详情活动
 
                 startActivity(intent);//跳转到详情页面
             }
@@ -297,7 +304,7 @@ public class ContentFragment extends Fragment implements View.OnClickListener, X
         setRefreshTime();//设置刷新的时间
         refreshNotesList();//刷新记录列表
 
-        if (lastUpdateNum > 1) {//如果更新记录数大于0，则显示通知记录数
+        if (lastUpdateNum >= 1) {//如果更新记录数大于0，则显示通知记录数
             Toast.makeText(getContext(), "记录同步成功，共同步记录" + lastUpdateNum + "条", Toast.LENGTH_LONG).show();
         } else {
             Toast.makeText(getContext(), "记录已更新至最新！", Toast.LENGTH_LONG).show();

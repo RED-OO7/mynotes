@@ -21,9 +21,18 @@ public class Notes implements Serializable {//该Notes是面向本地sqlite数�
 
     public static final String CLASSNAME = "Notes";
 
-    public static final int UPDATE_SUCCESS = 101;//给update_status用，用于表示该记录更新成功
-    public static final int UPDATE_FAILED = 102;//给update_status用，用于表示该记录更新失败
-    public static final int NEED_DOWNLOAD = 103;//给update_status用，用于表示该记录需要被客户端下载
+//    public static final int UPDATE_SUCCESS = 101;//给update_status用，用于表示该记录更新成功
+//    public static final int UPDATE_FAILED = 102;//给update_status用，用于表示该记录更新失败
+//    public static final int NEED_DOWNLOAD = 103;//给update_status用，用于表示该记录需要被客户端下载
+
+    public static final int NOTE_UPDATE_SUCCESS = 101;//给note_status用，用于表示该记录更新成功
+    public static final int NOTE_UPDATE_FAILED = 102;//给note_status用，用于表示该记录更新失败
+    public static final int NOTE_NEED_DOWNLOAD= 103;//给note_status用，用于表示该记录需要被客户端下载
+
+    public static final int NOTE_NEED_UPLOAD = 104;//给note_status用，需要上传到服务器的标识
+    public static final int NOTE_UPDATED = 105;//给note_status用，已经被上传的标识(不再需要更新了)
+    public static final int NOTE_NEED_DELETE = 106;//给note_status用，需要服务器删除这条记录的标识
+    public static final int NOTE_DELETE_SUCCESS = 107;//给note_status用，表示服务器已成功删除这条记录
 
     private int id;//记录者id
     private String title;//标题
@@ -33,13 +42,14 @@ public class Notes implements Serializable {//该Notes是面向本地sqlite数�
     private String sound_path;//录音路径
     private String time;//记录创建时间
     private String change_time;//记录更新的时间
-    private boolean is_change;//是否更新过的标识
+    //    private boolean is_change;//是否更新过的标识
+    private int note_status;//记录的状态
     private String owner;//拥有者
 
     public Notes() {
     }
 
-    public Notes(String title, String content, String pic_path, String video_path, String sound_path, String time, String change_time, boolean is_change, String owner) {
+    public Notes(String title, String content, String pic_path, String video_path, String sound_path, String time, String change_time, int note_status, String owner) {
         this.title = title;
         this.content = content;
         this.pic_path = pic_path;
@@ -47,11 +57,11 @@ public class Notes implements Serializable {//该Notes是面向本地sqlite数�
         this.sound_path = sound_path;
         this.time = time;
         this.change_time = change_time;
-        this.is_change = is_change;
+        this.note_status = note_status;
         this.owner = owner;
     }
 
-    public Notes(int id, String title, String content, String pic_path, String video_path, String sound_path, String time, String change_time, boolean is_change, String owner) {
+    public Notes(int id, String title, String content, String pic_path, String video_path, String sound_path, String time, String change_time, int note_status, String owner) {
         this.id = id;
         this.title = title;
         this.content = content;
@@ -60,7 +70,7 @@ public class Notes implements Serializable {//该Notes是面向本地sqlite数�
         this.sound_path = sound_path;
         this.time = time;
         this.change_time = change_time;
-        this.is_change = is_change;
+        this.note_status = note_status;
         this.owner = owner;
     }
 
@@ -128,12 +138,12 @@ public class Notes implements Serializable {//该Notes是面向本地sqlite数�
         this.change_time = change_time;
     }
 
-    public boolean getIs_change() {
-        return is_change;
+    public int getNote_status() {
+        return note_status;
     }
 
-    public void setIs_change(boolean is_change) {
-        this.is_change = is_change;
+    public void setNote_status(int note_status) {
+        this.note_status = note_status;
     }
 
     public String getOwner() {
@@ -153,7 +163,7 @@ public class Notes implements Serializable {//该Notes是面向本地sqlite数�
 
         try {
             dataJsonPackObject.put("CLASSNAME", CLASSNAME);
-            dataJsonPackObject.put("is_change", is_change);// 是否更新过的标识
+            dataJsonPackObject.put("note_status", note_status);// 记事记录的状态
             dataJsonPackObject.put("owner", owner);// 拥有者
             dataJsonPackObject.put("time", time);// 记录创建时间
             dataJsonPackObject.put("change_time", change_time);// 记录更新的时间
@@ -197,22 +207,23 @@ public class Notes implements Serializable {//该Notes是面向本地sqlite数�
             String sound_pathStr = cursor.getString(cursor.getColumnIndex(NotesDB.SOUND_PATH));
             String timeStr = cursor.getString(cursor.getColumnIndex(NotesDB.TIME));
             String changeTimeStr = cursor.getString(cursor.getColumnIndex(NotesDB.CHANGE_TIME));
-            int isChange_int = cursor.getInt(cursor.getColumnIndex(NotesDB.IS_CHANGE));// 0 为 false ， 1为true
-            boolean isChange = (isChange_int == 1);
+//            int isChange_int = cursor.getInt(cursor.getColumnIndex(NotesDB.IS_CHANGE));// 0 为 false ， 1为true
+//            boolean isChange = (isChange_int == 1);
+            int note_status = cursor.getInt(cursor.getColumnIndex(NotesDB.NOTE_STATUS));
             String ownerStr = cursor.getString(cursor.getColumnIndex(NotesDB.OWNER));
 
             Notes note = new Notes();
             note.setTime(timeStr);
             note.setChange_time(changeTimeStr);
-            note.setIs_change(isChange);
+            note.setNote_status(note_status);
+            note.setOwner(ownerStr);
 
-            if (isChange) {
+            if (note_status == Notes.NOTE_NEED_UPLOAD) {//如果该记录需要被上传的话
                 note.setTitle(titleStr);
                 note.setContent(contentStr);
                 note.setPic_path(pic_pathStr);
                 note.setVideo_path(video_pathStr);
                 note.setSound_path(sound_pathStr);
-                note.setOwner(ownerStr);
             }
 
             notesList.add(note);
@@ -238,7 +249,8 @@ public class Notes implements Serializable {//该Notes是面向本地sqlite数�
         SQLiteDatabase dbReader = notesDB.getReadableDatabase();//获取可读取数据库
         //该cursor游标设置为使用NotesDB.OWNER限定搜索结果，再使用NotesDB.CHANGE_TIME排序
         Cursor cursor = dbReader.query(NotesDB.TABLE_NAME, null,
-                NotesDB.OWNER + " = ? or " + NotesDB.OWNER + " = ? ",
+                "( " +NotesDB.OWNER + " = ? or " + NotesDB.OWNER + " = ? )" +
+                        " and " + NotesDB.NOTE_STATUS + " != " + Notes.NOTE_NEED_DELETE ,
                 selectionArgs, null, null, NotesDB.CHANGE_TIME + " Desc");
 
         while (cursor.moveToNext()) {//遍历游标里的所有数据
@@ -252,6 +264,7 @@ public class Notes implements Serializable {//该Notes是面向本地sqlite数�
             String changeTimeStr = cursor.getString(cursor.getColumnIndex(NotesDB.CHANGE_TIME));
 //            int isChange_int = cursor.getInt(cursor.getColumnIndex(NotesDB.IS_CHANGE));// 0 为 false ， 1为true
 //            boolean isChange = (isChange_int == 1);
+            int noteStatus_int =cursor.getInt(cursor.getColumnIndex(NotesDB.NOTE_STATUS));
             String ownerStr = cursor.getString(cursor.getColumnIndex(NotesDB.OWNER));
 
             Notes note = new Notes();
@@ -259,7 +272,7 @@ public class Notes implements Serializable {//该Notes是面向本地sqlite数�
             note.setId(id);
             note.setTime(timeStr);
             note.setChange_time(changeTimeStr);
-//            note.setIs_change(isChange);
+            note.setNote_status(noteStatus_int);
 
             note.setTitle(titleStr);
             note.setContent(contentStr);
@@ -296,7 +309,7 @@ public class Notes implements Serializable {//该Notes是面向本地sqlite数�
         for (int i = 0; i < jsonArray.length(); i++) {//遍历jsonArray里的对象
             try {
                 JSONObject noteObject = jsonArray.getJSONObject(i);//获取noteObject
-                int status_code = noteObject.getInt("update_status");//获取该记事记录的操作码
+                int status_code = noteObject.getInt("note_status");//获取该记事记录的状态码
 
                 String time = null;
                 String owner = null;
@@ -304,10 +317,10 @@ public class Notes implements Serializable {//该Notes是面向本地sqlite数�
                 String selectionArgs[] = null;//用于限制查询下载记录是否存在的参数
 
                 switch (status_code) {
-                    case UPDATE_SUCCESS://这是更新成功的情况
+                    case Notes.NOTE_UPDATE_SUCCESS://这是更新成功的情况
                         ContentValues updateSuccessCV = new ContentValues();
 
-                        updateSuccessCV.put(NotesDB.IS_CHANGE, 0);//0表示该记录已经上传到服务器了
+                        updateSuccessCV.put(NotesDB.NOTE_STATUS, Notes.NOTE_UPDATED);//NOTE_UPDATED表示该记录已经上传到服务器了
 
                         time = noteObject.getString(NotesDB.TIME);//获取创建时间，用作识别标识
                         owner = noteObject.getString(NotesDB.OWNER);//获取该记录用户，用作识别标识
@@ -317,9 +330,11 @@ public class Notes implements Serializable {//该Notes是面向本地sqlite数�
                         updateSuccessCV.clear();
                         iUpdateSuccess++;
                         break;
-                    case UPDATE_FAILED://这是更新失败的情况
+
+                    case Notes.NOTE_UPDATE_FAILED://这是更新失败的情况
                         break;
-                    case NEED_DOWNLOAD://这是服务器回传的需更新的记录的情况
+
+                    case Notes.NOTE_NEED_DOWNLOAD://这是服务器回传的需更新的记录的情况
                         ContentValues downloadCV = new ContentValues();
 
                         downloadCV.put(NotesDB.TITLE, noteObject.getString(NotesDB.TITLE));//TITLE
@@ -330,7 +345,7 @@ public class Notes implements Serializable {//该Notes是面向本地sqlite数�
                         downloadCV.put(NotesDB.OWNER, noteObject.getString(NotesDB.OWNER));//OWNER
                         downloadCV.put(NotesDB.TIME, noteObject.getString(NotesDB.TIME));//TIME
                         downloadCV.put(NotesDB.CHANGE_TIME, noteObject.getString(NotesDB.CHANGE_TIME));//CHANGE_TIME
-                        downloadCV.put(NotesDB.IS_CHANGE, 0);//IS_CHANGE是自己设置的
+                        downloadCV.put(NotesDB.NOTE_STATUS, NOTE_UPDATED);//NOTE_UPDATED表示更新成功
 
                         time = noteObject.getString(NotesDB.TIME);//获取创建时间，用作识别标识
                         owner = noteObject.getString(NotesDB.OWNER);//获取该记录用户，用作识别标识
@@ -354,6 +369,18 @@ public class Notes implements Serializable {//该Notes是面向本地sqlite数�
                         downloadCV.clear();//在下次更新前必须先清理旧的值
                         iUpdateSuccess++;
                         break;
+
+                    case Notes.NOTE_DELETE_SUCCESS:
+                        time = noteObject.getString(NotesDB.TIME);//获取创建时间，用作识别标识
+                        owner = noteObject.getString(NotesDB.OWNER);//获取该记录用户，用作识别标识
+
+                        selectionArgs = new String[]{time, owner};
+
+                        dbWriter.delete(NotesDB.TABLE_NAME,
+                                NotesDB.TIME + " = ? AND " + NotesDB.OWNER + " = ?",
+                                selectionArgs);//根据条件删除该行数据
+                        iUpdateSuccess++;
+                        break;
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -366,42 +393,42 @@ public class Notes implements Serializable {//该Notes是面向本地sqlite数�
     }
 
 
-    public static List<Notes> getUserTextNotesList() {
-        List<Notes> notesList = new ArrayList<Notes>();//将要返回的笔记本列表
-
-        int i = 0;
-        while (i < 5) {//遍历游标里的所有数据
-            String titleStr = "测试标题";
-            String contentStr = "测试内容";
-            String pic_pathStr = "null";
-            String video_pathStr = "null";
-            String sound_pathStr = "null";
-            String timeStr = "测试时间";
-            String changeTimeStr = "修改时间";
-            int isChange_int = 1;// 0 为 false ， 1为true
-            boolean isChange = (isChange_int == 1);
-            String ownerStr = NotesDB.LOCAL_OWNER_STRING;
-
-            Notes note = new Notes();
-            note.setTime(timeStr);
-            note.setChange_time(changeTimeStr);
-            note.setIs_change(isChange);
-
-            if (isChange) {
-                note.setTitle(titleStr);
-                note.setContent(contentStr);
-                note.setPic_path(pic_pathStr);
-                note.setVideo_path(video_pathStr);
-                note.setSound_path(sound_pathStr);
-                note.setOwner(ownerStr);
-            }
-
-            notesList.add(note);
-
-            i++;
-        }
-
-        return notesList;
-    }
+//    public static List<Notes> getUserTextNotesList() {
+//        List<Notes> notesList = new ArrayList<Notes>();//将要返回的笔记本列表
+//
+//        int i = 0;
+//        while (i < 5) {//遍历游标里的所有数据
+//            String titleStr = "测试标题";
+//            String contentStr = "测试内容";
+//            String pic_pathStr = "null";
+//            String video_pathStr = "null";
+//            String sound_pathStr = "null";
+//            String timeStr = "测试时间";
+//            String changeTimeStr = "修改时间";
+////            int isChange_int = 1;// 0 为 false ， 1为true
+////            boolean isChange = (isChange_int == 1);
+//            String ownerStr = NotesDB.LOCAL_OWNER_STRING;
+//
+//            Notes note = new Notes();
+//            note.setTime(timeStr);
+//            note.setChange_time(changeTimeStr);
+//            note.setIs_change(isChange);
+//
+//            if (isChange) {
+//                note.setTitle(titleStr);
+//                note.setContent(contentStr);
+//                note.setPic_path(pic_pathStr);
+//                note.setVideo_path(video_pathStr);
+//                note.setSound_path(sound_pathStr);
+//                note.setOwner(ownerStr);
+//            }
+//
+//            notesList.add(note);
+//
+//            i++;
+//        }
+//
+//        return notesList;
+//    }
 
 }

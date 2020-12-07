@@ -23,7 +23,7 @@
                 android:textSize="20dp"
                 android:textStyle="bold"
                 android:background="#778899"
-                android:visibility="visible"
+                android:visibility="gone"
                 />
 
             <ImageView
@@ -31,7 +31,8 @@
                 android:layout_width="160px"
                 android:layout_height="160px"
                 android:layout_centerInParent="true"
-                android:visibility="gone"/>
+                android:visibility="visible">
+            </ImageView>
 
             <ImageView
                 android:id="@+id/cell_video"
