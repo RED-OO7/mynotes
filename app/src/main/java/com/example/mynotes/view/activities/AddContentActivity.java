@@ -272,7 +272,7 @@ public class AddContentActivity extends AppCompatActivity implements View.OnClic
 
         DataJsonPack dataJsonPack = new DataJsonPack(note, ClientSendString.NoteAdd);
         TCPConnectController savesend = new TCPConnectController();
-        savesend.sendTCPRequestAndRespone(dataJsonPack);
+//        savesend.sendTCPRequestAndRespone(dataJsonPack);//先不发送
 
     }
 
@@ -453,12 +453,39 @@ public class AddContentActivity extends AppCompatActivity implements View.OnClic
                 testMediaPlayer.release();//尝试释放资源
             }
             //若上面的测试全都通过，说明录音正常，则可以保存
-            addItem();//则可以尝试记录并结束
-            finish();
+            addItem();//则可以尝试记录
         } else {//否则其它三种记录模式另外单独处理
             if ("".equals(title_input)) {//如果输入的标题为空，如果标题为空，则判断是不是拍照或录像记录
                 if (!"1".equals(flag_str)) {//如果flag_str不是1，说明不是记事记录
-                    addItem();//则可以尝试记录并结束
+                    Boolean bCanSave = true;
+                    if ("2".equals(flag_str)){//拍照记录的处理方法
+                        //如果照片损坏，则不能添加记录
+                        Bitmap bitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());//用bitmap工厂解码该图片
+                        try {
+                            bitmap.getWidth();//用getWidth来判断该图片是否正常
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            bCanSave = false;
+                        }
+                        if (bCanSave){
+                            addItem();//则可以尝试记录
+                        }
+                    }
+                    if ("3".equals(flag_str)){//录像记录的处理方法
+                        //如果视频损坏，则不能添加记录
+                        try {
+                            MediaMetadataRetriever mmr = new MediaMetadataRetriever();
+                            mmr.setDataSource(videoFile.getAbsolutePath());
+                            String duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);// 播放时长单位为毫秒
+                            Toast.makeText(this, "该视频播放时间为：\n" + duration + "毫秒", Toast.LENGTH_SHORT);
+                        } catch (IllegalArgumentException e) {//有异常则提示并直接结束
+                            e.printStackTrace();
+                            bCanSave = false;
+                        }
+                        if (bCanSave){
+                            addItem();//则可以尝试记录
+                        }
+                    }
                 } else {//否则则为记事记录，记事记录标题不能为空！
                     if (!"".equals(content_input.trim())){//如果内容能成为标题
                         addItem();
