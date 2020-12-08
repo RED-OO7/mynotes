@@ -113,8 +113,8 @@ public class AddContentActivity extends AppCompatActivity implements View.OnClic
         owner = getIntent().getStringExtra("owner");//获取传递过来的owner值
 
         //以下为查找控件
-        bt_save = (Button) findViewById(R.id.bt_save);
-        bt_cancel = (Button) findViewById(R.id.bt_cancel);
+//        bt_save = (Button) findViewById(R.id.bt_save);
+//        bt_cancel = (Button) findViewById(R.id.bt_cancel);
         bt_display = (Button) findViewById(R.id.bt_display);
         bt_stop = (Button) findViewById(R.id.bt_stop);
         bt_start = (Button) findViewById(R.id.bt_start);
@@ -128,8 +128,8 @@ public class AddContentActivity extends AppCompatActivity implements View.OnClic
         add_linearListen = (LinearLayout) findViewById(R.id.add_linearListen);
 
         //以下为注册按钮的点击事件
-        bt_save.setOnClickListener(this);
-        bt_cancel.setOnClickListener(this);
+//        bt_save.setOnClickListener(this);
+//        bt_cancel.setOnClickListener(this);
         bt_display.setOnClickListener(this);
         bt_stop.setOnClickListener(this);
         bt_start.setOnClickListener(this);
@@ -247,16 +247,26 @@ public class AddContentActivity extends AppCompatActivity implements View.OnClic
                     title_input = alternativeTitle;//则可以使用替代标题
             }
         }
+        String imgPathStr = imgFile + "";
+        String videoPathStr = videoFile + "";
+        String soundPathStr = soundFile + "";
         contentValues.put(NotesDB.TITLE, title_input);//添加标题输入框里的内容进数据库
         contentValues.put(NotesDB.CONTENT, content_input);//添加文本输入框里的内容进数据库
         String nowTimeStr = getNowTimeStr();
         contentValues.put(NotesDB.TIME, nowTimeStr);//添加当前的时间
         contentValues.put(NotesDB.CHANGE_TIME, nowTimeStr);//添加修改的时间
-        contentValues.put(NotesDB.PIC_PATH, imgFile + "");//添加图片路径  注意！ null + "" = "null" ！！！
-        contentValues.put(NotesDB.VIDEO_PATH, videoFile + "");//添加视频路径
-        contentValues.put(NotesDB.SOUND_PATH, soundFile + "");//添加录音路径
+        contentValues.put(NotesDB.PIC_PATH, imgPathStr + "");//添加图片路径  注意！ null + "" = "null" ！！！
+        contentValues.put(NotesDB.VIDEO_PATH, videoPathStr + "");//添加视频路径
+        contentValues.put(NotesDB.SOUND_PATH, soundPathStr + "");//添加录音路径
         contentValues.put(NotesDB.OWNER, owner);//添加当前拥有者名
-        contentValues.put(NotesDB.NOTE_STATUS, Notes.NOTE_NEED_UPLOAD);//NOTE_NEED_UPLOAD表示需要服务器上传
+        if (!"null".equals(imgPathStr)||
+                !"null".equals(videoPathStr)||
+                !"null".equals(soundPathStr)){//如果三个文件有一个不为空，则
+            contentValues.put(NotesDB.NOTE_STATUS, Notes.NOTE_DATA_NEED_UPLOAD);//NOTE_NEED_UPLOAD表示需要服务器上传的文件记录
+        }else {
+            contentValues.put(NotesDB.NOTE_STATUS, Notes.NOTE_NEED_UPLOAD);//NOTE_NEED_UPLOAD表示需要服务器上传的普通记录
+        }
+
         notesWriter.insert(NotesDB.TABLE_NAME, null, contentValues);
 
         Notes note = new Notes();
@@ -271,7 +281,7 @@ public class AddContentActivity extends AppCompatActivity implements View.OnClic
         note.setOwner(owner);
 
         DataJsonPack dataJsonPack = new DataJsonPack(note, ClientSendString.NoteAdd);
-        TCPConnectController savesend = new TCPConnectController();
+//        TCPConnectController savesend = new TCPConnectController();
 //        savesend.sendTCPRequestAndRespone(dataJsonPack);//先不发送
 
     }
@@ -388,6 +398,7 @@ public class AddContentActivity extends AppCompatActivity implements View.OnClic
      * 这是点击保存按钮后的处理方法
      */
     public void clickedSaveBtn() {
+        /*
         //开始时判断是否能进行记录
         Intent get_intent = getIntent();
 
@@ -425,7 +436,8 @@ public class AddContentActivity extends AppCompatActivity implements View.OnClic
                 addItem();//点击保存之后就会添加数据
                 finish();//最后一定会结束
             }
-        }
+        }*/
+        finish();//直接结束，因为销毁活动时会自动保存记录
     }
 
 
@@ -525,7 +537,7 @@ public class AddContentActivity extends AppCompatActivity implements View.OnClic
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.bt_save:
+//            case R.id.bt_save:
 //                //开始时判断是否能进行记录
 //                Intent get_intent = getIntent();
 //
@@ -564,10 +576,10 @@ public class AddContentActivity extends AppCompatActivity implements View.OnClic
 //                        finish();//最后一定会结束
 //                    }
 //                }
-                clickedSaveBtn();
-                break;
+//                clickedSaveBtn();
+//                break;
 
-            case R.id.bt_cancel:
+//            case R.id.bt_cancel:
 //                if (soundFile != null)
 //                    if (soundFile.exists())
 //                        soundFile.delete();//如果取消时文件存在，则删除
@@ -578,8 +590,8 @@ public class AddContentActivity extends AppCompatActivity implements View.OnClic
 //                    if (imgFile.exists())
 //                        imgFile.delete();
 //                finish();//结束
-                clickedCancelBtn();
-                break;
+//                clickedCancelBtn();
+//                break;
 
             case R.id.bt_start://开始录音
                 startRecording();//开始录音

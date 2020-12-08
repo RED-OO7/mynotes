@@ -4,6 +4,7 @@ import android.os.Handler;
 
 import com.example.mynotes.MainActivity;
 import com.example.mynotes.model.ClientSendString;
+import com.example.mynotes.util.FileUtil;
 import com.example.mynotes.view.fragments.ContentFragment;
 import com.example.mynotes.view.fragments.LoginFragment;
 import com.example.mynotes.model.Account;
@@ -17,6 +18,7 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -29,8 +31,11 @@ import java.net.SocketAddress;
 
 
 public class TCPConnectController {
-    //"10.3.49.170"本地wifi ip地址，"139.224.128.87"是远程服务端的地址
-    private static String serverAddress_str = "139.224.128.87";
+    //"10.2.41.109"本地wifi ip地址，
+    //"192.168.43.64"平板热点 ip地址，
+    // "10.0.31.174"是本地网线服务端的地址，
+    // "139.224.128.87"是远程服务端的地址
+    private static String serverAddress_str = "192.168.43.64";
     private static int PORT = 19200;
 
     private static Handler mHandler = new Handler();//创建Handler
@@ -56,7 +61,7 @@ public class TCPConnectController {
                             Socket clientSocket = new Socket();
                             clientSocket.connect(addr, 500);
                             // 设置读取数据超时时间
-                            clientSocket.setSoTimeout(5000);
+                            clientSocket.setSoTimeout(5*1000);
 
                             // 开启字节输入流(用以接收服务器发来的信息)
                             InputStream serverInputStream = clientSocket.getInputStream();
@@ -68,7 +73,16 @@ public class TCPConnectController {
                             PrintWriter printWriter = new PrintWriter(serverBufferedWriter, true);
 
                             String dataSendStr = TCPConnectController.DATA_START + sendData.toString() + TCPConnectController.DATA_END;
-                            printWriter.println(dataSendStr);// 发送数据给服务器
+
+//                            byte[] dataBytes = dataSendStr.getBytes();
+//                            int iStep = 1024;
+//                            for (int i = 0; i < dataBytes.length;i = i + iStep){
+//                                int nowStep = (i + iStep >= dataBytes.length) ? (dataBytes.length - i - 1) : (iStep);
+//
+//                                byte[] tempBytes = FileUtil.subBytes(dataBytes,i,nowStep);
+//                                serverOutputStream.write(tempBytes);//每次只写入1024字节
+//                            }
+                            printWriter.println(dataSendStr);// 发送数据给服务器(原)
 
                             //开始接收服务器回传的数据
                             StringBuffer dataBuffer = new StringBuffer();

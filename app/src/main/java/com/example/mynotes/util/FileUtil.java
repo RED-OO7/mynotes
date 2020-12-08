@@ -3,7 +3,9 @@ package com.example.mynotes.util;
 import android.content.Context;
 import android.widget.Toast;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 
 public class FileUtil {//该类用于进行文件的输入输出
 
@@ -55,4 +57,42 @@ public class FileUtil {//该类用于进行文件的输入输出
             System.out.print(dir_path+"已存在!");
         }
     }
+
+    /**
+     * 该方法用于将文件转换成Byte数组
+     */
+    public static byte[] getBytesByFile(String pathStr) {
+        File file = new File(pathStr);
+        try {
+            FileInputStream fis = new FileInputStream(file);
+            ByteArrayOutputStream bos = new ByteArrayOutputStream(1000);
+            byte[] b = new byte[1000];
+            int n;
+            while ((n = fis.read(b)) != -1) {
+                bos.write(b, 0, n);
+            }
+            fis.close();
+            byte[] data = bos.toByteArray();
+            bos.close();
+            return data;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * 从一个byte[]数组中截取一部分
+     * @param src
+     * @param begin
+     * @param step
+     * @return
+     */
+    public static byte[] subBytes(byte[] src, int begin, int step) {
+        byte[] bs = new byte[step];
+        for (int i=begin;i<begin+step; i++)
+            bs[i-begin] = src[i];
+        return bs;
+    }
+
 }

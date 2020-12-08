@@ -44,7 +44,10 @@ import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshLayout;
 
 public class ContentFragment extends Fragment implements View.OnClickListener, XListView.IXListViewListener {
     public static PullToRefreshLayout refreshLayout;//该布局用于下拉刷新(同步)
-    public static int lastUpdateNum = 0;//上一次的更新记录条数
+    /**
+     * -1 代表禁止更新，0代表全部更新至最新，大于0表示有更新条目
+     */
+    public static int lastUpdateNum = -1;//上一次的更新记录条数
     public static final int PICTURE_RESULT_CODE = 1;
     public static final int VIDEO_RESULT_CODE = 2;
 
@@ -155,16 +158,17 @@ public class ContentFragment extends Fragment implements View.OnClickListener, X
                         "CAMERA:"+(PermissionChecker.checkSelfPermission(getContext(), Manifest.permission.CAMERA) ==
                                 PermissionChecker.PERMISSION_GRANTED)+"\nWRITE_EXTERNAL_STORAGE:"+
                                 (PermissionChecker.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) ==
-                                        PermissionChecker.PERMISSION_GRANTED) +"\n\n\n\n\n", Toast.LENGTH_LONG).show();
+                                        PermissionChecker.PERMISSION_GRANTED) +"\n\n\n\n\n", Toast.LENGTH_LONG);
+                requestPermissions(new String[]{Manifest.permission.CAMERA,Manifest.permission.WRITE_EXTERNAL_STORAGE}, PICTURE_RESULT_CODE);
                 if(
                         (PermissionChecker.checkSelfPermission(getContext(), Manifest.permission.CAMERA) ==
                         PermissionChecker.PERMISSION_GRANTED ) &&
                                 (PermissionChecker.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) ==
                                 PermissionChecker.PERMISSION_GRANTED)
                 ){
-                    Toast.makeText(getContext(),"有权限，允许跳转\n"+"有权限，允许跳转\n", Toast.LENGTH_LONG).show();
+//                    Toast.makeText(getContext(),"有权限，允许跳转\n"+"有权限，允许跳转\n", Toast.LENGTH_LONG).show();
                     intent.putExtra("flag", "2");
-                    startActivity(intent);//先不跳转
+//                    startActivity(intent);//先不跳转
                 }else{
                     requestPermissions(new String[]{Manifest.permission.CAMERA,Manifest.permission.WRITE_EXTERNAL_STORAGE}, PICTURE_RESULT_CODE);
                 }
@@ -194,24 +198,28 @@ public class ContentFragment extends Fragment implements View.OnClickListener, X
         Boolean isPermit = true;
         switch (requestCode){
             case PICTURE_RESULT_CODE:
-                Toast.makeText(getContext(), "现在什么也不做", Toast.LENGTH_LONG).show();
+                String showStr = "";
+//                Toast.makeText(getContext(), "现在什么也不做", Toast.LENGTH_LONG).show();
                 for (int result: grantResults) {
                     if (result != PermissionChecker.PERMISSION_GRANTED){
                         isPermit = false;
                     }
+                    showStr = showStr + "授权结果:"+ result+"\n";
                 }
                 if (grantResults.length<=0){
                     isPermit = false;
                 }
+                //查看授权结果
+//                Toast.makeText(getContext(), showStr, Toast.LENGTH_LONG).show();
 
                 if(isPermit){
-                    Toast.makeText(getContext(),"当前拥有全部两个权限(相机，写入)",Toast.LENGTH_LONG).show();
+//                    Toast.makeText(getContext(),"当前拥有全部两个权限(相机，写入)",Toast.LENGTH_LONG).show();
                     Log.e("find","当前允许拍照");
                     intent.putExtra("flag", "2");
-//                    startActivity(intent);//先不跳转
+                    startActivity(intent);//先不跳转
                 }else{
                     Log.e("find","当前不允许拍照");
-                    Toast.makeText(getContext(), "当前缺少其中一个权限(相机，写入)", Toast.LENGTH_LONG).show();
+//                    Toast.makeText(getContext(), "当前缺少其中一个权限(相机，写入)", Toast.LENGTH_LONG).show();
                 }
                 break;
 
@@ -346,8 +354,10 @@ public class ContentFragment extends Fragment implements View.OnClickListener, X
 
         if (lastUpdateNum >= 1) {//如果更新记录数大于0，则显示通知记录数
             Toast.makeText(getContext(), "记录同步成功，共同步记录" + lastUpdateNum + "条", Toast.LENGTH_LONG).show();
-        } else {
+        } else if (lastUpdateNum == 0){
             Toast.makeText(getContext(), "记录已更新至最新！", Toast.LENGTH_LONG).show();
+        }else {//小于0表示禁止刷新
+
         }
 
     }
