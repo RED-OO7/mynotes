@@ -113,8 +113,8 @@ public class AddContentActivity extends AppCompatActivity implements View.OnClic
         owner = getIntent().getStringExtra("owner");//获取传递过来的owner值
 
         //以下为查找控件
-        bt_save = (Button) findViewById(R.id.bt_save);
-        bt_cancel = (Button) findViewById(R.id.bt_cancel);
+//        bt_save = (Button) findViewById(R.id.bt_save);
+//        bt_cancel = (Button) findViewById(R.id.bt_cancel);
         bt_display = (Button) findViewById(R.id.bt_display);
         bt_stop = (Button) findViewById(R.id.bt_stop);
         bt_start = (Button) findViewById(R.id.bt_start);
@@ -128,8 +128,8 @@ public class AddContentActivity extends AppCompatActivity implements View.OnClic
         add_linearListen = (LinearLayout) findViewById(R.id.add_linearListen);
 
         //以下为注册按钮的点击事件
-        bt_save.setOnClickListener(this);
-        bt_cancel.setOnClickListener(this);
+//        bt_save.setOnClickListener(this);
+//        bt_cancel.setOnClickListener(this);
         bt_display.setOnClickListener(this);
         bt_stop.setOnClickListener(this);
         bt_start.setOnClickListener(this);
@@ -247,16 +247,26 @@ public class AddContentActivity extends AppCompatActivity implements View.OnClic
                     title_input = alternativeTitle;//则可以使用替代标题
             }
         }
+        String imgPathStr = imgFile + "";
+        String videoPathStr = videoFile + "";
+        String soundPathStr = soundFile + "";
         contentValues.put(NotesDB.TITLE, title_input);//添加标题输入框里的内容进数据库
         contentValues.put(NotesDB.CONTENT, content_input);//添加文本输入框里的内容进数据库
         String nowTimeStr = getNowTimeStr();
         contentValues.put(NotesDB.TIME, nowTimeStr);//添加当前的时间
         contentValues.put(NotesDB.CHANGE_TIME, nowTimeStr);//添加修改的时间
-        contentValues.put(NotesDB.PIC_PATH, imgFile + "");//添加图片路径  注意！ null + "" = "null" ！！！
-        contentValues.put(NotesDB.VIDEO_PATH, videoFile + "");//添加视频路径
-        contentValues.put(NotesDB.SOUND_PATH, soundFile + "");//添加录音路径
+        contentValues.put(NotesDB.PIC_PATH, imgPathStr + "");//添加图片路径  注意！ null + "" = "null" ！！！
+        contentValues.put(NotesDB.VIDEO_PATH, videoPathStr + "");//添加视频路径
+        contentValues.put(NotesDB.SOUND_PATH, soundPathStr + "");//添加录音路径
         contentValues.put(NotesDB.OWNER, owner);//添加当前拥有者名
-        contentValues.put(NotesDB.NOTE_STATUS, Notes.NOTE_NEED_UPLOAD);//NOTE_NEED_UPLOAD表示需要服务器上传
+        if (!"null".equals(imgPathStr)||
+                !"null".equals(videoPathStr)||
+                !"null".equals(soundPathStr)){//如果三个文件有一个不为空，则
+            contentValues.put(NotesDB.NOTE_STATUS, Notes.NOTE_DATA_NEED_UPLOAD);//NOTE_NEED_UPLOAD表示需要服务器上传的文件记录
+        }else {
+            contentValues.put(NotesDB.NOTE_STATUS, Notes.NOTE_NEED_UPLOAD);//NOTE_NEED_UPLOAD表示需要服务器上传的普通记录
+        }
+
         notesWriter.insert(NotesDB.TABLE_NAME, null, contentValues);
 
         Notes note = new Notes();
@@ -271,8 +281,8 @@ public class AddContentActivity extends AppCompatActivity implements View.OnClic
         note.setOwner(owner);
 
         DataJsonPack dataJsonPack = new DataJsonPack(note, ClientSendString.NoteAdd);
-        TCPConnectController savesend = new TCPConnectController();
-        savesend.sendTCPRequestAndRespone(dataJsonPack);
+//        TCPConnectController savesend = new TCPConnectController();
+//        savesend.sendTCPRequestAndRespone(dataJsonPack);//先不发送
 
     }
 
@@ -356,7 +366,6 @@ public class AddContentActivity extends AppCompatActivity implements View.OnClic
             e.printStackTrace();
         }
         mediaRecorder.start();
-//        status.setText("Recording...");
     }
 
     public void stopRecording() {
@@ -388,6 +397,7 @@ public class AddContentActivity extends AppCompatActivity implements View.OnClic
      * 这是点击保存按钮后的处理方法
      */
     public void clickedSaveBtn() {
+        /*
         //开始时判断是否能进行记录
         Intent get_intent = getIntent();
 
@@ -425,7 +435,8 @@ public class AddContentActivity extends AppCompatActivity implements View.OnClic
                 addItem();//点击保存之后就会添加数据
                 finish();//最后一定会结束
             }
-        }
+        }*/
+        finish();//直接结束，因为销毁活动时会自动保存记录
     }
 
 
@@ -445,6 +456,8 @@ public class AddContentActivity extends AppCompatActivity implements View.OnClic
             try {//尝试调用录音查看是否正常
                 testMediaPlayer = new MediaPlayer();
                 testMediaPlayer.setDataSource(soundFile.getAbsolutePath());
+                //若上面的测试全都通过，说明录音正常，则可以保存
+                addItem();//则可以尝试记录
             } catch (Exception e) {//没有录音则提醒并结束
                 e.printStackTrace();
                 Toast.makeText(this, "未录音，保存失败！", Toast.LENGTH_SHORT).show();
@@ -452,13 +465,39 @@ public class AddContentActivity extends AppCompatActivity implements View.OnClic
             }finally {
                 testMediaPlayer.release();//尝试释放资源
             }
-            //若上面的测试全都通过，说明录音正常，则可以保存
-            addItem();//则可以尝试记录并结束
-            finish();
+
         } else {//否则其它三种记录模式另外单独处理
             if ("".equals(title_input)) {//如果输入的标题为空，如果标题为空，则判断是不是拍照或录像记录
                 if (!"1".equals(flag_str)) {//如果flag_str不是1，说明不是记事记录
-                    addItem();//则可以尝试记录并结束
+                    Boolean bCanSave = true;
+                    if ("2".equals(flag_str)){//拍照记录的处理方法
+                        //如果照片损坏，则不能添加记录
+                        Bitmap bitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());//用bitmap工厂解码该图片
+                        try {
+                            bitmap.getWidth();//用getWidth来判断该图片是否正常
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            bCanSave = false;
+                        }
+                        if (bCanSave){
+                            addItem();//则可以尝试记录
+                        }
+                    }
+                    if ("3".equals(flag_str)){//录像记录的处理方法
+                        //如果视频损坏，则不能添加记录
+                        try {
+                            MediaMetadataRetriever mmr = new MediaMetadataRetriever();
+                            mmr.setDataSource(videoFile.getAbsolutePath());
+                            String duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);// 播放时长单位为毫秒
+                            Toast.makeText(this, "该视频播放时间为：\n" + duration + "毫秒", Toast.LENGTH_SHORT);
+                        } catch (IllegalArgumentException e) {//有异常则提示并直接结束
+                            e.printStackTrace();
+                            bCanSave = false;
+                        }
+                        if (bCanSave){
+                            addItem();//则可以尝试记录
+                        }
+                    }
                 } else {//否则则为记事记录，记事记录标题不能为空！
                     if (!"".equals(content_input.trim())){//如果内容能成为标题
                         addItem();
@@ -498,7 +537,7 @@ public class AddContentActivity extends AppCompatActivity implements View.OnClic
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.bt_save:
+//            case R.id.bt_save:
 //                //开始时判断是否能进行记录
 //                Intent get_intent = getIntent();
 //
@@ -537,10 +576,10 @@ public class AddContentActivity extends AppCompatActivity implements View.OnClic
 //                        finish();//最后一定会结束
 //                    }
 //                }
-                clickedSaveBtn();
-                break;
+//                clickedSaveBtn();
+//                break;
 
-            case R.id.bt_cancel:
+//            case R.id.bt_cancel:
 //                if (soundFile != null)
 //                    if (soundFile.exists())
 //                        soundFile.delete();//如果取消时文件存在，则删除
@@ -551,11 +590,18 @@ public class AddContentActivity extends AppCompatActivity implements View.OnClic
 //                    if (imgFile.exists())
 //                        imgFile.delete();
 //                finish();//结束
-                clickedCancelBtn();
-                break;
+//                clickedCancelBtn();
+//                break;
 
             case R.id.bt_start://开始录音
-                startRecording();//开始录音
+                try {//如果报异常则直接结束活动
+                    startRecording();//开始录音
+                }catch (Exception e){
+                    e.printStackTrace();
+//                    Toast.makeText(this, "已取消录音", Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+
                 bt_display.setEnabled(false);
                 bt_finish.setEnabled(true);//完成录音 能按了
                 bt_start.setEnabled(false);

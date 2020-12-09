@@ -4,15 +4,18 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
 import com.example.mynotes.dao.NotesDB;
+import com.example.mynotes.util.FileUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +23,8 @@ import java.util.List;
 public class Notes implements Serializable {//该Notes是面向本地sqlite数据库的
 
     public static final String CLASSNAME = "Notes";
+
+    public static final int FILE_MAX_BYTES = 33554432;//约32MB
 
 //    public static final int UPDATE_SUCCESS = 101;//给update_status用，用于表示该记录更新成功
 //    public static final int UPDATE_FAILED = 102;//给update_status用，用于表示该记录更新失败
@@ -34,6 +39,8 @@ public class Notes implements Serializable {//该Notes是面向本地sqlite数�
     public static final int NOTE_NEED_DELETE = 106;//给note_status用，需要服务器删除这条记录的标识
     public static final int NOTE_DELETE_SUCCESS = 107;//给note_status用，表示服务器已成功删除这条记录
 
+    public static final int NOTE_DATA_NEED_UPLOAD = 108;//给note_status用，表示需要上传数据(照片，视频，录音)到服务器的标识
+
     private int id;//记录者id
     private String title;//标题
     private String content;//内容
@@ -45,6 +52,10 @@ public class Notes implements Serializable {//该Notes是面向本地sqlite数�
     //    private boolean is_change;//是否更新过的标识
     private int note_status;//记录的状态
     private String owner;//拥有者
+    //以下文件将用于转为二进制字节流以用于传输
+    private File imgFile;//图片文件
+    private File videoFile;//视频文件
+    private File soundFile;//录音文件
 
     public Notes() {
     }
@@ -168,13 +179,43 @@ public class Notes implements Serializable {//该Notes是面向本地sqlite数�
             dataJsonPackObject.put("time", time);// 记录创建时间
             dataJsonPackObject.put("change_time", change_time);// 记录更新的时间
 
-//            if (is_change) {
             dataJsonPackObject.put("title", title);//
-            dataJsonPackObject.put("content", content);//
-            dataJsonPackObject.put("pic_path", pic_path);// 照片路径
-            dataJsonPackObject.put("video_path", video_path);// 录像路径
-            dataJsonPackObject.put("sound_path", sound_path);// 录音路径
+
+//            //复制二进制照片文件到二进制字符串
+//            if (!"null".equals(pic_path) && pic_path != null){
+//                File tempFile = new File(pic_path);
+//                if (tempFile.length()<=FILE_MAX_BYTES){//如果小于等于可容忍限度的话
+//                    byte[] imgBytes = FileUtil.getBytesByFile(pic_path);
+//                    pic_path = new String(imgBytes);//转换
+////                    Log.e("file path",pic_path);
+//                }else
+//                    pic_path = "null";
 //            }
+//            //复制二进制视频文件到二进制字符串
+//            if (!"null".equals(video_path) && video_path != null){
+//                File tempFile = new File(video_path);
+//                if (tempFile.length()<=FILE_MAX_BYTES){//如果小于等于可容忍限度的话
+//                    byte[] videoBytes = FileUtil.getBytesByFile(video_path);
+//                    video_path = new String(videoBytes);//转换
+////                    Log.e("file path",video_path);
+//                }else
+//                    video_path = "null";
+//            }
+//            //复制二进制录音文件到二进制字符串
+//            if (!"null".equals(sound_path) && sound_path != null){
+//                File tempFile = new File(sound_path);
+//                if (tempFile.length()<=FILE_MAX_BYTES){//如果小于等于可容忍限度的话
+//                    byte[] soundBytes = FileUtil.getBytesByFile(sound_path);
+//                    sound_path = new String(soundBytes);//强制转换
+////                    Log.e("file path",sound_path);
+//                }else//否则为"null"字符串
+//                    sound_path = "null";
+//            }
+
+            dataJsonPackObject.put("content", content);//
+            dataJsonPackObject.put("pic_path", "null");// 照片路径
+            dataJsonPackObject.put("video_path", "null");// 录像路径
+            dataJsonPackObject.put("sound_path", "null");// 录音路径
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -183,7 +224,7 @@ public class Notes implements Serializable {//该Notes是面向本地sqlite数�
     }
 
     /**
-     * 该方法返回的notes列表里的note 在isChange标识为0的情况下，<br/>
+     * 该方法返回的notes列表里的note 在NOTE_STATUS标识不为NOTE_NEED_UPLOAD或NOTE_DATA_NEED_UPLOAD的情况下，<br/>
      * 将不会加入除创建时间和更新时间之外的额外内容
      */
     @NonNull
@@ -191,13 +232,15 @@ public class Notes implements Serializable {//该Notes是面向本地sqlite数�
         List<Notes> notesList = new ArrayList<Notes>();//将要返回的笔记本列表
 
         NotesDB notesDB = new NotesDB(context);
-        String selectionArgs[] = {NotesDB.LOCAL_OWNER_STRING, nowUsername, "null", "null", "null"};
+//        String selectionArgs[] = {NotesDB.LOCAL_OWNER_STRING, nowUsername, "null", "null", "null"};
+        String selectionArgs[] = {NotesDB.LOCAL_OWNER_STRING, nowUsername};
         SQLiteDatabase dbReader = notesDB.getReadableDatabase();//获取可读取数据库
         //该cursor游标设置为使用NotesDB.OWNER限定搜索结果，再使用NotesDB.CHANGE_TIME排序
-        Cursor cursor = dbReader.query(NotesDB.TABLE_NAME, null, " ( " + NotesDB.OWNER + " = ? or " + NotesDB.OWNER + " = ? ) and " +
-                NotesDB.PIC_PATH + " = ? and " +
-                NotesDB.VIDEO_PATH + " = ? and " +
-                NotesDB.SOUND_PATH + " = ? ", selectionArgs, null, null, NotesDB.CHANGE_TIME + " Desc");
+        Cursor cursor = dbReader.query(NotesDB.TABLE_NAME, null, " ( " + NotesDB.OWNER + " = ? or " + NotesDB.OWNER + " = ? ) "
+//                        + "and " + NotesDB.PIC_PATH + " = ? and " +
+//                NotesDB.VIDEO_PATH + " = ? and " +
+//                NotesDB.SOUND_PATH + " = ? "
+                , selectionArgs, null, null, NotesDB.CHANGE_TIME + " Desc");
 
         while (cursor.moveToNext()) {//遍历游标里的所有数据
             String titleStr = cursor.getString(cursor.getColumnIndex(NotesDB.TITLE));
@@ -218,7 +261,7 @@ public class Notes implements Serializable {//该Notes是面向本地sqlite数�
             note.setNote_status(note_status);
             note.setOwner(ownerStr);
 
-            if (note_status == Notes.NOTE_NEED_UPLOAD) {//如果该记录需要被上传的话
+            if (note_status == Notes.NOTE_NEED_UPLOAD || note_status == Notes.NOTE_DATA_NEED_UPLOAD) {//如果该记录需要被上传的话
                 note.setTitle(titleStr);
                 note.setContent(contentStr);
                 note.setPic_path(pic_pathStr);

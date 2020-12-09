@@ -24,7 +24,9 @@
         android:layout_alignBottom="@+id/tip_text"
         android:layout_alignParentTop="true"
         android:layout_marginBottom="30dp"
+        android:divider="@null"
         android:layout_weight="4">
+        <!--  设置android:divider="@null"使得没有分隔线  -->
     </com.example.mynotes.widget.XListView>
 
     <!--    </uk.co.senab.actionbarpulltorefresh.library.PullToRefreshLayout>-->
