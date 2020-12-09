@@ -35,7 +35,7 @@ public class TCPConnectController {
     //"192.168.43.64"平板热点 ip地址，
     // "10.0.31.174"是本地网线服务端的地址，
     // "139.224.128.87"是远程服务端的地址
-    private static String serverAddress_str = "192.168.43.64";
+    private static String serverAddress_str = "139.224.128.87";
     private static int PORT = 19200;
 
     private static Handler mHandler = new Handler();//创建Handler

@@ -366,7 +366,6 @@ public class AddContentActivity extends AppCompatActivity implements View.OnClic
             e.printStackTrace();
         }
         mediaRecorder.start();
-//        status.setText("Recording...");
     }
 
     public void stopRecording() {
@@ -457,6 +456,8 @@ public class AddContentActivity extends AppCompatActivity implements View.OnClic
             try {//尝试调用录音查看是否正常
                 testMediaPlayer = new MediaPlayer();
                 testMediaPlayer.setDataSource(soundFile.getAbsolutePath());
+                //若上面的测试全都通过，说明录音正常，则可以保存
+                addItem();//则可以尝试记录
             } catch (Exception e) {//没有录音则提醒并结束
                 e.printStackTrace();
                 Toast.makeText(this, "未录音，保存失败！", Toast.LENGTH_SHORT).show();
@@ -464,8 +465,7 @@ public class AddContentActivity extends AppCompatActivity implements View.OnClic
             }finally {
                 testMediaPlayer.release();//尝试释放资源
             }
-            //若上面的测试全都通过，说明录音正常，则可以保存
-            addItem();//则可以尝试记录
+
         } else {//否则其它三种记录模式另外单独处理
             if ("".equals(title_input)) {//如果输入的标题为空，如果标题为空，则判断是不是拍照或录像记录
                 if (!"1".equals(flag_str)) {//如果flag_str不是1，说明不是记事记录
@@ -594,7 +594,14 @@ public class AddContentActivity extends AppCompatActivity implements View.OnClic
 //                break;
 
             case R.id.bt_start://开始录音
-                startRecording();//开始录音
+                try {//如果报异常则直接结束活动
+                    startRecording();//开始录音
+                }catch (Exception e){
+                    e.printStackTrace();
+//                    Toast.makeText(this, "已取消录音", Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+
                 bt_display.setEnabled(false);
                 bt_finish.setEnabled(true);//完成录音 能按了
                 bt_start.setEnabled(false);

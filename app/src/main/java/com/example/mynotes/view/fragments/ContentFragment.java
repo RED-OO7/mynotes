@@ -6,7 +6,9 @@ import android.content.Intent;
 
 import android.content.pm.PackageManager;
 import android.content.SharedPreferences;
+import android.media.MediaRecorder;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -38,6 +40,8 @@ import com.example.mynotes.widget.XListView;
 
 import org.json.JSONArray;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshLayout;
@@ -50,6 +54,7 @@ public class ContentFragment extends Fragment implements View.OnClickListener, X
     public static int lastUpdateNum = -1;//上一次的更新记录条数
     public static final int PICTURE_RESULT_CODE = 1;
     public static final int VIDEO_RESULT_CODE = 2;
+    public static final int AUDIO_RESULT_CODE = 3;
 
     public static boolean isRefreshing = false;//是否正在刷新的标识
 
@@ -154,12 +159,12 @@ public class ContentFragment extends Fragment implements View.OnClickListener, X
                 break;
 
             case R.id.bt_pic:
-                Toast.makeText(getContext(),
-                        "CAMERA:"+(PermissionChecker.checkSelfPermission(getContext(), Manifest.permission.CAMERA) ==
-                                PermissionChecker.PERMISSION_GRANTED)+"\nWRITE_EXTERNAL_STORAGE:"+
-                                (PermissionChecker.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) ==
-                                        PermissionChecker.PERMISSION_GRANTED) +"\n\n\n\n\n", Toast.LENGTH_LONG);
-                requestPermissions(new String[]{Manifest.permission.CAMERA,Manifest.permission.WRITE_EXTERNAL_STORAGE}, PICTURE_RESULT_CODE);
+//                Toast.makeText(getContext(),
+//                        "CAMERA:"+(PermissionChecker.checkSelfPermission(getContext(), Manifest.permission.CAMERA) ==
+//                                PermissionChecker.PERMISSION_GRANTED)+"\nWRITE_EXTERNAL_STORAGE:"+
+//                                (PermissionChecker.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) ==
+//                                        PermissionChecker.PERMISSION_GRANTED) +"\n\n\n\n\n", Toast.LENGTH_LONG);
+//                requestPermissions(new String[]{Manifest.permission.CAMERA,Manifest.permission.WRITE_EXTERNAL_STORAGE}, PICTURE_RESULT_CODE);
                 if(
                         (PermissionChecker.checkSelfPermission(getContext(), Manifest.permission.CAMERA) ==
                         PermissionChecker.PERMISSION_GRANTED ) &&
@@ -168,15 +173,15 @@ public class ContentFragment extends Fragment implements View.OnClickListener, X
                 ){
 //                    Toast.makeText(getContext(),"有权限，允许跳转\n"+"有权限，允许跳转\n", Toast.LENGTH_LONG).show();
                     intent.putExtra("flag", "2");
-//                    startActivity(intent);//先不跳转
+                    startActivity(intent);//先不跳转
                 }else{
                     requestPermissions(new String[]{Manifest.permission.CAMERA,Manifest.permission.WRITE_EXTERNAL_STORAGE}, PICTURE_RESULT_CODE);
                 }
                 break;
 
             case R.id.bt_video:
-                if(ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA)!= PackageManager.PERMISSION_GRANTED ||
-                        ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED){
+                if(PermissionChecker.checkSelfPermission(getContext(), Manifest.permission.CAMERA)!= PermissionChecker.PERMISSION_GRANTED ||
+                        PermissionChecker.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)!= PermissionChecker.PERMISSION_GRANTED){
                     requestPermissions(new String[]{Manifest.permission.CAMERA,Manifest.permission.WRITE_EXTERNAL_STORAGE}, VIDEO_RESULT_CODE);
                 }else{
                     intent.putExtra("flag", "3");
@@ -185,8 +190,14 @@ public class ContentFragment extends Fragment implements View.OnClickListener, X
                 break;
 
             case R.id.bt_sound:
-                intent.putExtra("flag", "4");
-                startActivity(intent);
+                if(PermissionChecker.checkSelfPermission(getContext(), Manifest.permission.RECORD_AUDIO)!= PermissionChecker.PERMISSION_GRANTED ||
+                        PermissionChecker.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)!= PermissionChecker.PERMISSION_GRANTED){
+                    requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO,Manifest.permission.WRITE_EXTERNAL_STORAGE}, AUDIO_RESULT_CODE);
+                }else{
+                    intent.putExtra("flag", "4");
+                    startActivity(intent);
+                }
+
                 break;
             default:
                 break;
@@ -198,19 +209,15 @@ public class ContentFragment extends Fragment implements View.OnClickListener, X
         Boolean isPermit = true;
         switch (requestCode){
             case PICTURE_RESULT_CODE:
-                String showStr = "";
-//                Toast.makeText(getContext(), "现在什么也不做", Toast.LENGTH_LONG).show();
+
                 for (int result: grantResults) {
                     if (result != PermissionChecker.PERMISSION_GRANTED){
                         isPermit = false;
                     }
-                    showStr = showStr + "授权结果:"+ result+"\n";
                 }
                 if (grantResults.length<=0){
                     isPermit = false;
                 }
-                //查看授权结果
-//                Toast.makeText(getContext(), showStr, Toast.LENGTH_LONG).show();
 
                 if(isPermit){
 //                    Toast.makeText(getContext(),"当前拥有全部两个权限(相机，写入)",Toast.LENGTH_LONG).show();
@@ -219,7 +226,7 @@ public class ContentFragment extends Fragment implements View.OnClickListener, X
                     startActivity(intent);//先不跳转
                 }else{
                     Log.e("find","当前不允许拍照");
-//                    Toast.makeText(getContext(), "当前缺少其中一个权限(相机，写入)", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), "当前缺少权限(摄像头 或 写入)", Toast.LENGTH_LONG).show();
                 }
                 break;
 
@@ -234,12 +241,28 @@ public class ContentFragment extends Fragment implements View.OnClickListener, X
                 }
 
                 if(isPermit){
-//                    Toast.makeText(getContext(),"11111",Toast.LENGTH_LONG).show();
-
                     intent.putExtra("flag", "3");
                     startActivity(intent);
                 }else{
-                    Toast.makeText(getContext(), "当前没有录音权限", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), "当前缺少权限(摄像头 或 写入)", Toast.LENGTH_LONG).show();
+                }
+                break;
+
+            case AUDIO_RESULT_CODE:
+                for (int result: grantResults) {
+                    if (result != PackageManager.PERMISSION_GRANTED){
+                        isPermit = false;
+                    }
+                }
+                if (grantResults.length<=0){
+                    isPermit = false;
+                }
+
+                if(isPermit){
+                    intent.putExtra("flag", "4");
+                    startActivity(intent);
+                }else{
+                    Toast.makeText(getContext(), "当前缺少权限(录音 或 写入)", Toast.LENGTH_LONG).show();
                 }
                 break;
             default:

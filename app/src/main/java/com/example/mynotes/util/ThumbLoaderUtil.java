@@ -49,11 +49,12 @@ public class ThumbLoaderUtil {
 //                int r = x * 255 / (width - 1);
 //                int g = y * 255 / (width - 1);
 //                int b = 255 - Math.min(r, g);
-                int r = 100;
-                int g = 100;
-                int b = 100;
+                int r = 119;
+                int g = 136;
+                int b = 153;
                 int a = Math.max(r, g);
-                colors[y * width + x] = Color.argb(a, r, g, b);
+//                colors[y * width + x] = Color.argb(a, r, g, b);
+                colors[y * width + x] = Color.rgb( r, g, b);
             }
         }
         Bitmap bitmap = Bitmap.createBitmap(colors, width, height, Bitmap.Config.ARGB_8888);
@@ -64,25 +65,25 @@ public class ThumbLoaderUtil {
 
         Canvas canvas = new Canvas(newBitmap);
         Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG); // new antialised Paint
-        paint.setColor(Color.rgb(110, 110, 110));       // text color - #3D3D3D
-        paint.setTextSize((int)(14 * scale));           // text size in pixels
+        paint.setColor(Color.rgb(68, 68, 68));       // text color - #3D3D3D
+        paint.setTextSize((int)(13 * scale));           // text size in pixels
         paint.setShadowLayer(1f, 0f, 1f, Color.DKGRAY); // text shadow
 
         // draw text to the Canvas center
         Rect bounds1 = new Rect();
-        bounds1.set(0,0,160,80);
-        String text1 = "图像";
+//        bounds1.set(0,0,160,80);
+        String text1 = "资源损坏";
         String text2 = "损坏";
         paint.getTextBounds(text1, 0, text1.length(), bounds1);
-        int x = (bitmap.getWidth() - bounds1.width()) / 5;
-        int y = (bitmap.getHeight() + bounds1.height()) / 5;
+        int x = (bitmap.getWidth() - bounds1.width()) / 6;
+        int y = (bitmap.getHeight() + bounds1.height()) / 6;
 
         canvas.drawText(text1, x * scale , y * scale, paint);
 
-        Rect bounds2 = new Rect();
-        bounds2.set(0,80,160,160);
-        paint.getTextBounds(text1, 0, text1.length(), bounds2);
-        canvas.drawText(text2, x * scale , y * scale, paint);
+//        Rect bounds2 = new Rect();
+//        bounds2.set(0,80,160,160);
+//        paint.getTextBounds(text1, 0, text1.length(), bounds2);
+//        canvas.drawText(text2, x * scale , y * scale, paint);
 
         return newBitmap;
     }
