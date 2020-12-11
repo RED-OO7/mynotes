@@ -49,6 +49,7 @@
     </RelativeLayout>
 
     <!--  该listview用于承载记录的内容  -->
+    <!--  这里原本是listview  -->
     <ListView
         android:id="@+id/cellListView"
         android:layout_width="match_parent"

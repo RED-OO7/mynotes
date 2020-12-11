@@ -55,6 +55,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public static final int CONTENT_FRAGMENT_CODE = 1001;//ContentFragment的代号
     public static final int LOGIN_FRAGMENT_CODE = 1002;//LoginFragment的代号
     public static final int REGISTER_FRAGMENT_CODE = 1003;//RegisterFragment的代号
+    public static final int SEARCH_FRAGMENT_CODE = 1004;//SearchFragment的代号
 
     //    Button bt_text;//输入文字按钮
 //    Button bt_pic;//拍照按钮
@@ -391,6 +392,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         if (fragment instanceof RegisterFragment){
             fragment_type = REGISTER_FRAGMENT_CODE;
+        }
+        if (fragment instanceof SearchFragment){
+            fragment_type = SEARCH_FRAGMENT_CODE;
         }
 
         FragmentManager fragmentManager = getSupportFragmentManager();
