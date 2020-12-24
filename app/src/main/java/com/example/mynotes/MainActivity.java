@@ -55,6 +55,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public static final int CONTENT_FRAGMENT_CODE = 1001;//ContentFragment的代号
     public static final int LOGIN_FRAGMENT_CODE = 1002;//LoginFragment的代号
     public static final int REGISTER_FRAGMENT_CODE = 1003;//RegisterFragment的代号
+    public static final int SEARCH_FRAGMENT_CODE = 1004;//SearchFragment的代号
 
     //    Button bt_text;//输入文字按钮
 //    Button bt_pic;//拍照按钮
@@ -171,10 +172,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         bt_tosearch = (Button) findViewById(R.id.bt_tosearch);
         bt_tomain = (Button) findViewById(R.id.bt_tomain);
         bt_callleft = (Button) findViewById(R.id.bt_callleft);
-        bt_test1 = (Button) findViewById(R.id.bt_test1);
-        bt_test2 = (Button) findViewById(R.id.bt_test2);
-        bt_test3 = (Button) findViewById(R.id.bt_test3);
-        bt_test4 = (Button) findViewById(R.id.bt_test4);
+//        bt_test1 = (Button) findViewById(R.id.bt_test1);
+//        bt_test2 = (Button) findViewById(R.id.bt_test2);
+//        bt_test3 = (Button) findViewById(R.id.bt_test3);
+//        bt_test4 = (Button) findViewById(R.id.bt_test4);
 
         accountLayout = findViewById(R.id.show_account);
         voidLayout = findViewById(R.id.show_void);
@@ -188,10 +189,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         bt_tosearch.setOnClickListener(this);
         bt_tomain.setOnClickListener(this);
         bt_callleft.setOnClickListener(this);
-        bt_test1.setOnClickListener(this);
-        bt_test2.setOnClickListener(this);
-        bt_test3.setOnClickListener(this);
-        bt_test4.setOnClickListener(this);
+//        bt_test1.setOnClickListener(this);
+//        bt_test2.setOnClickListener(this);
+//        bt_test3.setOnClickListener(this);
+//        bt_test4.setOnClickListener(this);
 
         mainDrawer = findViewById(R.id.mainDrawer);
         mainDrawer.addDrawerListener(new DrawerLayout.DrawerListener() {//给drawer布局设置监听器
@@ -253,90 +254,90 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.bt_callleft://该按钮会唤出左侧菜单栏
                 mainDrawer.openDrawer(Gravity.LEFT);
                 break;
-            case R.id.bt_test1://该按钮用于测试
-                ContentValues contentValues1 = new ContentValues();
-                //id不需要放入是因为设置了id自增
-                contentValues1.put(NotesDB.TITLE, "无序号的空内容记录2");
-                contentValues1.put(NotesDB.CONTENT, "");//添加文本输入框里的内容进数据库
-                contentValues1.put(NotesDB.TIME, AddContentActivity.getNowTimeStr());//添加当前的时间
-                contentValues1.put(NotesDB.CHANGE_TIME, AddContentActivity.getNowTimeStr());//添加修改的时间
-                contentValues1.put(NotesDB.PIC_PATH, null + "");//添加图片路径  我怀疑这个路径有问题
-                contentValues1.put(NotesDB.VIDEO_PATH, null + "");//添加视频路径
-                contentValues1.put(NotesDB.SOUND_PATH, null + "");//添加录音路径
-                contentValues1.put(NotesDB.OWNER, NotesDB.LOCAL_OWNER_STRING);//添加当前拥有者名
-                contentValues1.put(NotesDB.IS_CHANGE, 1);//添加是否修改标识
-
-                notesDB = new NotesDB(this);
-                SQLiteDatabase notesWriter1 = notesDB.getWritableDatabase();
-                notesWriter1.insert(NotesDB.TABLE_NAME, null, contentValues1);
-//                ContentFragment.contentFragmentInstance.selectNotesDB();//重新查询记录以刷新记录
-//                Toast.makeText(this, "这个按钮现在什么都没做", Toast.LENGTH_SHORT).show();
-                break;
-
-            case R.id.bt_test2://该按钮用于测试数据库的获取
-                NotesDB notesDB = new NotesDB(this);
-                dbWriter = notesDB.getReadableDatabase();//获取可写入数据库
-                Cursor cursor = dbWriter.query(NotesDB.TABLE_NAME, null, null, null, null, null, null);
-
-                //cursor.moveToFirst();//游标移到第一位;
-                String allDataStr = "";
-                while (cursor.moveToNext()) {//遍历游标里的所有数据
-                    String ownerStr = cursor.getString(cursor.getColumnIndex(NotesDB.OWNER));
-                    String timeStr = cursor.getString(cursor.getColumnIndex(NotesDB.TIME));
-                    String changeTimeStr = cursor.getString(cursor.getColumnIndex(NotesDB.CHANGE_TIME));
-                    int isChange_int = cursor.getInt(cursor.getColumnIndex(NotesDB.IS_CHANGE));// 0 为 false ， 1为true
-                    boolean isChange = isChange_int == 1;
-                    String contentStr = cursor.getString(cursor.getColumnIndex(NotesDB.CONTENT));//如果输入内容为空，则真的会获取到"null"字符串
-                    allDataStr = allDataStr + timeStr + ":  " + contentStr + "\n";
-                }
-
-                if ("".equals(allDataStr)) {
-                    Toast.makeText(this, "数据库消息为空", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(this, allDataStr, Toast.LENGTH_LONG).show();
-                }
-                break;
-
-            case R.id.bt_test3:
-//                new TCPConnectUtil().sendTCPRequestAndRespone();
-                Toast.makeText(this, "主活动中尝试释放按钮", Toast.LENGTH_SHORT).show();
-//                mainLoginFragment.releaseLoginButton();
-//                LoginFragement.loginFragementInstance.releaseLoginButton();//尝试释放按钮
-                afterLoginFailed();//尝试释放按钮
-                break;
-
-            case R.id.bt_test4:
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        BufferedReader reader = null;
-
-                        try {
-                            URL url = new URL("http://10.0.80.64:8080/users");
-                            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                            connection.setRequestMethod("GET");
-                            connection.setConnectTimeout(3000);
-                            connection.setReadTimeout(3000);
-
-                            InputStream in = new BufferedInputStream(connection.getInputStream());
-                            reader = new BufferedReader(new InputStreamReader(in));
-                            StringBuffer stringBuffer = new StringBuffer();
-                            String line;
-
-                            while ((line = reader.readLine()) != null){
-                                stringBuffer.append(line);
-                            }
-
-                            sendToastTextWouldBlock(stringBuffer.toString());
-
-                        } catch (MalformedURLException e) {
-                            e.printStackTrace();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }).start();
-                break;
+//            case R.id.bt_test1://该按钮用于测试
+//                ContentValues contentValues1 = new ContentValues();
+//                //id不需要放入是因为设置了id自增
+//                contentValues1.put(NotesDB.TITLE, "无序号的空内容记录2");
+//                contentValues1.put(NotesDB.CONTENT, "");//添加文本输入框里的内容进数据库
+//                contentValues1.put(NotesDB.TIME, AddContentActivity.getNowTimeStr());//添加当前的时间
+//                contentValues1.put(NotesDB.CHANGE_TIME, AddContentActivity.getNowTimeStr());//添加修改的时间
+//                contentValues1.put(NotesDB.PIC_PATH, null + "");//添加图片路径  我怀疑这个路径有问题
+//                contentValues1.put(NotesDB.VIDEO_PATH, null + "");//添加视频路径
+//                contentValues1.put(NotesDB.SOUND_PATH, null + "");//添加录音路径
+//                contentValues1.put(NotesDB.OWNER, NotesDB.LOCAL_OWNER_STRING);//添加当前拥有者名
+//                contentValues1.put(NotesDB.IS_CHANGE, 1);//添加是否修改标识
+//
+//                notesDB = new NotesDB(this);
+//                SQLiteDatabase notesWriter1 = notesDB.getWritableDatabase();
+//                notesWriter1.insert(NotesDB.TABLE_NAME, null, contentValues1);
+////                ContentFragment.contentFragmentInstance.selectNotesDB();//重新查询记录以刷新记录
+////                Toast.makeText(this, "这个按钮现在什么都没做", Toast.LENGTH_SHORT).show();
+//                break;
+//
+//            case R.id.bt_test2://该按钮用于测试数据库的获取
+//                NotesDB notesDB = new NotesDB(this);
+//                dbWriter = notesDB.getReadableDatabase();//获取可写入数据库
+//                Cursor cursor = dbWriter.query(NotesDB.TABLE_NAME, null, null, null, null, null, null);
+//
+//                //cursor.moveToFirst();//游标移到第一位;
+//                String allDataStr = "";
+//                while (cursor.moveToNext()) {//遍历游标里的所有数据
+//                    String ownerStr = cursor.getString(cursor.getColumnIndex(NotesDB.OWNER));
+//                    String timeStr = cursor.getString(cursor.getColumnIndex(NotesDB.TIME));
+//                    String changeTimeStr = cursor.getString(cursor.getColumnIndex(NotesDB.CHANGE_TIME));
+//                    int isChange_int = cursor.getInt(cursor.getColumnIndex(NotesDB.IS_CHANGE));// 0 为 false ， 1为true
+//                    boolean isChange = isChange_int == 1;
+//                    String contentStr = cursor.getString(cursor.getColumnIndex(NotesDB.CONTENT));//如果输入内容为空，则真的会获取到"null"字符串
+//                    allDataStr = allDataStr + timeStr + ":  " + contentStr + "\n";
+//                }
+//
+//                if ("".equals(allDataStr)) {
+//                    Toast.makeText(this, "数据库消息为空", Toast.LENGTH_SHORT).show();
+//                } else {
+//                    Toast.makeText(this, allDataStr, Toast.LENGTH_LONG).show();
+//                }
+//                break;
+//
+//            case R.id.bt_test3:
+////                new TCPConnectUtil().sendTCPRequestAndRespone();
+//                Toast.makeText(this, "主活动中尝试释放按钮", Toast.LENGTH_SHORT).show();
+////                mainLoginFragment.releaseLoginButton();
+////                LoginFragement.loginFragementInstance.releaseLoginButton();//尝试释放按钮
+//                afterLoginFailed();//尝试释放按钮
+//                break;
+//
+//            case R.id.bt_test4:
+//                new Thread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        BufferedReader reader = null;
+//
+//                        try {
+//                            URL url = new URL("http://10.0.80.64:8080/users");
+//                            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+//                            connection.setRequestMethod("GET");
+//                            connection.setConnectTimeout(3000);
+//                            connection.setReadTimeout(3000);
+//
+//                            InputStream in = new BufferedInputStream(connection.getInputStream());
+//                            reader = new BufferedReader(new InputStreamReader(in));
+//                            StringBuffer stringBuffer = new StringBuffer();
+//                            String line;
+//
+//                            while ((line = reader.readLine()) != null){
+//                                stringBuffer.append(line);
+//                            }
+//
+//                            sendToastTextWouldBlock(stringBuffer.toString());
+//
+//                        } catch (MalformedURLException e) {
+//                            e.printStackTrace();
+//                        } catch (IOException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                }).start();
+//                break;
 
             default:
                 break;
@@ -391,6 +392,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         if (fragment instanceof RegisterFragment){
             fragment_type = REGISTER_FRAGMENT_CODE;
+        }
+        if (fragment instanceof SearchFragment){
+            fragment_type = SEARCH_FRAGMENT_CODE;
         }
 
         FragmentManager fragmentManager = getSupportFragmentManager();

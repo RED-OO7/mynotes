@@ -70,7 +70,7 @@ public class AddContentActivity extends AppCompatActivity implements View.OnClic
     private EditText add_text;//输入内容的框
     private ImageView add_img;//图片
     private VideoView add_video;//视频
-//    private TextView add_seize1;//占位用
+    //    private TextView add_seize1;//占位用
     private LinearLayout add_linearSound;//装载播放声音按钮用
     private LinearLayout add_linearListen;//装载录制声音按钮用
     private MediaRecorder mediaRecorder = new MediaRecorder();
@@ -85,6 +85,7 @@ public class AddContentActivity extends AppCompatActivity implements View.OnClic
     private String owner;//用以存储信息拥有者
 
     private String alternativeTitle = "";//这是给拍照，录像和录音用的记事记录用的懒人替代标题
+    private boolean canSave = true;//这是给退出时判断是否能退出用的
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     @Override
@@ -176,7 +177,7 @@ public class AddContentActivity extends AppCompatActivity implements View.OnClic
     /**
      * 该方法用于禁用滑动
      */
-    public void disabledScrolling(){
+    public void disabledScrolling() {
         //使收缩栏不打开
         add_appBar.setExpanded(false);
         //做以下操作使得不能拖动
@@ -196,7 +197,7 @@ public class AddContentActivity extends AppCompatActivity implements View.OnClic
     /**
      * 该方法用于启用滑动
      */
-    public void enabledScrolling(){
+    public void enabledScrolling() {
         //使收缩栏打开
         add_appBar.setExpanded(true);
         //做以下操作使得能拖动
@@ -239,7 +240,7 @@ public class AddContentActivity extends AppCompatActivity implements View.OnClic
         if ("".equals(title_input)) {//如果标题为空
             if (!"".equals(content_input.trim())) {//如果内容不为空，则使用内容的前八个字作为标题
                 title_input = content_input.trim().replaceAll("\r|\n", "");//将标题换行都去掉
-                if (title_input.length() > 8){//如果内容长度大于8，则截断，否则自己也能当标题
+                if (title_input.length() > 8) {//如果内容长度大于8，则截断，否则自己也能当标题
                     title_input = title_input.substring(0, 8) + "……";
                 }
             } else {//否则标题和内容都为空
@@ -259,11 +260,11 @@ public class AddContentActivity extends AppCompatActivity implements View.OnClic
         contentValues.put(NotesDB.VIDEO_PATH, videoPathStr + "");//添加视频路径
         contentValues.put(NotesDB.SOUND_PATH, soundPathStr + "");//添加录音路径
         contentValues.put(NotesDB.OWNER, owner);//添加当前拥有者名
-        if (!"null".equals(imgPathStr)||
-                !"null".equals(videoPathStr)||
-                !"null".equals(soundPathStr)){//如果三个文件有一个不为空，则
+        if (!"null".equals(imgPathStr) ||
+                !"null".equals(videoPathStr) ||
+                !"null".equals(soundPathStr)) {//如果三个文件有一个不为空，则
             contentValues.put(NotesDB.NOTE_STATUS, Notes.NOTE_DATA_NEED_UPLOAD);//NOTE_NEED_UPLOAD表示需要服务器上传的文件记录
-        }else {
+        } else {
             contentValues.put(NotesDB.NOTE_STATUS, Notes.NOTE_NEED_UPLOAD);//NOTE_NEED_UPLOAD表示需要服务器上传的普通记录
         }
 
@@ -436,6 +437,7 @@ public class AddContentActivity extends AppCompatActivity implements View.OnClic
                 finish();//最后一定会结束
             }
         }*/
+        canSave = true;//能保存的标识为真
         finish();//直接结束，因为销毁活动时会自动保存记录
     }
 
@@ -462,7 +464,7 @@ public class AddContentActivity extends AppCompatActivity implements View.OnClic
                 e.printStackTrace();
                 Toast.makeText(this, "未录音，保存失败！", Toast.LENGTH_SHORT).show();
                 cleanTempFile();//清理临时文件
-            }finally {
+            } finally {
                 testMediaPlayer.release();//尝试释放资源
             }
 
@@ -470,7 +472,7 @@ public class AddContentActivity extends AppCompatActivity implements View.OnClic
             if ("".equals(title_input)) {//如果输入的标题为空，如果标题为空，则判断是不是拍照或录像记录
                 if (!"1".equals(flag_str)) {//如果flag_str不是1，说明不是记事记录
                     Boolean bCanSave = true;
-                    if ("2".equals(flag_str)){//拍照记录的处理方法
+                    if ("2".equals(flag_str)) {//拍照记录的处理方法
                         //如果照片损坏，则不能添加记录
                         Bitmap bitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());//用bitmap工厂解码该图片
                         try {
@@ -479,11 +481,11 @@ public class AddContentActivity extends AppCompatActivity implements View.OnClic
                             e.printStackTrace();
                             bCanSave = false;
                         }
-                        if (bCanSave){
+                        if (bCanSave) {
                             addItem();//则可以尝试记录
                         }
                     }
-                    if ("3".equals(flag_str)){//录像记录的处理方法
+                    if ("3".equals(flag_str)) {//录像记录的处理方法
                         //如果视频损坏，则不能添加记录
                         try {
                             MediaMetadataRetriever mmr = new MediaMetadataRetriever();
@@ -494,16 +496,18 @@ public class AddContentActivity extends AppCompatActivity implements View.OnClic
                             e.printStackTrace();
                             bCanSave = false;
                         }
-                        if (bCanSave){
+                        if (bCanSave) {
                             addItem();//则可以尝试记录
                         }
                     }
                 } else {//否则则为记事记录，记事记录标题不能为空！
-                    if (!"".equals(content_input.trim())){//如果内容能成为标题
+                    if (!"".equals(content_input.trim())) {//如果内容能成为标题
                         addItem();
-                    }else //否则则警告
+                        Toast.makeText(this, "记事保存成功！", Toast.LENGTH_LONG).show();
+                    } else {//否则则警告
                         cleanTempFile();//清理临时文件
                         Toast.makeText(this, "记事标题不能为空！保存失败！", Toast.LENGTH_LONG).show();
+                    }
                 }
             } else {//否则输入标题不为空，可以记录
                 addItem();//点击保存之后就会添加数据
@@ -530,6 +534,7 @@ public class AddContentActivity extends AppCompatActivity implements View.OnClic
      * 这是点击取消按钮后的处理方法
      */
     public void clickedCancelBtn() {
+        canSave = false;//能保存的标识为false
         cleanTempFile();//清理临时文件
         finish();//结束
     }
@@ -596,7 +601,7 @@ public class AddContentActivity extends AppCompatActivity implements View.OnClic
             case R.id.bt_start://开始录音
                 try {//如果报异常则直接结束活动
                     startRecording();//开始录音
-                }catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
 //                    Toast.makeText(this, "已取消录音", Toast.LENGTH_SHORT).show();
                     finish();
@@ -686,13 +691,15 @@ public class AddContentActivity extends AppCompatActivity implements View.OnClic
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        ifNeedThenSave();//判断退出后要进行的操作
+        if (canSave) {//如果能保存(说明点的不是退出按钮)
+            ifNeedThenSave();//判断退出后要进行的操作
+        }
         notesWriter.close();
         notesDB.close();
-        try{
+        try {
             mediaPlayer.release();//尝试释放资源
 //            Thread.sleep(200);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         runOnUiThread(new Runnable() {

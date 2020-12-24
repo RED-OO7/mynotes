@@ -42,6 +42,7 @@ import com.example.mynotes.util.FileUtil;
 import com.example.mynotes.dao.NotesDB;
 import com.example.mynotes.model.Notes;
 import com.example.mynotes.view.fragments.ContentFragment;
+import com.example.mynotes.view.fragments.SearchFragment;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -52,7 +53,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     private VideoView detail_video;
     private EditText detail_title;
     private EditText detail_text;
-//    private TextView detail_seize1;
+    //    private TextView detail_seize1;
     private TextView detail_time;
 
     private LinearLayout detail_linearSound;//该add_linearSound用于存放播放和暂停按钮
@@ -201,7 +202,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     /**
      * 该方法用于禁用滑动
      */
-    public void disabledScrolling(){
+    public void disabledScrolling() {
         //使收缩栏不打开
         detail_appBar.setExpanded(false);
         //做以下操作使得不能拖动
@@ -221,7 +222,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     /**
      * 该方法用于启用滑动
      */
-    public void enabledScrolling(){
+    public void enabledScrolling() {
         //使收缩栏打开
         detail_appBar.setExpanded(true);
         //做以下操作使得能拖动
@@ -276,13 +277,13 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         int id = note.getId();//获取该行数据的id
 //        notesWriter.delete(NotesDB.TABLE_NAME, NotesDB.ID + " = " + id, null);//根据id删除该行数据
 
-        if ("null".equals(note.getPic_path())&&
-                "null".equals(note.getVideo_path())&&
-                "null".equals(note.getSound_path())){//如果条件成立，则为记事记录
+        if ("null".equals(note.getPic_path()) &&
+                "null".equals(note.getVideo_path()) &&
+                "null".equals(note.getSound_path())) {//如果条件成立，则为记事记录
             ContentValues contentValues = new ContentValues();
             contentValues.put(NotesDB.NOTE_STATUS, Notes.NOTE_NEED_DELETE);//把状态改为需要删除
             notesWriter.update(NotesDB.TABLE_NAME, contentValues, NotesDB.ID + " = " + id, null);//根据id修改该行数据
-        }else{//否则不是记事记录，直接删除
+        } else {//否则不是记事记录，直接删除
             notesWriter.delete(NotesDB.TABLE_NAME, NotesDB.ID + " = " + id, null);//根据id修改该行数据
         }
     }
@@ -423,7 +424,18 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         runOnUiThread(new Runnable() {//刷新显示的记录内容
             @Override
             public void run() {
-                ContentFragment.getContentFragmentInstance().refreshNotesList();
+                switch (MainActivity.fragment_type) {
+                    case MainActivity.CONTENT_FRAGMENT_CODE:
+                        ContentFragment contentFragment = ContentFragment.getContentFragmentInstance();
+                        if (contentFragment != null)
+                            ContentFragment.getContentFragmentInstance().refreshNotesList();
+                        break;
+                    case MainActivity.SEARCH_FRAGMENT_CODE:
+                        SearchFragment searchFragment = SearchFragment.getSearchFragmentInstance();
+                        if (searchFragment != null)
+                            SearchFragment.getSearchFragmentInstance().refreshNotesList();
+                        break;
+                }
             }
         });
 //        notesWriter.close();

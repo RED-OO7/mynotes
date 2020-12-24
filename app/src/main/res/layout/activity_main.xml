@@ -176,61 +176,61 @@
             android:textStyle="bold"
             android:visibility="gone" />
 
-        <Button
-            android:id="@+id/bt_test1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="5dp"
-            android:background="@android:color/transparent"
-            android:gravity="left"
-            android:text="测试按钮(增加内容为空的记录)"
-            android:textColor="#FFFFFF"
-            android:textSize="20dp"
-            android:textStyle="bold"
-            android:visibility="visible" />
+<!--        <Button-->
+<!--            android:id="@+id/bt_test1"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginLeft="20dp"-->
+<!--            android:layout_marginTop="5dp"-->
+<!--            android:background="@android:color/transparent"-->
+<!--            android:gravity="left"-->
+<!--            android:text="测试按钮(增加内容为空的记录)"-->
+<!--            android:textColor="#FFFFFF"-->
+<!--            android:textSize="20dp"-->
+<!--            android:textStyle="bold"-->
+<!--            android:visibility="visible" />-->
 
-        <Button
-            android:id="@+id/bt_test2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="5dp"
-            android:background="@android:color/transparent"
-            android:gravity="left"
-            android:text="测试按钮(数据库)"
-            android:textColor="#FFFFFF"
-            android:textSize="20dp"
-            android:textStyle="bold"
-            android:visibility="visible" />
+<!--        <Button-->
+<!--            android:id="@+id/bt_test2"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginLeft="20dp"-->
+<!--            android:layout_marginTop="5dp"-->
+<!--            android:background="@android:color/transparent"-->
+<!--            android:gravity="left"-->
+<!--            android:text="测试按钮(数据库)"-->
+<!--            android:textColor="#FFFFFF"-->
+<!--            android:textSize="20dp"-->
+<!--            android:textStyle="bold"-->
+<!--            android:visibility="visible" />-->
 
-        <Button
-            android:id="@+id/bt_test3"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="5dp"
-            android:background="@android:color/transparent"
-            android:gravity="left"
-            android:text="测试按钮(尝试释放登录碎片的按钮)"
-            android:textColor="#FFFFFF"
-            android:textSize="20dp"
-            android:textStyle="bold"
-            android:visibility="visible" />
+<!--        <Button-->
+<!--            android:id="@+id/bt_test3"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginLeft="20dp"-->
+<!--            android:layout_marginTop="5dp"-->
+<!--            android:background="@android:color/transparent"-->
+<!--            android:gravity="left"-->
+<!--            android:text="测试按钮(尝试释放登录碎片的按钮)"-->
+<!--            android:textColor="#FFFFFF"-->
+<!--            android:textSize="20dp"-->
+<!--            android:textStyle="bold"-->
+<!--            android:visibility="visible" />-->
 
-        <Button
-            android:id="@+id/bt_test4"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="5dp"
-            android:background="@android:color/transparent"
-            android:gravity="left"
-            android:text="测试按钮(测试连接spring后端)"
-            android:textColor="#FFFFFF"
-            android:textSize="20dp"
-            android:textStyle="bold"
-            android:visibility="visible" />
+<!--        <Button-->
+<!--            android:id="@+id/bt_test4"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginLeft="20dp"-->
+<!--            android:layout_marginTop="5dp"-->
+<!--            android:background="@android:color/transparent"-->
+<!--            android:gravity="left"-->
+<!--            android:text="测试按钮(测试连接spring后端)"-->
+<!--            android:textColor="#FFFFFF"-->
+<!--            android:textSize="20dp"-->
+<!--            android:textStyle="bold"-->
+<!--            android:visibility="visible" />-->
 
     </LinearLayout>
 
