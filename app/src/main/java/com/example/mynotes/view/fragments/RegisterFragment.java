@@ -25,9 +25,9 @@ import com.example.mynotes.model.DataJsonPack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class RegisterFragment extends Fragment implements View.OnClickListener{
+public class RegisterFragment extends Fragment implements View.OnClickListener {
 
-    public static  RegisterFragment registerFragementInstance = null;//本注册碎片的静态对象
+    public static RegisterFragment registerFragementInstance = null;//本注册碎片的静态对象
 
     public static final String reg_btn_sure_color = "#74e674";
     public static final String reg_btn_login_color = "#63d563";
@@ -43,9 +43,10 @@ public class RegisterFragment extends Fragment implements View.OnClickListener{
     Matcher m;
     Matcher m1;
     String str;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.register_fragment,container,false);
+        View view = inflater.inflate(R.layout.register_fragment, container, false);
         //这个view这里使得碎片绑定了login_fragement这个layout
 
         reg_username = (EditText) view.findViewById(R.id.reg_username);
@@ -75,42 +76,44 @@ public class RegisterFragment extends Fragment implements View.OnClickListener{
         switch (v.getId()) {
             //注册开始，判断注册条件
             case R.id.reg_btn_sure:
-                if(!TextUtils.isEmpty(mail)){
+                if (!TextUtils.isEmpty(mail)) {
+                    //判断邮箱的正则表达式
                     str = "^([a-zA-Z0-9_\\-\\.]+)@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.)|(([a-zA-Z0-9\\-]+\\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\\]?)$";
                     p = Pattern.compile(str);
                     m = p.matcher(mail);
-                    if(m.matches()==false){
-                        Toast.makeText(getContext(), "地址格式有问题", Toast.LENGTH_SHORT).show();
+                    if (m.matches() == false) {
+                        Toast.makeText(getContext(), "邮箱地址格式有误", Toast.LENGTH_SHORT).show();
                     }
                 }
                 if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password) || TextUtils.isEmpty(password2) || TextUtils.isEmpty(mail)) {
                     Toast.makeText(getContext(), "各项均不能为空", Toast.LENGTH_SHORT).show();
                 } else {
-                    //str="^[a-zA-Z\\d\\.@]{6,20}$";
-                    str="^[a-zA-Z][a-zA-Z0-9]{6,20}$";
+                    //判断用户名的正则表达式(只能以字母开头，且6-20位的数字或字母字符)
+                    str = "^[a-zA-Z][a-zA-Z0-9]{6,20}$";
                     p = Pattern.compile(str);
                     m = p.matcher(username);
-                    if(m.matches()==false){
-                        Toast.makeText(getContext(), "账号长度格式有问题", Toast.LENGTH_SHORT).show();
-                    }
-                    if (TextUtils.equals(password, password2)) {
-                        lockRegisterButton();//先锁住按钮
+                    if (m.matches() == false) {//如果账号格式有误，则不能继续注册
+                        Toast.makeText(getContext(), "账号格式有误\n(只能以字母开头，且6-20位的数字或字母字符)", Toast.LENGTH_SHORT).show();
+                    } else {//否则账号格式无误，允许继续注册
+                        if (TextUtils.equals(password, password2)) {
+                            lockRegisterButton();//先锁住按钮
 
-                        //执行注册操作
-                        Account accountRegister = new Account();
-                        accountRegister.setUsername(username);
-                        accountRegister.setPassword(password);
-                        accountRegister.setEmail(mail);
+                            //执行注册操作
+                            Account accountRegister = new Account();
+                            accountRegister.setUsername(username);
+                            accountRegister.setPassword(password);
+                            accountRegister.setEmail(mail);
 
-                        DataJsonPack dataSend = new DataJsonPack();
-                        dataSend.setDataObject(accountRegister);
-                        dataSend.setOperation(ClientSendString.RegisterAccount);//设置操作为注册账户
+                            DataJsonPack dataSend = new DataJsonPack();
+                            dataSend.setDataObject(accountRegister);
+                            dataSend.setOperation(ClientSendString.RegisterAccount);//设置操作为注册账户
 
-                        new TCPConnectController().sendTCPRequestAndRespone(dataSend);//发送数据
+                            new TCPConnectController().sendTCPRequestAndRespone(dataSend);//发送数据
+                            //Toast.makeText(getContext(), "注册成功,请返回登录", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(getContext(), "两次输入的密码不一样", Toast.LENGTH_SHORT).show();
+                        }
 
-//                            Toast.makeText(getContext(), "注册成功,请返回登录", Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(getContext(), "两次输入的密码不一样", Toast.LENGTH_SHORT).show();
                     }
                 }
                 break;
@@ -124,7 +127,7 @@ public class RegisterFragment extends Fragment implements View.OnClickListener{
     }
 
 
-    private void replaceMainFragment(Fragment fragment){
+    private void replaceMainFragment(Fragment fragment) {
         MainActivity mainActivity = MainActivity.getMainActivityInstance();
         mainActivity.replaceMainFragment(fragment);//调用主活动的碎片替换方法
     }
@@ -132,7 +135,7 @@ public class RegisterFragment extends Fragment implements View.OnClickListener{
     /**
      * 该方法用于使注册按钮和跳转按钮不可用，该方法只能在RegisterFragment被初始化完成后使用！
      */
-    public void lockRegisterButton(){
+    public void lockRegisterButton() {
         reg_btn_sure.setEnabled(false);//使注册按钮不可用
         reg_btn_login.setEnabled(false);//使跳转按钮不可用
 
@@ -143,7 +146,7 @@ public class RegisterFragment extends Fragment implements View.OnClickListener{
     /**
      * 该方法用于使使注册按钮和跳转按钮可用，该方法只能在RegisterFragment被初始化完成后使用！
      */
-    public void releaseRegisterButton(){
+    public void releaseRegisterButton() {
         reg_btn_sure.setEnabled(true);//使注册按钮可用
         reg_btn_login.setEnabled(true);//使跳转按钮可用
 
